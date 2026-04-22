@@ -23,9 +23,15 @@ const landingPage = async (req, res) => {
       isDeleted: false,
       isAvailable: true,
       isFeatured: true,
-    });
+    }).populate("category");
 
-    return res.render("userPages/landing", { products, categories });
+    const user = req.session?.user || null;
+    const wishlistIds = user
+      ? (await Wishlist.find({ userId: user.id }, { variantId: 1, _id: 0 }).lean())
+          .map((item) => item.variantId.toString())
+      : [];
+
+    return res.render("userPages/landing", { products, categories, user, wishlistIds });
   } catch (err) {
     handleError(res, "landingPage", err);
   }
@@ -48,9 +54,15 @@ const showHome = async (req, res) => {
       isDeleted: false,
       isAvailable: true,
       isFeatured: true,
-    });
+    }).populate("category");
 
-    return res.render("userPages/home", { products, categories });
+    const user = req.session?.user || null;
+    const wishlistIds = user
+      ? (await Wishlist.find({ userId: user.id }, { variantId: 1, _id: 0 }).lean())
+          .map((item) => item.variantId.toString())
+      : [];
+
+    return res.render("userPages/home", { products, categories, user, wishlistIds });
   } catch (err) {
     handleError(res, "showHome", err);
   }
@@ -63,9 +75,9 @@ const showShop = async (req, res) => {
     let { maxPrice, minPrice, sort, category, search} = req.query;
 
 
-    const user = req.session?.user?.id || null;
+    const user = req.session?.user || null;
 const wishlistIds = user
-  ? (await Wishlist.find({ userId: user }, { variantId: 1, _id: 0 }).lean())
+  ? (await Wishlist.find({ userId: user.id }, { variantId: 1, _id: 0 }).lean())
       .map((item) => item.variantId.toString())
   : [];
 
@@ -94,6 +106,7 @@ const wishlistIds = user
 
       const totalProducts = await Product.countDocuments({
         isDeleted: false,
+        isAvailable: true,
       });
       const totalPages = Math.ceil(totalProducts / limit);
 
@@ -109,6 +122,7 @@ const wishlistIds = user
         totalPages,
         limit,
         wishlistIds,
+        totalProducts,
         user,
         buildQuery: (extra) => {
           const params = { ...req.query, ...extra };
@@ -177,6 +191,16 @@ const selectedMaxPrice = Number(maxPrice)|| Infinity
     let products = result[0].data;
     products = await Product.populate(products, { path: "category" });
 
+    // Calculate ratings for filtered results
+    for(let product of products){
+      const reviews = await Review.find({productId:product._id})
+      if (reviews.length > 0) {
+        const total = reviews.reduce((acc, r) => acc + r.rating, 0);
+        product.rating = total / reviews.length;
+        product.reviewLength = reviews.length 
+      }
+    }
+
     const totalProducts = result[0].totalCount[0]?.total || 0;
     const totalPages = Math.ceil(totalProducts / limit);
 
@@ -193,6 +217,7 @@ const selectedMaxPrice = Number(maxPrice)|| Infinity
       limit,
       query: req.query,
       wishlistIds,
+      totalProducts,
       user,
       buildQuery: (extra) => {
         const params = { ...req.query, ...extra };
@@ -208,7 +233,7 @@ const selectedMaxPrice = Number(maxPrice)|| Infinity
 
 const cartCount = async (req,res)=>{
   try{
-    const count = await Cart.countDocuments({userId:req.session.user?.id})
+    const count = await Cart.countDocuments({userId:req.session.user?.id, status: "active"})
     res.json({count})
   }catch(error){
     res.json({count:0})

@@ -26,6 +26,12 @@ app.use(flash())
 app.use(flashMsg)
 app.use(passport.initialize())
 app.use(passport.session())
+
+// Global user middleware
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null;
+  next();
+});
 app.use(method('_method'))
 app.use(nocache())
 

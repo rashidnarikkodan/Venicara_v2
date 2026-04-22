@@ -1,136 +1,134 @@
 <!DOCTYPE html>
-<html lang="en">
- <head>
+<html lang="en" class="h-full">
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%=title%></title>
-  <link
-   href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
-   rel="stylesheet"
-  />
-  <link rel="stylesheet" href="/css/userAuth.css" />
- </head>
- <body class="vh-100 d-flex align-items-center">
-  <div class="container text-center d-flex justify-content-center">
-   <div
-    class="card shadow-lg border-0 rounded-5 overflow-hidden mt-3"
-    style="max-width: 800px; width: 100%"
-   >
-    <div class="row g-0 d-flex justify-content-center pt-md-2 pb-md-5">
-            <div class="col-md-12 py-4">
-        <img src="/images/logo.avif" class="img-fluid" alt="" style="width:13rem">
-      </div>
-      <!-- Left Image Section -->
-     <div
-      class="col-md-6 d-none d-md-flex align-items-center justify-content-center"
-     >
-      <img
-       src="/images/b&w.avif"
-       alt="Signup"
-       class="object-fit-cover img-fluid rounded-4 img-login"
-      />
-     </div>
-     <!-- Right Form Section -->
-     <div class="col-md-5 p-5">
-      <div class="col-12 mb-md-3">
-              <h2 class="mb-2">Confirm with OTP</h2>
-              <p>Please check your mail address for OTP</p>
+  <title>Verify Email | VENICARA</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/output.css" />
+  <script src="https://kit.fontawesome.com/f45c5ea548.js" crossorigin="anonymous"></script>
+</head>
+<body class="h-full bg-luxury-cream dark:bg-luxury-black font-sans transition-colors duration-300 flex items-center justify-center p-6">
+
+  <div class="max-w-4xl w-full bg-white dark:bg-luxury-charcoal rounded-[3rem] shadow-2xl overflow-hidden animate-zoom-in">
+    <div class="flex flex-col md:flex-row flex-row-reverse">
+      <!-- Form Side -->
+      <div class="flex-1 p-10 md:p-16">
+        <div class="mb-12">
+          <img src="/images/logo.avif" alt="Venicara" class="w-40 mb-10 dark:invert">
+          <h2 class="text-3xl font-serif font-bold text-luxury-black dark:text-white mb-2 uppercase tracking-tight">Identity Verification</h2>
+          <p class="text-gray-500 dark:text-gray-400 text-sm italic">A secure code has been dispatched to your mailbox.</p>
+        </div>
+
+        <% if(messages.error && messages.error.length > 0){ %>
+          <div class="mb-8 p-4 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-widest rounded-2xl flex items-center">
+            <i class="fa-solid fa-circle-exclamation mr-3 text-sm"></i>
+            <%= messages.error[0] %>
+          </div>
+        <% } %>
+
+        <form action="/profile/edit/otp" method="post" class="space-y-8">
+          <div class="space-y-4">
+            <label class="text-[10px] font-bold text-luxury-black dark:text-gray-400 uppercase tracking-widest ml-4 text-center block w-full">Authentication Code</label>
+            <input type="text" name="otp" maxlength="6"
+                   class="w-full bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/5 rounded-2xl py-5 text-center text-2xl font-mono font-bold tracking-[0.5em] focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 outline-none transition dark:text-white" 
+                   placeholder="000000">
+            <input type="hidden" id="email" value="<%=email%>" name="email">
+          </div>
+
+          <div class="flex flex-col items-center space-y-4 pt-2">
+            <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center">
+              <i class="fa-solid fa-clock-rotate-left mr-2 text-gold-500"></i>
+              Expiry in <span id="timer" class="text-gold-600 dark:text-gold-400 ml-1">00:50s</span>
             </div>
-      <%if(messages.error.length>0){%>
-      <div class="alert alert-danger p-2"><%=messages.error[0]%></div>
-      <%}%>
-      <!-- Form -->
-      <div class="row g-0 d-flex justify-content-center pt-md-3 pb-md-5">
-              <form action="/profile/edit/otp" method="post" class="">
-                <input type="text" name="otp" placeholder="Enter OTP" class="p-3 mb-md-3 text-center w-100 form-control" maxlength="6">
-                <input type="hidden" id="email" value="<%=email%>" name="email">
-                <div class="mb-3 mt-3">
-                  <span>Remaining Time <span id="timer" style="color:blueviolet" >00:50s</span></span>
-                  <br class=" d-block">
-                  <span class="">Didn’t you receive code? <a href="#" id="resend-otp" class="text-decoration-none"><span style="color:blueviolet">Resend</span></a></span>
-                </div>
-                <button class="btn btn-dark w-75  mb-3 p-md-3 p-2" type="submit">Confirm</button>
-              </form>
+            
+            <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+              Identity unconfirmed? 
+              <button id="resend-otp" type="button" class="text-gold-600 dark:text-gold-400 hover:underline ml-1">Dispatch Again</button>
+            </p>
+          </div>
 
-      <p class="mt-3 text-center text-muted">
-       <a href="/profile/edit" class="fw-semibold text-decoration-none text-secondary">Go back to Profile Edit page?</a>
-      </p>
-     </div>
-     
+          <button type="submit" class="w-full bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black py-5 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 transition shadow-xl">
+            Confirm Identity
+          </button>
+        </form>
+
+        <div class="mt-12 text-center">
+          <a href="/profile/edit" class="text-[10px] font-bold text-gray-400 hover:text-gold-600 dark:hover:text-gold-400 uppercase tracking-widest transition">
+            Modify Profile Settings
+          </a>
+        </div>
+      </div>
+
+      <!-- Visual Side -->
+      <div class="hidden md:block flex-1 relative">
+        <img src="/images/b&w.avif" alt="Luxury" class="h-full w-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-l from-white dark:from-luxury-charcoal to-transparent md:block hidden"></div>
+      </div>
     </div>
-   </div>
   </div>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const resend = document.getElementById('resend-otp');
-    const timer = document.getElementById('timer');
-    const successOTP = document.getElementById('success-otp');
-    let timerId;
 
-    // --- Function: Start Timer ---
-    function startTimer(seconds) {
-      if (timerId) clearInterval(timerId);
-      let i = seconds;
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const resend = document.getElementById('resend-otp');
+      const timer = document.getElementById('timer');
+      let timerId;
 
-      resend.style.pointerEvents = 'none';
-      resend.innerHTML = 'wait...';
-      timer.innerHTML = `00:${i < 10 ? '0' + i : i}s`;
+      function startTimer(seconds) {
+        if (timerId) clearInterval(timerId);
+        let i = seconds;
 
-      timerId = setInterval(() => {
-        i--;
+        resend.style.pointerEvents = 'none';
+        resend.classList.add('opacity-50');
         timer.innerHTML = `00:${i < 10 ? '0' + i : i}s`;
-        if (i <= 0) {
-          clearInterval(timerId);
-          timer.innerHTML = `00:00s`;
-          resend.innerHTML = 'Resend';
-          resend.style.pointerEvents = 'auto';
-        }
-      }, 1000);
-    }
 
-    // --- Function: Resend OTP ---
-    resend.addEventListener('click', async (e) => {
-      e.preventDefault();
-      resend.innerHTML = 'Sending...';
-      resend.style.pointerEvents = 'none';
-
-      try {
-        const email = document.getElementById('email').value.trim();
-        const response = await fetch('/profile/resendOTP', {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          resend.innerHTML = 'Resend';
-          startTimer(50);
-        } else {
-          showAlert('error',data.message || "Something went wrong");
-          resend.innerHTML = 'Resend';
-          resend.style.pointerEvents = 'auto';
-        }
-      } catch (err) {
-        console.error(err);
-        resend.innerHTML = 'Resend';
-        resend.style.pointerEvents = 'auto';
+        timerId = setInterval(() => {
+          i--;
+          timer.innerHTML = `00:${i < 10 ? '0' + i : i}s`;
+          if (i <= 0) {
+            clearInterval(timerId);
+            timer.innerHTML = `00:00s`;
+            resend.style.pointerEvents = 'auto';
+            resend.classList.remove('opacity-50');
+          }
+        }, 1000);
       }
+
+      resend.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const originalText = resend.innerHTML;
+        resend.innerHTML = 'Sending...';
+        resend.style.pointerEvents = 'none';
+
+        try {
+          const email = document.getElementById('email').value.trim();
+          const response = await fetch('/profile/resendOTP', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            resend.innerHTML = originalText;
+            startTimer(50);
+          } else {
+            resend.innerHTML = originalText;
+            resend.style.pointerEvents = 'auto';
+          }
+        } catch (err) {
+          resend.innerHTML = originalText;
+          resend.style.pointerEvents = 'auto';
+        }
+      });
+
+      startTimer(50);
     });
-
-    // --- Fade-out success message ---
-    if (successOTP && successOTP.textContent.trim() !== '') {
-      setTimeout(() => {
-        successOTP.classList.add('fade-out');
-        successOTP.addEventListener('transitionend', () => successOTP.remove());
-      }, 3000);
-    }
-
-    // --- Auto Start Timer on Page Load ---
-    console.log('page loaded, starting timer');
-    startTimer(50);
-  });
-</script>
- </body>
+  </script>
+</body>
 </html>

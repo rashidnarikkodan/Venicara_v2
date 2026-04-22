@@ -1,182 +1,183 @@
-<%- include('../partials/admin/header.ejs')%>
-    <main class="flex-grow-1 min-vh-100 p-3">
-      <div class="container-fluid">
-        <div class="row align-items-center mb-5">
-          <div class="col-md-6">
-            <h1>Category Managment</h1>
-          </div>
-          <div class="col-md-6 d-flex justify-content-end gap-2">
-            <form action="/admin/categories" method="GET" class="d-flex gap-2 w-100">
-              <input type="text" name="search" class="form-control w-50" placeholder="Search..." value="<%= search %>">
-              <button class="btn btn-dark">Search</button>
-            </form>
-            <a href="/admin/categories/add"><button class="btn btn-dark">Add</button></a>
-          </div>
+<%- include('../partials/admin/header.ejs') %>
+
+<div class="space-y-8 animate-fade-in">
+  
+  <!-- Header Section -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div>
+      <h1 class="text-3xl font-serif font-bold dark:text-white">Category Management</h1>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 font-medium uppercase tracking-widest">Organize your fragrance families</p>
+    </div>
+    
+    <div class="flex items-center space-x-4">
+      <div class="relative group">
+        <form action="/admin/categories" method="GET" class="flex items-center">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 text-gray-400 group-focus-within:text-gold-500 transition-colors"></i>
+          <input 
+            type="text" 
+            name="search" 
+            placeholder="Search categories..." 
+            value="<%= search %>"
+            class="pl-11 pr-4 py-3 bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/5 rounded-2xl outline-none focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all text-sm min-w-[300px] dark:text-white shadow-sm"
+          >
+        </form>
+      </div>
+      <a href="/admin/categories/add" class="bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black px-8 py-3.5 rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 transition-all shadow-lg shadow-gold-500/10 flex items-center">
+        <i class="fa-solid fa-plus mr-2"></i> New Category
+      </a>
+    </div>
+  </div>
+
+  <!-- Categories Table -->
+  <div class="bg-white dark:bg-luxury-charcoal rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-gray-100 dark:border-white/5">
+            <th class="px-8 py-6 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">No.</th>
+            <th class="px-8 py-6 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Category Name</th>
+            <th class="px-8 py-6 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Description</th>
+            <th class="px-8 py-6 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500 text-center">Discount</th>
+            <th class="px-8 py-6 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Status</th>
+            <th class="px-8 py-6 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50 dark:divide-white/5">
+          <% categories.forEach((category, idx) => { %>
+            <tr class="group hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+              <td class="px-8 py-6 text-xs font-mono font-bold text-gray-400"><%= idx + 1 + (currentPage - 1) * limit %></td>
+              <td class="px-8 py-6">
+                <span class="text-sm font-bold dark:text-white leading-tight uppercase tracking-wider"><%= category.name %></span>
+              </td>
+              <td class="px-8 py-6">
+                <p class="text-xs text-gray-500 dark:text-gray-400 max-w-xs truncate"><%= category.description %></p>
+              </td>
+              <td class="px-8 py-6 text-center">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 uppercase tracking-widest">
+                  <%= category.discount %>% Off
+                </span>
+              </td>
+              <td class="px-8 py-6">
+                <button 
+                  onclick="showConfirmModal('toggle','<%= category._id %>','Confirm change of activation state for category: <%= category.name %>')"
+                  class="flex items-center space-x-2 px-3 py-1.5 rounded-xl transition-all <%= category.isActive ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-600' %>"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full <%= category.isActive ? 'bg-green-500' : 'bg-red-500' %>"></span>
+                  <span class="text-[10px] font-bold uppercase tracking-widest"><%= category.isActive ? 'Active' : 'Inactive' %></span>
+                </button>
+              </td>
+              <td class="px-8 py-6">
+                <div class="flex items-center justify-end space-x-2">
+                  <a href="/admin/categories/edit/<%=category._id%>" class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-50 dark:bg-luxury-black text-gray-400 hover:text-gold-600 dark:hover:text-gold-400 transition-colors border border-gray-100 dark:border-white/5 shadow-sm">
+                    <i class="fa-solid fa-pen-to-square text-sm"></i>
+                  </a>
+                  <button onclick="showConfirmModal('delete','<%=category._id%>','Are you sure you want to delete this category? This will unlist related products.')" class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-50 dark:bg-luxury-black text-gray-400 hover:text-red-500 transition-colors border border-gray-100 dark:border-white/5 shadow-sm">
+                    <i class="fa-solid fa-trash-can text-sm"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="px-8 py-6 bg-gray-50/50 dark:bg-white/5 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
+      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+        Showing <%= categories.length %> Families
+      </p>
+      
+      <div class="flex items-center space-x-2">
+        <% if (currentPage > 1) { %>
+          <a href="?page=<%= currentPage - 1 %>&search=<%= search %>" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/5 shadow-sm text-gray-500 hover:text-gold-500 transition-all">
+            <i class="fa-solid fa-chevron-left text-xs"></i>
+          </a>
+        <% } %>
+        
+        <div class="px-4 py-2 bg-white dark:bg-luxury-charcoal rounded-xl border border-gray-100 dark:border-white/5 shadow-sm text-xs font-bold dark:text-white">
+          <%= currentPage %>
         </div>
-        <div class="table-responsive shadow rounded-3 bg-white">
-          <table class="table table-hover align-middle mb-0">
-            <thead class="table-dark">
-              <tr>
-                <th class="text-center p-3">No.</th>
-                <th class="text-center p-3">Category</th>
-                <th class="text-center p-3">Description</th>
-                <th class="text-center p-3">Discount</th>
-                <th class="text-center p-3">Created On</th>
-                <th class="text-center p-3">Status</th>
-                <th class="text-center p-3">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% categories.forEach(category=> { %>
-                <%count++%>
-                  <tr>
-                    <td class="text-center">
-                      <%= count %>
-                    </td>
-                    <td class="text-center">
-                      <%= category.name %>
-                    </td>
-                    <td class="text-center">
-                      <%= category.description%>
-                    </td>
-                    <td class="text-center">
-                      <%= category.discount%>%
-                    </td>
-                    <td class="text-center">
-                      <%= category.createdAt.toLocaleDateString()%>
-                    </td>
-                    <td class="text-center">
-                      <button type="button" onclick="showConfirmModal('toggle','<%= category._id %>','Confirm that You are deactivating the Category <%=category.name.toUpperCase()%>')"
-                        class="alert py-1 m-0 <%=  category.isActive?'alert-success text-success':'alert-danger text-danger'%>">
-                        <%= category.isActive? 'Active' : 'Not avtive' %>
-                      </button>
-                    </td>
-                    <td class="text-center">
-                      <a href="/admin/categories/edit/<%=category._id%>">
-                        <button class="btn btn-sm btn-outline-primary"><i class="fa fa-pen"></i></button>
-                      </a>
-                      <form action="/admin/categories/<%=category._id%>?_method=PATCH" method="POST" class="d-inline" id="deleteForm">
-                        <button type="button" onclick="showConfirmModal('delete','<%=category._id%>','Are you sure you want to delete this category?')" class="btn btn-sm btn-outline-danger">
-                          <i class="fa fa-trash"></i>
-                        </button>
-                      </form>
-                    </td>
-                  </tr>
-                  <% }) %>
-            </tbody>
-          </table>
-        </div>
-      </div>
 
-      <!-- //pagination -->
-      <div class="d-flex justify-content-end">
-        <nav aria-label="Page navigation">
-          <ul class="pagination justify-content-end flex-wrap p-3">
-
-            <!-- Previous Button -->
-            <% if (currentPage> 1) { %>
-              <li class="page-item">
-                <a class="page-link bg-dark" href="?page=<%= currentPage - 1 %>&limit=<%= limit %>">
-                  <i class="fa-solid fa-caret-left text-white"></i>
-                </a>
-              </li>
-              <% } else { %>
-                <li class="page-item disabled">
-                  <span class="page-link bg-dark">
-                    <i class="fa-solid fa-caret-left text-white"></i>
-                  </span>
-                </li>
-                <% } %>
-
-                  <!-- Left Page (if exists) -->
-                  <% if (currentPage - 1>= 1) { %>
-                    <li class="page-item">
-                      <a class="page-link" href="?page=<%= currentPage - 1 %>&limit=<%= limit %>">
-                        <%= currentPage - 1 %>
-                      </a>
-                    </li>
-                    <% } %>
-
-                      <!-- Current Page -->
-                      <li class="page-item active">
-                        <span class="page-link bg-white text-dark border-0">
-                          <%= currentPage %>
-                        </span>
-                      </li>
-
-                      <!-- Right Page (if exists) -->
-                      <% if (currentPage + 1 <=totalPages) { %>
-                        <li class="page-item">
-                          <a class="page-link" href="?page=<%= currentPage + 1 %>&limit=<%= limit %>">
-                            <%= currentPage + 1 %>
-                          </a>
-                        </li>
-                        <% } %>
-
-                          <!-- Next Button -->
-                          <% if (currentPage < totalPages) { %>
-                            <li class="page-item">
-                              <a class="page-link bg-dark" href="?page=<%= currentPage + 1 %>&limit=<%= limit %>">
-                                <i class="fa-solid fa-caret-right text-white"></i>
-                              </a>
-                            </li>
-                            <% } else { %>
-                              <li class="page-item disabled">
-                                <span class="page-link bg-dark">
-                                  <i class="fa-solid fa-caret-right text-white"></i>
-                                </span>
-                              </li>
-                              <% } %>
-
-          </ul>
-        </nav>
-      </div>
-
-       <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-dark">
-      <div class="modal-header bg-dark text-white">
-        <h5 class="modal-title" id="confirmLabel">Are you sure You want to Log-Out?</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p id="confirmMessage"></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" data-bs-dismiss="modal" class="btn btn-outline-dark">No</button>
-        <button type="button" class="btn btn-dark" id="yes" data-operation="" data-categoryId="">Yes</button>
+        <% if (currentPage < totalPages) { %>
+          <a href="?page=<%= currentPage + 1 %>&search=<%= search %>" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/5 shadow-sm text-gray-500 hover:text-gold-500 transition-all">
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </a>
+        <% } %>
       </div>
     </div>
   </div>
 </div>
 
-    </main>
+<!-- Modal -->
+<div id="confirmModal" class="fixed inset-0 z-[100] hidden">
+  <div class="absolute inset-0 bg-luxury-black/60 backdrop-blur-sm"></div>
+  <div class="absolute inset-0 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-luxury-charcoal w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-zoom-in">
+      <div class="p-10 text-center">
+        <div class="w-20 h-20 bg-gold-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i class="fa-solid fa-circle-question text-3xl text-gold-600 dark:text-gold-400"></i>
+        </div>
+        <h3 class="text-xl font-serif font-bold dark:text-white mb-2">Category Action</h3>
+        <p id="confirmMessage" class="text-sm text-gray-500 dark:text-gray-400 font-medium"></p>
+        
+        <div class="grid grid-cols-2 gap-4 mt-10">
+          <button onclick="closeModal()" class="py-4 rounded-2xl bg-gray-50 dark:bg-luxury-black text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-luxury-black transition-all">
+            Cancel
+          </button>
+          <button id="confirmActionBtn" class="py-4 rounded-2xl bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black text-[10px] font-bold uppercase tracking-widest hover:bg-gold-600 transition-all shadow-lg shadow-gold-500/20">
+            Confirm
+          </button>
+        </div>
+      </div>
     </div>
-    <script>
+  </div>
+</div>
 
-      const yes = document.getElementById('yes')
-      const form = document.getElementById('deleteForm')
+<form id="actionForm" method="POST" class="hidden">
+</form>
 
-          function showConfirmModal(operation,categoryId,message){
-            
-    const modalEl = document.getElementById("confirmModal");
-    const messageEl = document.getElementById("confirmMessage");
-    messageEl.textContent = message;
-    yes.setAttribute('data-operation',operation)
-    yes.setAttribute('data-categoryId',categoryId)
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
+<script>
+  let currentCategoryId = null;
+  let currentOperation = null;
+
+  function showConfirmModal(operation, categoryId, message) {
+    currentCategoryId = categoryId;
+    currentOperation = operation;
+    document.getElementById('confirmMessage').textContent = message;
+    document.getElementById('confirmModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('confirmModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+  }
+
+  document.getElementById('confirmActionBtn').addEventListener('click', () => {
+    const form = document.getElementById('actionForm');
+    if (currentOperation === 'delete') {
+      form.action = `/admin/categories/${currentCategoryId}?_method=PATCH`;
+      form.submit();
+    } else if (currentOperation === 'toggle') {
+      toggleCategoryActive(currentCategoryId);
     }
-    
-    yes.addEventListener('click',(e)=>{
-      const categoryId = yes.getAttribute('data-categoryId')
-      const operation = yes.getAttribute('data-operation')
-      if(operation === 'delete'){
-        form.submit()
-      }else if(operation === 'toggle'){
-        toggleCategoryActive(categoryId)
-      }
-    })
+  });
 
-    </script>
-    <%- include('../partials/admin/footer.ejs')%>
+  async function toggleCategoryActive(categoryId) {
+    try {
+      const res = await fetch(`/admin/categories/${categoryId}/toggle?_method=PATCH`, {
+        method: 'PATCH'
+      });
+      if (res.ok) {
+        location.reload();
+      } else {
+        new Notyf().error('Failed to update category status');
+      }
+    } catch (err) {
+      new Notyf().error('An unexpected error occurred');
+    }
+  }
+</script>
+
+<%- include('../partials/admin/footer.ejs') %>

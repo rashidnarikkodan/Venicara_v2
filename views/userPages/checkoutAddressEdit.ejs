@@ -1,115 +1,203 @@
 
 <%- include('../partials/user/header.ejs') %>
-<%- include('../partials/user/sidebarProfile.ejs') %>
 
-<main style="min-height: 90vh;" class="flex-grow-1 bg-light w-100 d-flex justify-content-center">
-  <div class="container py-5" style="max-width: 800px;">
-    <div class="card shadow-lg border-0 rounded-4 p-4">
-      <h4 class="fw-bold text-center mb-4">Edit Address</h4>
-
-<form action="/checkout/address/edit/<%= address._id %>?_method=PUT" method="POST">
-  <div class="row g-3">
-    <!-- Name -->
-    <div class="col-md-6">
-      <label for="fullName" class="form-label fw-semibold">Name</label>
-      <input type="text" class="form-control rounded-3" id="fullName" name="fullName" 
-             placeholder="Enter your name" value="<%= address.fullName %>" required>
-    </div>
-
-    <!-- Mobile -->
-    <div class="col-md-6">
-      <label for="mobile" class="form-label fw-semibold">Mobile Number</label>
-      <input type="tel" pattern="[0-9]{10}" class="form-control rounded-3" id="mobile" name="mobile" 
-             placeholder="Enter your mobile number" value="<%= address.mobile %>" required>
-    </div>
-
-    <!-- Pincode -->
-    <div class="col-md-6">
-      <label for="pin" class="form-label fw-semibold">Pincode</label>
-      <input type="text" class="form-control rounded-3" id="pin" name="pin" 
-             placeholder="Enter your pincode" value="<%= address.pin %>" required>
-    </div>
-
-    <!-- Locality -->
-    <div class="col-md-6">
-      <label for="street" class="form-label fw-semibold">Locality</label>
-      <input type="text" class="form-control rounded-3" id="street" name="street" 
-             placeholder="Enter your locality" value="<%= address.street %>">
-    </div>
-
-    <!-- Address -->
-    <div class="col-12">
-      <label for="address" class="form-label fw-semibold">Address</label>
-      <textarea class="form-control rounded-3" id="address" name="address" rows="2" 
-                placeholder="Address (area, city)" required><%= address.address %></textarea>
-    </div>
-
-    <!-- City -->
-    <div class="col-md-6">
-      <label for="city" class="form-label fw-semibold">City/District/Town</label>
-      <input type="text" class="form-control rounded-3" id="city" name="city" 
-             placeholder="Enter city/district/town" value="<%= address.city %>" required>
-    </div>
-
-    <!-- State -->
-    <div class="col-md-6">
-      <label for="state" class="form-label fw-semibold">State</label>
-      <select class="form-select rounded-3" id="state" name="state" required>
-        <option value="" disabled>--- select state ---</option>
-        <option value="Kerala" <%= address.state === "Kerala" ? "selected" : "" %>>Kerala</option>
-        <option value="Tamil Nadu" <%= address.state === "Tamil Nadu" ? "selected" : "" %>>Tamil Nadu</option>
-        <option value="Karnataka" <%= address.state === "Karnataka" ? "selected" : "" %>>Karnataka</option>
-        <option value="Maharashtra" <%= address.state === "Maharashtra" ? "selected" : "" %>>Maharashtra</option>
-        <option value="Delhi" <%= address.state === "Delhi" ? "selected" : "" %>>Delhi</option>
-      </select>
-    </div>
-
-    <!-- Landmark -->
-    <div class="col-md-6">
-      <label for="landmark" class="form-label fw-semibold">Landmark</label>
-      <input type="text" class="form-control rounded-3" id="landmark" name="landmark" 
-             placeholder="Enter landmark (optional)" value="<%= address.landmark %>">
-    </div>
-
-    <!-- Alternate Mobile -->
-    <div class="col-md-6">
-      <label for="alternateMobile" class="form-label fw-semibold">Alternate Mobile Number</label>
-      <input type="tel" pattern="[0-9]{10}" class="form-control rounded-3" id="alternateMobile" name="alternateMobile" 
-             placeholder="Alternate number (optional)" value="<%= address.alternateMobile %>">
-    </div>
-
-    <!-- Address Type -->
-    <div class="col-12">
-      <label class="form-label fw-semibold d-block">Type</label>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="type" id="home" value="home" 
-               <%= address.type === "home" ? "checked" : "" %>>
-        <label class="form-check-label" for="home">Home</label>
-      </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="type" id="work" value="work" 
-               <%= address.type === "work" ? "checked" : "" %>>
-        <label class="form-check-label" for="work">Work</label>
-      </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="type" id="other" value="other" 
-               <%= address.type === "other" ? "checked" : "" %>>
-        <label class="form-check-label" for="other">Other</label>
+<main class="bg-white min-h-screen py-20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Progress Indicator -->
+    <div class="mb-12">
+      <div class="flex items-center justify-center space-x-4">
+        <div class="flex items-center space-x-2 text-gold-600">
+          <div class="w-8 h-8 rounded-full bg-luxury-black text-white flex items-center justify-center text-xs font-bold">1</div>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-luxury-black">Address</span>
+        </div>
+        <div class="w-12 h-px bg-gray-200"></div>
+        <div class="flex items-center space-x-2 opacity-30">
+          <div class="w-8 h-8 rounded-full border-2 border-gray-200 text-gray-400 flex items-center justify-center text-xs font-bold">2</div>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Payment</span>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Buttons -->
-  <div class="d-flex justify-content-end gap-2 mt-4">
-    <button type="submit" class="btn btn-dark px-4">Save</button>
-    <a href="/checkout/address" class="btn btn-outline-secondary px-4">Cancel</a>
-  </div>
-</form>
+    <div class="mb-10 text-center">
+      <h1 class="text-3xl font-serif font-bold text-luxury-black mb-2 uppercase tracking-tight">Edit Shipping Address</h1>
+      <p class="text-gray-500 text-sm italic">Refine your delivery details for the perfect arrival.</p>
+    </div>
 
+    <div class="bg-white border border-gray-100 rounded-[3rem] p-8 sm:p-12 shadow-sm">
+      <form id="addressForm" action="/checkout/address/edit/<%= address._id %>?_method=PUT" method="POST" novalidate class="space-y-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          <!-- Full Name -->
+          <div class="space-y-2">
+            <label for="fullName" class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Recipient Name</label>
+            <div class="relative">
+              <input type="text" id="fullName" name="fullName" placeholder="Enter full name" value="<%= address.fullName %>" required
+                class="w-full p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus:bg-white focus:border-gold-300 outline-none">
+              <div class="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-2 ml-2" id="error-fullName"></div>
+            </div>
+          </div>
+
+          <!-- Mobile -->
+          <div class="space-y-2">
+            <label for="mobile" class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Mobile Number</label>
+            <div class="relative">
+              <input type="tel" id="mobile" name="mobile" placeholder="10-digit mobile number" value="<%= address.mobile %>" required
+                class="w-full p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus:bg-white focus:border-gold-300 outline-none">
+              <div class="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-2 ml-2" id="error-mobile"></div>
+            </div>
+          </div>
+
+          <!-- Pincode -->
+          <div class="space-y-2">
+            <label for="pin" class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Pincode</label>
+            <div class="relative">
+              <input type="text" id="pin" name="pin" placeholder="6-digit pincode" value="<%= address.pin %>" required
+                class="w-full p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus:bg-white focus:border-gold-300 outline-none">
+              <div class="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-2 ml-2" id="error-pin"></div>
+            </div>
+          </div>
+
+          <!-- Locality -->
+          <div class="space-y-2">
+            <label for="street" class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Locality / Area</label>
+            <input type="text" id="street" name="street" placeholder="e.g. Near Central Park" value="<%= address.street %>"
+              class="w-full p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus:bg-white focus:border-gold-300 outline-none">
+          </div>
+
+          <!-- Address (Textarea) -->
+          <div class="col-span-full space-y-2">
+            <label for="address" class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Detailed Address</label>
+            <div class="relative">
+              <textarea id="address" name="address" rows="3" placeholder="Flat, House no., Building, Apartment" required
+                class="w-full p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus:bg-white focus:border-gold-300 outline-none resize-none"><%= address.address %></textarea>
+              <div class="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-2 ml-2" id="error-address"></div>
+            </div>
+          </div>
+
+          <!-- City -->
+          <div class="space-y-2">
+            <label for="city" class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">City / District</label>
+            <div class="relative">
+              <input type="text" id="city" name="city" placeholder="Enter city" value="<%= address.city %>" required
+                class="w-full p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus:bg-white focus:border-gold-300 outline-none">
+              <div class="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-2 ml-2" id="error-city"></div>
+            </div>
+          </div>
+
+          <!-- State -->
+          <div class="space-y-2">
+            <label for="state" class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">State</label>
+            <div class="relative">
+              <select id="state" name="state" required
+                class="w-full p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus:bg-white focus:border-gold-300 outline-none appearance-none">
+                <option value="" disabled>Select State</option>
+                <option value="Kerala" <%= address.state === "Kerala" ? "selected" : "" %>>Kerala</option>
+                <option value="Tamil Nadu" <%= address.state === "Tamil Nadu" ? "selected" : "" %>>Tamil Nadu</option>
+                <option value="Karnataka" <%= address.state === "Karnataka" ? "selected" : "" %>>Karnataka</option>
+                <option value="Maharashtra" <%= address.state === "Maharashtra" ? "selected" : "" %>>Maharashtra</option>
+                <option value="Delhi" <%= address.state === "Delhi" ? "selected" : "" %>>Delhi</option>
+              </select>
+              <div class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
+                <i class="fa-solid fa-chevron-down text-gray-400"></i>
+              </div>
+              <div class="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-2 ml-2" id="error-state"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Address Type -->
+        <div class="space-y-4 pt-4">
+          <label class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Address Type</label>
+          <div class="flex flex-wrap gap-6">
+            <label class="flex items-center space-x-3 cursor-pointer group">
+              <div class="relative flex items-center justify-center">
+                <input type="radio" name="type" value="home" <%= address.type === "home" ? "checked" : "" %> class="peer sr-only">
+                <div class="w-6 h-6 border-2 border-gray-200 rounded-full peer-checked:border-gold-600 peer-checked:bg-gold-600 transition"></div>
+                <div class="absolute w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100 transition"></div>
+              </div>
+              <span class="text-xs font-bold text-gray-500 uppercase tracking-widest group-hover:text-luxury-black transition">Home</span>
+            </label>
+            <label class="flex items-center space-x-3 cursor-pointer group">
+              <div class="relative flex items-center justify-center">
+                <input type="radio" name="type" value="work" <%= address.type === "work" ? "checked" : "" %> class="peer sr-only">
+                <div class="w-6 h-6 border-2 border-gray-200 rounded-full peer-checked:border-gold-600 peer-checked:bg-gold-600 transition"></div>
+                <div class="absolute w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100 transition"></div>
+              </div>
+              <span class="text-xs font-bold text-gray-500 uppercase tracking-widest group-hover:text-luxury-black transition">Work</span>
+            </label>
+            <label class="flex items-center space-x-3 cursor-pointer group">
+              <div class="relative flex items-center justify-center">
+                <input type="radio" name="type" value="other" <%= address.type === "other" ? "checked" : "" %> class="peer sr-only">
+                <div class="w-6 h-6 border-2 border-gray-200 rounded-full peer-checked:border-gold-600 peer-checked:bg-gold-600 transition"></div>
+                <div class="absolute w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100 transition"></div>
+              </div>
+              <span class="text-xs font-bold text-gray-500 uppercase tracking-widest group-hover:text-luxury-black transition">Other</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="pt-10 flex flex-col sm:flex-row gap-4 border-t border-gray-50">
+          <button type="submit" class="flex-1 bg-luxury-black text-white py-5 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 transition shadow-xl group">
+            Save Changes
+            <i class="fa-solid fa-check ml-3 group-hover:scale-110 transition-transform"></i>
+          </button>
+          <a href="/checkout/address" class="flex-1 text-center py-5 border-2 border-gray-100 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gray-50 transition">
+            Cancel
+          </a>
+        </div>
+      </form>
     </div>
   </div>
 </main>
 
-<script src="/js/userHeader.js"></script>
-</body>
-</html>
+<script>
+  document.getElementById("addressForm").addEventListener("submit", function (e) {
+    let isValid = true;
+    document.querySelectorAll('[id^="error-"]').forEach(div => div.textContent = "");
+
+    const name = document.getElementById("fullName").value.trim();
+    if (!/^[a-zA-Z ]{3,}$/.test(name)) {
+      document.getElementById("error-fullName").textContent = "Min 3 letters required";
+      isValid = false;
+    }
+
+    const mobile = document.getElementById("mobile").value.trim();
+    if (!/^[0-9]{10}$/.test(mobile)) {
+      document.getElementById("error-mobile").textContent = "10-digit number required";
+      isValid = false;
+    }
+
+    const pin = document.getElementById("pin").value.trim();
+    if (!/^[0-9]{6}$/.test(pin)) {
+      document.getElementById("error-pin").textContent = "6-digit pin required";
+      isValid = false;
+    }
+
+    const address = document.getElementById("address").value.trim();
+    if (address.length < 5) {
+      document.getElementById("error-address").textContent = "Detailed address required";
+      isValid = false;
+    }
+
+    const city = document.getElementById("city").value.trim();
+    if (!/^[a-zA-Z ]{2,}$/.test(city)) {
+      document.getElementById("error-city").textContent = "Valid city required";
+      isValid = false;
+    }
+
+    const state = document.getElementById("state").value;
+    if (!state) {
+      document.getElementById("error-state").textContent = "Select a state";
+      isValid = false;
+    }
+
+    if (!isValid) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+</script>
+
+<%- include('../partials/user/footer.ejs') %>

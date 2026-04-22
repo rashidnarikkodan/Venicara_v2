@@ -1,364 +1,324 @@
-<%- include('../partials/admin/header.ejs')%>
-<style>
-  /* Let modal grow with content */
-  .modal-dialog {
-    max-width: 600px; /* optional: adjust width */
-  }
+<%- include('../partials/admin/header.ejs') %>
 
-  .modal-content {
-    max-height: none !important;   /* remove Bootstrap's height restriction */
-  }
-
-  .modal-body {
-    max-height: none;
-    overflow: visible;  /* remove scrollbar */
-  }
-
-  #returnReason {
-    font-size: 1rem;
-    line-height: 1.6;
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-</style>
-
-<main class="flex-grow-1 min-vh-100 p-3">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-8 p-3 rounded-4" style="background-color: rgb(192, 192, 192);">
-        <div class="container">
-          <div class="row">
-            <p class="p-4 fw-bold fs-2">Order Details</p>
-            <div class="col-md-6 p-3">
-              <span class="fw-bold">OrderID : </span>
-              <span><%=order.orderId%></span>
-            </div>
-            <div class="col-md-6 p-3">
-              <span class="fw-bold">Customer : </span>
-              <span class="fw-semibold"><%=order.userId?.name%></span>
-            </div>
-            <div class="col-md-6 p-3">
-              <span class="fw-bold">Ordered On : </span>
-              <span class="fw-semibold"><%=order.createdAt.toLocaleDateString()%></span>
-            </div>
-            <div class="col-md-6 p-3">
-              <span class="fw-bold">Updated On : </span>
-              <span class="fw-semibold"><%=order.updatedAt.toLocaleDateString()%></span>
-            </div>
-            <div class="col-md-6 p-3">
-              <span class="fw-bold">Payment method : </span>
-              <span class="fw-semibold"><%=order.payment.method%></span>
-            </div>
-            <div class="col-md-6 p-3">
-              <span class="fw-bold">Payment status : </span>
-              <span class="fw-semibold"><%=order.payment.status%></span>
-            </div>
-            <div class="col-md-6 p-3">
-              <span class="fw-bold">Coupon : </span>
-              <span class="fw-semibold"><%=order.couponApplied?.code || 'Not Applied'%></span>
-            </div>
-            <div class="col-md-6 p-3">
-              <span class="fw-bold">Total Amount : </span>
-              <span class="fw-semibold">₹<%=order.finalAmount%></span>
-            </div>
-            <hr />
-            <div class="col-md-6 p-3 p-2">
-              <form action="/admin/orders/<%= order._id %>/status?_method=PATCH" method="POST" class="d-inline order-status-form">
-                <select name="status" data-status ="<%=order.status%>" class="form-select form-select-sm d-inline w-auto status-select">
-                    <option value="confirmed" <%= order.status === "pending"||order.status === "confirmed" ? "selected" : "" %>>Confirmed</option>                    
-                    <option value="shipped" <%= order.status === "shipped" ? "selected" : "" %>>Shipped</option>
-                    <option value="Out of delivery" <%= order.status === "Out of delivery" ? "selected" : "" %>>Out of Delivery</option>
-                    <option value="delivered" <%= order.status === "delivered" ? "selected" : "" %>>Delivered</option>
-                    <option value="cancelled" <%= order.status === "cancelled" ? "selected" : "" %>>Cancelled</option>
-                    <option value="returned" <%= order.status === "returned" ? "selected" : "" %>>Returned</option>
-                </select>
-                <button type="submit" class="btn btn-sm btn-primary ms-1 update-btn">Update</button>
-                </form>
-
-            </div>
-            <div class="col-md-6 p-3 p-2">
-              <span class="fw-bold">Status : </span>
-              <span class="text-success fw-semibold"><%=order.status%></span>
-            </div>
-              <div class="col-md-12 px-3 mb-3 alert alert-primary text-primary d-flex justify-content-between align-items-center <%=!order.return.isRequested?'d-none':''%>">
-                <div>
-                <p class="fw-bold">New Request : <span class="fw-semibold text-dark">Customer Requested to Return Order</span></p>
-                <span class="fw-bold">Reason : </span>
-                <span class="fw-semibold text-dark"><%=order.return.reason%></span>
-                </div>
-                <div>
-                  <button onclick="Approve('<%= order._id %>')" class="btn btn-sm btn-primary" >Approve</button>
-                  <button class="btn btn-sm btn-dark" onclick="openRejectModal('<%= order._id %>')">Reject</button>
-
-                </div>
-              </div>
-              <div class="<%=!order.return?.adminReason?'d-none':''%> text-danger p-3">
-                Return Rejected Reason : <span class="fw-semibold text-dark"><%=order.return.adminReason%></span>
-              </div>
-          </div>
-        </div>
+<div class="space-y-10 animate-fade-in pb-20">
+  
+  <!-- Page Header -->
+  <div class="flex items-center justify-between mb-10">
+    <div>
+      <div class="flex items-center space-x-3 mb-2">
+        <a href="/admin/orders" class="text-gray-400 hover:text-gold-500 transition-colors">
+          <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <h1 class="text-3xl font-serif font-bold dark:text-white">Order Analysis</h1>
       </div>
-      <div class="col-md-4">
-        <div class="d-flex flex-column gap-3">
-          <div style="background:rgb(192, 192, 192)" class="p-4 rounded-4 shadow-sm mb-3">
-  <p class="fw-bold fs-5 mb-2">Shipping Address</p>
-  <p class="mb-1"><strong>Name:</strong> <%=order.shippingAddress.fullName%></p>
-  <p class="mb-1"><strong>Street:</strong> <%=order.shippingAddress.street%></p>
-  <p class="mb-1"><strong>City:</strong> <%=order.shippingAddress.city%></p>
-  <p class="mb-1"><strong>State:</strong> <%=order.shippingAddress.state%></p>
-  <p class="mb-1"><strong>Pincode:</strong> <%=order.shippingAddress.pin%></p>
-  <p class="mb-0"><strong>Phone:</strong><%=order.shippingAddress.mobile%></p>
-</div>
-
-          <div class="p-4 rounded-4" style="background:rgb(192, 192, 192)">
-            <p class="fw-bold fs-5 mb-2">Billing Summary</p>
-            <div class="d-flex justify-content-between">
-              <span>Subtotal:</span>
-              <span>₹<%=order.totalOrderPrice%></span>
-            </div>
-            <div class="d-flex justify-content-between">
-              <span>Coupon Discount:</span>
-              <span class="text-success"><%=order.couponDiscount?order.couponDiscount+'%':'No Coupon'%></span>
-            </div>
-            <%if(order.deliveryCharge){%>
-              <div class="d-flex justify-content-between">
-                  <span>Delivery Charge:</span>
-                  <span class="text-success">
-                    ₹<%=parseFloat(order.deliveryCharge.toFixed(2))%>
-                  </span>
-                </div>
-              <div class="d-flex justify-content-between">
-                  <span>Total:</span>
-                  <span class="text-dark fw-semibold">
-                    ₹<%=parseFloat((order.deliveryCharge+order.totalOrderPrice).toFixed(2))%>
-                  </span>
-                </div>
-
-                <div class="d-flex justify-content-between">
-                  <span>Discount Amount:</span>
-                  <span class="text-danger">
-                    - ₹<%=parseFloat(((order.totalOrderPrice+order.deliveryCharge)-order.finalAmount).toFixed(2))%>
-                  </span>
-                </div>
-              <%}else{%>
-                <div class="d-flex justify-content-between">
-                  <span>Discount Amount:</span>
-                  <span class="text-danger">
-                    - ₹<%=parseFloat((order.totalOrderPrice-order.finalAmount).toFixed(2))%>
-                  </span>
-                </div>
-                  <%}%>
-            
-            <hr />
-            <div class="d-flex justify-content-between fw-bold">
-              <span>Total Amount:</span>
-              <span>₹<%=order.finalAmount%></span>
-            </div>
-          </div>
-        </div>
+      <p class="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest ml-7">Reference ID: #<%= order.orderId %></p>
+    </div>
+    
+    <div class="flex items-center space-x-4">
+      <div class="px-4 py-2 bg-gold-500/10 border border-gold-500/20 rounded-xl">
+        <span class="text-[10px] font-bold uppercase tracking-widest text-gold-600 dark:text-gold-400">Current Status: <%= order.status %></span>
       </div>
-      <div class="col-md-12 rounded-4">
-        <p class="p-4 fw-bold fs-2">Products</p>
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-dark">
-              <tr>
-                <th class="text-center p-3">No.</th>
-                <th class="text-center p-3">Product</th>
-                <th class="text-center p-3">Qty</th>
-                <th class="text-center p-3">Update</th>
-                <th class="text-center p-3">Status</th>
-                <th class="text-center p-3">Return</th>
-                <th class="text-center p-3">Return reason</th>
-                <th class="text-center p-3">Return Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% order.products.forEach((product,index)=> { %>
-                <%count++%>
-                  <tr>
-                    <td class="text-center">
-                      <%= count %>
-                    </td>
-                    <td class="text-center">
-                      <%= product.productName %>
-                    </td>
-                    <td class="text-center">
-                        <%= product.quantity%>
-                    </td>
-                    <td class="text-center">
-                         <form action="/admin/orders/product/status/<%=order._id%>?_method=PATCH&index=<%=index%>" method="POST" class="d-inline order-status-form">
-                <select name="status" data-status="<%=product.status%>" class="form-select form-select-sm d-inline w-auto status-select">
-                    <option value="confirmed" <%= product.status === "pending"||product.status === "confirmed" ? "selected" : "" %>>Confirmed</option>
-                    <option value="shipped" <%= product.status === "shipped" ? "selected" : "" %>>Shipped</option>
-                    <option value="Out of delivery" <%= product.status === "Out of delivery" ? "selected" : "" %>>Out of Delivery</option>
-                    <option value="delivered" <%= product.status === "delivered" ? "selected" : "" %>>Delivered</option>
-                    <option value="cancelled" <%= product.status === "cancelled" ? "selected" : "" %>>Cancelled</option>
-                    <option value="returned" <%= product.status === "returned" ? "selected" : "" %>>Returned</option>
-                </select>
-                <button type="submit" class="btn btn-sm btn-primary ms-1 update-btn">Update</button>
-                </form>
-
-                    </td>
-                    <td class="text-center text-success">
-                      <%=product.status%>
-                  </td>
-                  <td class="text-center">
-                    <span class="badge <%=product.return.isRequested?'bg-primary':product.status == "returned"?'bg-success':'bg-secondary'%>"><%=product.return.isRequested?'Requested':product.status == "returned"?'Approved':'No request'%></span>
-                  </td>
-                  <td class="text-center text-black">
-                    <button class="btn px-2 py-0 btn-outline-primary text-primary" onclick="showReason(' <%=product?.return.reason||'-'%>')">
-                      Reason
-                    </button>
-                </td>
-                <td class="text-center">
-                    <% if(product.return.isRequested && !product.return.adminReason){ %>
-                  <button onclick="Approve('<%= order._id %>', '<%= index %>')" class="btn btn-sm btn-primary" >Approve</button>
-                  <button class="btn btn-sm btn-dark" onclick="openRejectModal('<%= order._id %>', '<%= index %>')">Reject</button>
-                  <% }else{ %>
-                    <span>-</span>
-                  <% } %>
-                </td>
-                  </tr>
-                  <% }) %>
-            </tbody>
-          </table>
-      </div>
-
     </div>
   </div>
-  <!-- Reject Reason Modal -->
-<div class="modal fade" id="rejectReturnModal" tabindex="-1" aria-labelledby="rejectReturnLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form id="rejectReturnForm" method="POST">
-        <div class="modal-header">
-          <h5 class="modal-title" id="rejectReturnLabel">Reject Return Request</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Core Details -->
+    <div class="lg:col-span-2 space-y-8">
+      
+      <!-- Timeline & Info -->
+      <div class="bg-white dark:bg-luxury-charcoal p-10 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5">
+        <div class="flex items-center space-x-3 mb-10">
+          <div class="w-10 h-10 bg-gold-500/10 rounded-xl flex items-center justify-center">
+            <i class="fa-solid fa-circle-info text-gold-600"></i>
+          </div>
+          <h3 class="text-lg font-serif font-bold dark:text-white">General Overview</h3>
         </div>
 
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="rejectReason" class="form-label fw-semibold">Reason for Rejection</label>
-            <textarea name="rejectReason" id="rejectReason" class="form-control" rows="3" placeholder="Enter reason for rejecting this return request" required></textarea>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-12">
+          <div class="flex items-center space-x-4">
+            <div class="p-3 bg-gray-50 dark:bg-luxury-black rounded-xl">
+              <i class="fa-solid fa-user text-gray-400 text-sm"></i>
+            </div>
+            <div>
+              <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Customer</p>
+              <p class="text-sm font-bold dark:text-white mt-0.5"><%= order.userId?.name %></p>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <div class="p-3 bg-gray-50 dark:bg-luxury-black rounded-xl">
+              <i class="fa-solid fa-calendar text-gray-400 text-sm"></i>
+            </div>
+            <div>
+              <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Order Placed</p>
+              <p class="text-sm font-bold dark:text-white mt-0.5"><%= order.createdAt.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) %></p>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <div class="p-3 bg-gray-50 dark:bg-luxury-black rounded-xl">
+              <i class="fa-solid fa-credit-card text-gray-400 text-sm"></i>
+            </div>
+            <div>
+              <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Payment Method</p>
+              <p class="text-sm font-bold dark:text-white mt-0.5 uppercase tracking-wide"><%= order.payment.method %></p>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <div class="p-3 bg-gray-50 dark:bg-luxury-black rounded-xl">
+              <i class="fa-solid fa-receipt text-gray-400 text-sm"></i>
+            </div>
+            <div>
+              <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Payment Status</p>
+              <span class="text-xs font-bold <%= order.payment.status === 'paid' ? 'text-green-500' : 'text-orange-500' %> mt-0.5 uppercase"><%= order.payment.status %></span>
+            </div>
           </div>
         </div>
 
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-danger">Reject</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <div class="mt-12 pt-10 border-t border-gray-100 dark:border-white/5">
+          <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-4">Advance Order Status</p>
+          <form action="/admin/orders/<%= order._id %>/status?_method=PATCH" method="POST" class="flex items-center space-x-4 order-status-form">
+            <div class="relative flex-grow">
+              <select name="status" data-status="<%= order.status %>" class="status-select w-full pl-5 pr-12 py-4 bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/5 rounded-2xl outline-none focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all text-sm font-bold dark:text-white appearance-none">
+                <option value="confirmed" <%= order.status === "pending"||order.status === "confirmed" ? "selected" : "" %>>Confirmed</option>                    
+                <option value="shipped" <%= order.status === "shipped" ? "selected" : "" %>>Shipped</option>
+                <option value="Out of delivery" <%= order.status === "Out of delivery" ? "selected" : "" %>>Out of Delivery</option>
+                <option value="delivered" <%= order.status === "delivered" ? "selected" : "" %>>Delivered</option>
+                <option value="cancelled" <%= order.status === "cancelled" ? "selected" : "" %>>Cancelled</option>
+                <option value="returned" <%= order.status === "returned" ? "selected" : "" %>>Returned</option>
+              </select>
+              <i class="fa-solid fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+            </div>
+            <button type="submit" class="update-btn px-8 py-4 bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-gold-600 transition-all shadow-lg disabled:opacity-50">
+              Update Order
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Order Items -->
+      <div class="bg-white dark:bg-luxury-charcoal rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden">
+        <div class="p-8 border-b border-gray-100 dark:border-white/5">
+          <h3 class="text-lg font-serif font-bold dark:text-white">Ordered Collections</h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-gray-50 dark:bg-luxury-black/30 border-b border-gray-100 dark:border-white/5">
+                <th class="px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Product</th>
+                <th class="px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 text-center">Qty</th>
+                <th class="px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Item Status</th>
+                <th class="px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50 dark:divide-white/5">
+              <% order.products.forEach((product, index) => { %>
+                <tr class="group hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                  <td class="px-8 py-6">
+                    <div class="flex items-center space-x-4">
+                      <div class="w-12 h-12 bg-gray-50 dark:bg-luxury-black rounded-xl overflow-hidden border border-gray-100 dark:border-white/5 shadow-sm">
+                        <img src="<%= product.image?.url %>" class="w-full h-full object-cover">
+                      </div>
+                      <p class="text-sm font-bold dark:text-white"><%= product.productName %></p>
+                    </div>
+                  </td>
+                  <td class="px-8 py-6 text-center">
+                    <span class="text-sm font-bold dark:text-gray-300">x<%= product.quantity %></span>
+                  </td>
+                  <td class="px-8 py-6">
+                    <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest bg-gray-100 dark:bg-luxury-black text-gray-500 dark:text-gray-400">
+                      <%= product.status %>
+                    </span>
+                  </td>
+                  <td class="px-8 py-6 text-right">
+                    <div class="flex items-center justify-end space-x-2">
+                      <% if(product.return.isRequested && !product.return.adminReason){ %>
+                        <button onclick="Approve('<%= order._id %>', '<%= index %>')" class="p-2 bg-green-500/10 text-green-600 rounded-lg hover:bg-green-500 hover:text-white transition-all">
+                          <i class="fa-solid fa-check text-xs"></i>
+                        </button>
+                        <button onclick="openRejectModal('<%= order._id %>', '<%= index %>')" class="p-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all">
+                          <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                      <% } else if (product.return.reason) { %>
+                        <button onclick="showReasonModal('<%= product.return.reason %>')" class="text-[10px] font-bold uppercase tracking-widest text-gold-600 underline">View Reason</button>
+                      <% } else { %>
+                        <span class="text-xs text-gray-300">—</span>
+                      <% } %>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar Info -->
+    <div class="space-y-8">
+      
+      <!-- Shipping Address -->
+      <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5">
+        <h4 class="text-lg font-serif font-bold dark:text-white mb-6">Dispatch Details</h4>
+        <div class="space-y-4">
+          <div class="flex items-start space-x-3">
+            <i class="fa-solid fa-map-location-dot text-gold-600 mt-1"></i>
+            <div>
+              <p class="text-sm font-bold dark:text-white"><%= order.shippingAddress.fullName %></p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
+                <%= order.shippingAddress.street %><br>
+                <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %><br>
+                <%= order.shippingAddress.pin %><br>
+                <span class="inline-block mt-2 font-mono text-gold-600 dark:text-gold-400"><%= order.shippingAddress.mobile %></span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financial Summary -->
+      <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5">
+        <h4 class="text-lg font-serif font-bold dark:text-white mb-6">Financial Ledger</h4>
+        <div class="space-y-4">
+          <div class="flex justify-between text-xs">
+            <span class="text-gray-400 font-medium">Subtotal</span>
+            <span class="font-bold dark:text-white">₹<%= order.totalOrderPrice %></span>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-gray-400 font-medium">Coupon Savings</span>
+            <span class="font-bold text-green-500">
+              <%= order.couponDiscount ? '-' + order.couponDiscount + '%' : 'None' %>
+            </span>
+          </div>
+          <% if(order.deliveryCharge) { %>
+            <div class="flex justify-between text-xs">
+              <span class="text-gray-400 font-medium">Shipping Logistics</span>
+              <span class="font-bold dark:text-white">₹<%= order.deliveryCharge %></span>
+            </div>
+          <% } %>
+          <div class="flex justify-between text-xs pt-4 border-t border-gray-50 dark:border-white/5">
+            <span class="text-gray-400 font-medium uppercase tracking-widest">Grand Total</span>
+            <span class="text-lg font-serif font-bold text-gold-600 dark:text-gold-400">₹<%= order.finalAmount %></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Global Return Request -->
+      <% if(order.return.isRequested) { %>
+        <div class="bg-red-50 dark:bg-red-500/10 p-8 rounded-[2.5rem] border border-red-100 dark:border-red-500/20 animate-pulse-slow">
+          <h4 class="text-sm font-bold text-red-800 dark:text-red-400 uppercase tracking-widest mb-4 flex items-center">
+            <i class="fa-solid fa-triangle-exclamation mr-2"></i> Return Requested
+          </h4>
+          <p class="text-xs text-red-700 dark:text-red-300 font-medium leading-relaxed">
+            "<%= order.return.reason %>"
+          </p>
+          <div class="grid grid-cols-2 gap-3 mt-6">
+            <button onclick="Approve('<%= order._id %>')" class="py-3 bg-red-600 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-red-700 transition-all">Approve</button>
+            <button onclick="openRejectModal('<%= order._id %>')" class="py-3 bg-white dark:bg-luxury-black text-red-600 rounded-xl text-[10px] font-bold uppercase tracking-widest border border-red-100 dark:border-white/5 hover:bg-red-50 transition-all">Reject</button>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- Reason Modal -->
+<div id="reasonModal" class="fixed inset-0 z-[100] hidden">
+  <div class="absolute inset-0 bg-luxury-black/60 backdrop-blur-sm"></div>
+  <div class="absolute inset-0 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-luxury-charcoal w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-zoom-in">
+      <div class="p-10">
+        <h3 class="text-xl font-serif font-bold dark:text-white mb-6">Return Justification</h3>
+        <div id="returnReasonText" class="p-6 bg-gray-50 dark:bg-luxury-black rounded-2xl text-sm text-gray-600 dark:text-gray-400 font-medium italic leading-relaxed"></div>
+        <button onclick="closeModal('reasonModal')" class="mt-8 w-full py-4 bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black rounded-2xl text-[10px] font-bold uppercase tracking-widest">Close Record</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reject Modal -->
+<div id="rejectModal" class="fixed inset-0 z-[100] hidden">
+  <div class="absolute inset-0 bg-luxury-black/60 backdrop-blur-sm"></div>
+  <div class="absolute inset-0 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-luxury-charcoal w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-zoom-in">
+      <form id="rejectReturnForm" method="POST" class="p-10">
+        <h3 class="text-xl font-serif font-bold dark:text-white mb-6">Refusal Protocol</h3>
+        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Rejection Rationale</label>
+        <textarea name="rejectReason" required rows="4" placeholder="Explain the reason for denial..." class="w-full px-5 py-4 bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/5 rounded-2xl outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all text-sm dark:text-white resize-none mb-8"></textarea>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <button type="button" onclick="closeModal('rejectModal')" class="py-4 bg-gray-100 dark:bg-luxury-black text-[10px] font-bold uppercase tracking-widest text-gray-400 rounded-2xl hover:text-luxury-black transition-all">Cancel</button>
+          <button type="submit" class="py-4 bg-red-600 text-white rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-600/20">Confirm Reject</button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="reasonModal" tabindex="-1" aria-labelledby="reasonLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header bg-dark text-white">
-          <h5 class="modal-title" id="reasonLabel">Reject Return Request</h5>
-          <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="fw-semibold ">Return Reason</label>
-            <div  id="returnReason" style="max-width: 600px;"></div>
-          </div>
-        </div>
-    </div>
-  </div>
-</div>
-
-</main>
-</div>
 <script>
-   function openRejectModal(orderId, index = null) {
-    let url = index !== null
+  function showReasonModal(reason) {
+    document.getElementById('returnReasonText').textContent = reason;
+    document.getElementById('reasonModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function openRejectModal(orderId, index = null) {
+    const url = index !== null
       ? `/admin/orders/${orderId}/return/reject?_method=PATCH&index=${index}`
       : `/admin/orders/${orderId}/return/reject?_method=PATCH`;
-
     document.getElementById("rejectReturnForm").action = url;
-
-    const modal = new bootstrap.Modal(document.getElementById("rejectReturnModal"));
-    modal.show();
+    document.getElementById('rejectModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
   }
 
-
-  function showReason(reason){
-    document.getElementById('returnReason').textContent = reason
-    const modal = new bootstrap.Modal(document.getElementById("reasonModal"));
-    modal.show();
+  function closeModal(id) {
+    document.getElementById(id).classList.add('hidden');
+    document.body.style.overflow = 'auto';
   }
 
-
-  function Approve(orderId, index = null) {
-    let url = index !== null
+  async function Approve(orderId, index = null) {
+    const url = index !== null
       ? `/admin/orders/${orderId}/return/approve?index=${index}`
       : `/admin/orders/${orderId}/return/approve`;
-
-    fetch(url, {
-      method: 'PATCH'
-    })
-    .then(response => {
-      if (response.ok) {
-        location.reload(); // Reload the page to reflect changes
-      } else {
-        showAlert('error','Failed to approve return request.');
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      showAlert('error','An error occurred while processing the request.');
-    });
+    
+    try {
+      const res = await fetch(url, { method: 'PATCH' });
+      if (res.ok) location.reload();
+      else new Notyf().error('Failed to approve request');
+    } catch (err) {
+      new Notyf().error('Network communication error');
+    }
   }
 
+  // Status transition logic
   document.querySelectorAll('.order-status-form').forEach(form => {
     const select = form.querySelector('.status-select');
     const button = form.querySelector('.update-btn');
-    let currentStatus = select.getAttribute('data-status'); // from DB
-    console.log(currentStatus)
-    if(currentStatus == 'Out of delivery') currentStatus = 'out_of_delivery'
+    let currentStatus = select.getAttribute('data-status');
+    if(currentStatus === 'Out of delivery') currentStatus = 'out_of_delivery';
 
-    // Define allowed transitions
     const transitions = {
       pending: ["confirmed"],
       confirmed:["shipped", "Out of delivery","cancelled"],
       shipped: ["Out of delivery", "delivered"],
       out_of_delivery: ["delivered"],
-      delivered: ['returned'],   // final
-      cancelled: [],   // final
-      returned: []     // final
+      delivered: ['returned'],
+      cancelled: [],
+      returned: []
     };
 
     function lockOptions() {
       const allowed = transitions[currentStatus] || [];
-      // Disable everything by default
       [...select.options].forEach(opt => {
-        opt.disabled = true;
+        let val = opt.value === 'Out of delivery' ? 'out_of_delivery' : opt.value;
+        opt.disabled = !(allowed.includes(val) || opt.value === select.getAttribute('data-status'));
       });
-
-      // Keep current status selectable (to show properly)
-      [...select.options].forEach(opt => {
-        if (opt.value === currentStatus) {
-          opt.disabled = false;
-        }
-      });
-
-      // Enable only forward statuses
-      [...select.options].forEach(opt => {
-        if (allowed.includes(opt.value)) {
-          opt.disabled = false;
-        }
-      });
-
-      // Disable button if no valid moves left
       button.disabled = allowed.length === 0;
     }
-
-    lockOptions(); // Run on page load
+    lockOptions();
   });
-
 </script>
 
-<%- include('../partials/admin/footer.ejs')%>
+<%- include('../partials/admin/footer.ejs') %>

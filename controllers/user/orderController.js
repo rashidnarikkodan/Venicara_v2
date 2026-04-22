@@ -54,11 +54,11 @@ const cancelOrder = async (req, res) => {
     if (["delivered", "shipped"].includes(order.status))
       return res.json({
         status: false,
-        message: "cannot cancel the order in this stage",
+        message: "Cannot cancel the order at this stage",
       });
 
     for (const product of order.products) {
-      if (product.status !== "confirmed") continue;
+      if (["cancelled", "returned"].includes(product.status)) continue;
       // Restore stock
       await Product.updateOne(
         { _id: product.productId, "variants._id": product.variantId },
@@ -75,7 +75,7 @@ const cancelOrder = async (req, res) => {
         return res.status(200).json({
           status: true,
           message:
-            "Order cancelled successfully, No refunds since you didn't paid Amount",
+            "Order cancelled successfully. No refund required as payment was not completed.",
         });
       }
 
@@ -106,7 +106,7 @@ const cancelOrder = async (req, res) => {
         userId,
         orderId,
         type: "credit",
-        amount: refundAmount * 100,
+        amount: Math.round(refundAmount * 100),
         status: "success",
         lastBalance: wallet.balance,
         note: "Refund for cancelled order",
@@ -294,7 +294,7 @@ const cancelProduct = async (req, res) => {
       await WalletTransaction.create({
         userId,
         type: "credit",
-        amount: refundAmount * 100,
+        amount: Math.round(refundAmount * 100),
         status: "success",
         lastBalance: wallet.balance,
       });
@@ -418,14 +418,23 @@ const orderDetails = async (req, res) => {
     const { index } = req.query;
 
     // Fetch order
-    const order = await Order.findById(id).populate("shippingAddress");
+    const [order, user] = await Promise.all([
+      Order.findById(id).populate("shippingAddress"),
+      User.findById(req.session.user.id)
+    ]);
+
     if (!order) {
       return res.status(404).send("Order not found");
     }
     const product = order.products[index];
+    if (!product) {
+      req.flash("error", "Product details not found in this order");
+      return res.redirect("/orders");
+    }
     res.render("userPages/orderDetails", {
       order,
       product,
+      user,
       payment: order.payment,
       shippedAddress: order.shippingAddress,
     });
@@ -487,7 +496,7 @@ const retryPayment = async (req, res) => {
     }
 
     const options = {
-      amount: order.finalAmount * 100,
+      amount: Math.round(order.finalAmount * 100),
       currency: "INR",
       receipt: `rcpt_${Date.now()}`,
       payment_capture: 1,
@@ -524,14 +533,14 @@ const retryPaymentSuccess = async (req, res) => {
 
     if (expectedSignature !== razorpay_signature)
       return res
-        .status(400)
-        .json({ status: false, message: "Payment verification failed" });
+          .status(400)
+          .json({ status: false, message: "Payment verification failed" });
 
     const order = await Order.findOne({ orderId });
     if (!order)
       return res
-        .status(404)
-        .json({ status: false, message: "Order not found" });
+          .status(404)
+          .json({ status: false, message: "Order not found" });
 
     order.payment.status = "paid";
     order.payment.transactionId = razorpay_payment_id;
@@ -545,13 +554,7 @@ const retryPaymentSuccess = async (req, res) => {
       await order.save();
     }
 
-    // Mark coupon as used
-    if (order.couponApplied) {
-      await Coupon.updateOne(
-        { _id: order.couponApplied, usedBy: { $ne: order.userId } },
-        { $push: { usedBy: order.userId }, $inc: { used: 1 } }
-      );
-    }
+    // Coupon was already marked as used in handlePlaceOrder
     res.json({ status: true, message: "Payment verified and order completed" });
   } catch (error) {
     console.log(error);

@@ -502,7 +502,7 @@ const handlePlaceOrder = async (req, res) => {
       }
 
       const options = {
-        amount: parseInt(finalAmount * 100),
+        amount: Math.round(finalAmount * 100),
         currency: "INR",
         receipt: `rcpt_${Date.now()}`,
         payment_capture: 1,
@@ -515,7 +515,7 @@ const handlePlaceOrder = async (req, res) => {
         await WalletTransaction.create({
           userId: user.id,
           type: "debit",
-          amount: finalAmount * 100,
+          amount: Math.round(finalAmount * 100),
           status: "failed",
           lastBalance: wallet?.balance,
         });
@@ -536,7 +536,7 @@ const handlePlaceOrder = async (req, res) => {
       await WalletTransaction.create({
         userId: user.id,
         type: "debit",
-        amount: finalAmount * 100,
+        amount: Math.round(finalAmount * 100),
         status: "success",
         lastBalance: wallet.balance,
       });
@@ -628,23 +628,13 @@ const handleRazorpaySuccess = async (req, res) => {
     order.status = "confirmed";
     await order.save();
 
-    // Reduce stock
+    // Stock was already reduced in handlePlaceOrder
     for (const prod of order.products) {
       prod.status = "confirmed";
-      await Product.updateOne(
-        { _id: prod.productId, "variants._id": prod.variantId },
-        { $inc: { "variants.$.stock": -prod.quantity } }
-      );
-      await order.save();
     }
+    await order.save();
 
-    // Mark coupon as used
-    if (order.couponApplied) {
-      await Coupon.updateOne(
-        { _id: order.couponApplied, usedBy: { $ne: order.userId } },
-        { $push: { usedBy: order.userId }, $inc: { used: 1 } }
-      );
-    }
+    // Coupon was already marked as used in handlePlaceOrder
 
     delete req.session?.coupon;
 
@@ -668,7 +658,7 @@ const handleRazorpayFailed = async (req, res) => {
 
     res.json({
       status: true,
-      message: "Payment failed, Order placed as pending, Pleas Retry....",
+      message: "Payment failed, Order placed as pending, Please Retry....",
     });
     delete req.session?.coupon;
   } catch (error) {

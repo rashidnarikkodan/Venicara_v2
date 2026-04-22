@@ -1,175 +1,159 @@
-<%- include('../partials/user/header.ejs') %> 
-<%- include('../partials/user/sidebarProfile.ejs') %>
+<%- include("../partials/user/header.ejs") %>
 
-<style>
-  .wallet-card {
-    max-width: 600px; /* keeps it neat on large screens */
-    width: 100%;      /* full width on mobile */
-    max-height: fit-content;
-  }
-  .add-input {
-    border: none;
-    text-align: center;
-    padding: 1.2rem 0;
-    font-size: 22px;
-    font-weight: bolder;
-    background: rgb(240, 240, 240);
-    width: 100%; /* stretches input */
-  }
-  .add-input:focus-visible {
-    outline: none !important;
-  }
+<main class="bg-white min-h-screen py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col lg:flex-row gap-12">
+      
+      <%- include("../partials/user/sidebarProfile.ejs") %>
 
-  /* tweak buttons for mobile */
-  .preset-btn {
-    margin: 0.25rem;
-    min-width: 80px;
-  }
-</style>
+      <!-- Wallet Content -->
+      <div class="flex-1">
+        <div class="mb-10">
+          <h1 class="text-3xl font-serif font-bold text-luxury-black mb-2 uppercase tracking-tight">Venicara Wallet</h1>
+          <p class="text-gray-500 text-sm italic">Manage your credits and view your transaction journey.</p>
+        </div>
 
-<main class="w-100 min-vh-100 d-flex justify-content-center px-md-2 p-0">
-  <div class="card rounded-4 p-4 shadow wallet-card">
-    <div class="row g-3">
-      <div class="col-12 text-center">
-        <p class="fs-3 fw-bold mt-1">MY WALLET</p>
-      </div>
+        <!-- Wallet Card -->
+        <div class="relative overflow-hidden rounded-[2.5rem] bg-luxury-black p-8 sm:p-12 mb-12 shadow-2xl group transition-all duration-500 hover:shadow-gold-600/10">
+          <!-- Decorative Background Elements -->
+          <div class="absolute top-0 right-0 w-64 h-64 bg-gold-600/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
+          <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl -ml-24 -mb-24"></div>
+          
+          <div class="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-12">
+            <div class="space-y-4">
+              <p class="text-[10px] text-gold-400 font-bold uppercase tracking-[0.3em]">Available Balance</p>
+              <h2 class="text-5xl sm:text-6xl font-serif font-bold text-white tracking-tighter">
+                <span class="text-2xl text-gold-500 mr-2">Rs.</span><span id="balanceDisplay"><%=(wallet?.balance).toFixed(2)%></span>
+              </h2>
+              <div class="pt-4 flex items-center space-x-4">
+                 <div class="flex -space-x-2">
+                    <div class="w-8 h-8 rounded-full border-2 border-luxury-black bg-gray-800"></div>
+                    <div class="w-8 h-8 rounded-full border-2 border-luxury-black bg-gray-700"></div>
+                    <div class="w-8 h-8 rounded-full border-2 border-luxury-black bg-gold-600 flex items-center justify-center text-[10px] text-white font-bold">V</div>
+                 </div>
+                 <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Premium Member</p>
+              </div>
+            </div>
 
-      <!-- BALANCE -->
-      <div class="col-12 rounded-3 p-3 border bg-light">
-        <span class="fs-6 fw-bold">TOTAL BALANCE</span>
-        <hr class="my-2" />
-        <span class="d-flex justify-content-between align-items-center">
-          <span class="fs-6 fw-semibold">WALLET</span>
-          <span class="text-success fs-4 fw-semibold" id="balance">₹<%=(wallet?.balance).toFixed(2)%></span>
-        </span>
-      </div>
+            <!-- Add Money Section -->
+            <div class="w-full sm:w-auto bg-white/5 backdrop-blur-md rounded-3xl p-6 border border-white/10 space-y-6">
+              <p class="text-[10px] text-gold-400 font-bold uppercase tracking-widest">Recharge Wallet</p>
+              
+              <form id="walletForm" class="space-y-6">
+                <div class="relative group">
+                   <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gold-500 font-serif font-bold text-xl">Rs.</span>
+                   <input type="text" id="amount" class="w-full bg-white/10 border border-white/20 rounded-2xl py-4 pl-12 pr-4 text-white text-xl font-serif font-bold focus:ring-gold-500 focus:border-gold-500 outline-none transition" value="0" maxlength="10">
+                </div>
 
-      <!-- ADD MONEY -->
-      <div class="col-12 rounded-3 p-3 border bg-light">
-        <span class="fs-6 fw-bold">ADD TO WALLET</span>
-        <hr class="my-2" />
-        <form id="walletForm" action="#" method="POST">
-          <div class="text-center p-1">
-            <input
-              type="text"
-              id="amount"
-              name="amount"
-              class="add-input rounded-3"
-              value="₹"
-              maxlength="10"
-              placeholder="Amount"
-            />
+                <div class="flex gap-2">
+                  <button type="button" class="preset-btn flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] text-white font-bold hover:bg-gold-600 hover:border-gold-600 transition" data-value="100">100</button>
+                  <button type="button" class="preset-btn flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] text-white font-bold hover:bg-gold-600 hover:border-gold-600 transition" data-value="500">500</button>
+                  <button type="button" class="preset-btn flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] text-white font-bold hover:bg-gold-600 hover:border-gold-600 transition" data-value="1000">1000</button>
+                </div>
+
+                <button type="submit" class="w-full bg-gold-600 text-white py-4 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-gold-500 transition shadow-xl flex items-center justify-center group">
+                  <span>Add Money</span>
+                  <i class="fa-solid fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
+                </button>
+              </form>
+            </div>
           </div>
+        </div>
 
-          <div class="text-center p-2 d-flex flex-wrap justify-content-center">
-            <button type="button" class="btn btn-outline-dark preset-btn" data-value="100">₹100</button>
-            <button type="button" class="btn btn-outline-dark preset-btn" data-value="200">₹200</button>
-            <button type="button" class="btn btn-outline-dark preset-btn" data-value="500">₹500</button>
-          </div>
+        <!-- History Link -->
+        <div class="flex justify-between items-center mb-8">
+           <h3 class="text-xl font-serif font-bold text-luxury-black tracking-tight">Recent Activity</h3>
+           <a href="/wallet/history" class="text-[10px] font-bold text-gold-600 uppercase tracking-widest hover:text-gold-700 transition underline underline-offset-8 decoration-gold-600/30">View Full History</a>
+        </div>
 
-          <div class="text-center p-2">
-            <button type="submit" class="btn btn-dark fw-bold w-100">ADD MONEY</button>
-          </div>
-        </form>
-      </div>
-
-      <!-- TRANSACTIONS -->
-      <div class="col-12 text-center">
-        <a href="/wallet/history" class="btn btn-primary px-4 fw-semibold w-100">Show Transaction History</a>
+        <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-12 text-center bg-gray-50/30">
+           <i class="fa-solid fa-clock-rotate-left text-4xl text-gray-200 mb-4"></i>
+           <p class="text-gray-400 text-xs uppercase tracking-[0.2em] font-bold">Detailed Transaction History is available on the history page.</p>
+        </div>
       </div>
     </div>
   </div>
 
-
-  <!-- //payment failed modal -->
-  <div class="modal fade" id="paymentFailedModal" tabindex="-1" aria-labelledby="paymentFailedLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-danger">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="paymentFailedLabel">Payment Failed</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+  <!-- Status Modal (Custom Tailwind version) -->
+  <div id="statusModal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-4">
+    <div id="statusModalOverlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+    <div id="statusModalContent" class="relative bg-white rounded-[2.5rem] p-10 max-w-sm w-full shadow-2xl text-center transform scale-95 opacity-0 transition-all duration-300">
+      <div id="statusModalIcon" class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8">
+        <i class="fa-solid text-3xl"></i>
       </div>
-      <div class="modal-body">
-        <p id="paymentFailedMessage">Your payment could not be processed. Please try again.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" id="retry" class="btn btn-outline-danger" >Retry</button>
-        <button type="button" class="btn btn-danger" onclick="window.location.reload()">Close</button>
-      </div>
+      <h2 id="statusModalTitle" class="text-2xl font-serif font-bold text-luxury-black mb-4 tracking-tight uppercase"></h2>
+      <p id="statusModalMessage" class="text-gray-500 text-sm mb-10 leading-relaxed"></p>
+      <button onclick="hideStatusModal()" id="statusModalBtn" class="w-full py-4 rounded-full font-bold text-[10px] uppercase tracking-widest transition shadow-lg"></button>
     </div>
   </div>
-</div>
-
-
-<!-- ///payment Success -->
-<div class="modal fade" id="paymentSuccessModal" tabindex="-1" aria-labelledby="paymentSuccessLabel" aria-hidden="true">
-<div class="modal-dialog modal-dialog-centered">
-  <div class="modal-content border-success">
-    <div class="modal-header bg-success text-white">
-      <h5 class="modal-title" id="paymentSuccessLabel">Payment Successful</h5>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-    </div>
-    <div class="modal-body">
-      <p id="paymentSuccessMessage"></p>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-success" onclick="window.location.reload()">OK</button>
-    </div>
-  </div>
-</div>
-</div>
-
-
 </main>
+
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-  // #1: Setup Input Formatting (₹ prefix + numeric only)
-  function setupAmountInput() {
-    const input = document.getElementById("amount");
-    input.addEventListener("input", () => {
-      const value = input.value.replace(/₹/g, "").replace(/[^0-9]/g, "");
-      input.value = "₹" + value;
+  // Formatting Input
+  const amountInput = document.getElementById("amount");
+  amountInput.addEventListener("focus", () => { if(amountInput.value === "0") amountInput.value = ""; });
+  amountInput.addEventListener("blur", () => { if(amountInput.value === "") amountInput.value = "0"; });
+  amountInput.addEventListener("input", (e) => {
+    e.target.value = e.target.value.replace(/[^0-9]/g, "");
+  });
+
+  // Preset Buttons
+  document.querySelectorAll(".preset-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      amountInput.value = btn.dataset.value;
     });
-  }
+  });
 
-    // Function to show payment failed modal
-function showPaymentFailedModal(message = "Your payment could not be processed. Please try again.") {
-  const modalEl = document.getElementById("paymentFailedModal");
-  const messageEl = document.getElementById("paymentFailedMessage");
-  messageEl.textContent = message;
+  // Modal Handlers
+  function showStatusModal(type, title, message) {
+    const modal = document.getElementById('statusModal');
+    const overlay = document.getElementById('statusModalOverlay');
+    const content = document.getElementById('statusModalContent');
+    const icon = document.getElementById('statusModalIcon');
+    const titleEl = document.getElementById('statusModalTitle');
+    const messageEl = document.getElementById('statusModalMessage');
+    const btn = document.getElementById('statusModalBtn');
 
-  const modal = new bootstrap.Modal(modalEl);
-  modal.show();
-}
+    titleEl.textContent = title;
+    messageEl.textContent = message;
 
-function showPaymentSuccessModal(message = "Payment successfully completed") {
-  const modalEl = document.getElementById("paymentSuccessModal");
-  const messageEl = document.getElementById("paymentSuccessMessage");
-  messageEl.textContent = message;
-
-  const modal = new bootstrap.Modal(modalEl);
-  modal.show();
-}
-  // #2: Setup Preset Amount Buttons (e.g., ₹100, ₹200)
-  function setupPresetButtons() {
-    const input = document.getElementById("amount");
-    document.querySelectorAll(".preset-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        input.value = "₹" + btn.dataset.value;
-      });
-    });
-  }
-
-  // #3: Validate Amount Field
-  function validateAmount(value) {
-    if (!value || isNaN(value) || parseInt(value) <= 0) {
-      showPaymentFailedModal("Please enter a valid amount.");
-      return false;
+    if (type === 'success') {
+      icon.className = "w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-8";
+      icon.innerHTML = '<i class="fa-solid fa-circle-check text-3xl"></i>';
+      btn.className = "w-full py-4 bg-green-500 text-white rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-green-600 transition shadow-lg";
+      btn.textContent = "Great, Thanks!";
+      btn.onclick = () => location.reload();
+    } else {
+      icon.className = "w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8";
+      icon.innerHTML = '<i class="fa-solid fa-circle-xmark text-3xl"></i>';
+      btn.className = "w-full py-4 bg-red-500 text-white rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-red-600 transition shadow-lg";
+      btn.textContent = "Try Again";
+      btn.onclick = hideStatusModal;
     }
-    return true;
+
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      overlay.classList.remove('opacity-0');
+      content.classList.remove('scale-95', 'opacity-0');
+      content.classList.add('scale-100', 'opacity-100');
+    }, 10);
   }
 
-  // #4: Create Razorpay Order (Backend API)
+  function hideStatusModal() {
+    const modal = document.getElementById('statusModal');
+    const overlay = document.getElementById('statusModalOverlay');
+    const content = document.getElementById('statusModalContent');
+
+    overlay.classList.add('opacity-0');
+    content.classList.add('scale-95', 'opacity-0');
+    content.classList.remove('scale-100', 'opacity-100');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 300);
+  }
+
+  // Razorpay Logic
   async function createRazorpayOrder(amountValue) {
     try {
       const res = await fetch("/wallet/add", {
@@ -177,20 +161,14 @@ function showPaymentSuccessModal(message = "Payment successfully completed") {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: amountValue }),
       });
-      const { order } = await res.json();
-      if (!order || !order.id || order.status !== "created") {
-        showPaymentFailedModal("Failed to create order. Try again.");
-        return null;
-      }
-      return order;
+      const data = await res.json();
+      return data.order;
     } catch (err) {
-      console.error(err);
-      showPaymentFailedModal("Error creating order. Try again later.");
+      showStatusModal('error', 'Order Error', 'Could not initiate the recharge. Please try again.');
       return null;
     }
   }
 
-  // #5: Verify Payment After Razorpay Success
   async function verifyPayment(response) {
     try {
       const res = await fetch("/wallet/verify-payment", {
@@ -200,90 +178,55 @@ function showPaymentSuccessModal(message = "Payment successfully completed") {
       });
       const data = await res.json();
       if (data.status) {
-        document.getElementById("balance").textContent = `₹${data.balance}`;
-        showPaymentSuccessModal("Wallet balance updated successfully!");
+        document.getElementById("balanceDisplay").textContent = data.balance.toFixed(2);
+        showStatusModal('success', 'Recharge Success', 'Your Venicara Wallet has been credited successfully.');
       } else {
-        showPaymentFailedModal("Payment verification failed!");
+        showStatusModal('error', 'Verification Failed', data.message || 'Payment verification failed.');
       }
     } catch (err) {
-      console.error(err);
-      showPaymentFailedModal("Verification error. Try again.");
+      showStatusModal('error', 'Error', 'Something went wrong during verification.');
     }
   }
 
+  document.getElementById("walletForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const amountValue = amountInput.value.trim();
+    if (!amountValue || isNaN(amountValue) || parseInt(amountValue) <= 0) {
+      showStatusModal('error', 'Invalid Amount', 'Please enter a valid amount to recharge.');
+      return;
+    }
 
-  // #7: Initialize Razorpay Checkout
-  function initializeRazorpay(order) {
+    const order = await createRazorpayOrder(amountValue);
+    if (!order) return;
+
     const options = {
       key: "<%= process.env.RAZORPAY_KEY_ID %>",
       amount: order.amount,
       currency: "INR",
       name: "Venicara Wallet",
-      description: "Add Money to Wallet",
+      description: "Wallet Top-up",
       order_id: order.id,
       handler: verifyPayment,
-      theme: { color: "#121212" },
-      modal: {escape: true,
-  ondismiss: async () => {
-    try{
-            console.log('sukdcgh')
-            const response = await fetch('/wallet/api/addMoneyFailed', {
+      theme: { color: "#d4af37" },
+      modal: {
+        ondismiss: async () => {
+          try {
+            await fetch('/wallet/api/addMoneyFailed', {
               method: 'PATCH',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ razorpayId:order.id})
+              body: JSON.stringify({ razorpayId: order.id })
             });
-            const result = await response.json();
-            showPaymentFailedModal(result.message) 
-            
-          }catch(error){
-            console.log('razorpay ondismiss'+error)
-            showPaymentFailedModal(result.message) 
-          }
-  }
-}
+            showStatusModal('error', 'Payment Cancelled', 'The transaction was cancelled.');
+          } catch(e) {}
+        }
+      }
     };
     const rzp = new Razorpay(options);
     rzp.open();
-    return 
-  }
-
-  async function retryPayment(){
-    const input = document.getElementById("amount");
-    const amountValue = input.value.replace("₹", "").trim();
-    if (!validateAmount(amountValue)) return;
-
-    const order = await createRazorpayOrder(amountValue);
-    if (order) initializeRazorpay(order);
-  }
-
-  // #8: Handle Form Submission
-  async function handleFormSubmit(e) {
-    e.preventDefault();
-    const input = document.getElementById("amount");
-    const amountValue = input.value.replace("₹", "").trim();
-    if (!validateAmount(amountValue)) return;
-
-    const order = await createRazorpayOrder(amountValue);
-    if (order) initializeRazorpay(order);
-  }
-
-  // #9: Initialize Everything on Page Load
-  function initWalletPage() {
-    setupAmountInput();
-    setupPresetButtons();
-    document
-      .getElementById("walletForm")
-      .addEventListener("submit", handleFormSubmit);
-    document
-      .getElementById('retry')
-      .addEventListener('click', retryPayment)
-  }
-
-
-
-  // #10: Start Script
-  document.addEventListener("DOMContentLoaded", initWalletPage);
+  });
 </script>
+
+<%- include("../partials/user/footer.ejs") %>
 
 </body>
 </html>

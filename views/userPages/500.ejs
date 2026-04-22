@@ -4,121 +4,64 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Server Error | VENICARA</title>
-   <link rel="shortcut icon" href="/images/fevicon.png" type="image/x-icon">
-  <!-- Bootstrap CSS -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
-
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      background: linear-gradient(135deg, #fdfbfb, #ebedee);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .error-container {
-      background: #fff;
-      padding: 3rem 2rem;
-      border-radius: 15px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-      max-width: 600px;
-      width: 90%;
-      text-align: center;
-    }
-
-    .error-container h1 {
-      font-size: 6rem;
-      color: #dc3545;
-      margin-bottom: 1rem;
-      text-shadow: 2px 2px 10px rgba(0,0,0,0.1);
-    }
-
-    .error-container p {
-      margin-bottom: 1rem;
-      font-size: 1.2rem;
-    }
-
-    .btn-home, .btn-show-error {
-      border: none;
-      padding: 0.75rem 2rem;
-      font-size: 1.1rem;
-      border-radius: 50px;
-      transition: all 0.3s ease;
-      margin: 0.5rem;
-      cursor: pointer;
-    }
-
-    .btn-home {
-      background: black;
-      color: white;
-    }
-
-    .btn-show-error {
-      background: linear-gradient(90deg, #dc3545, #ff6b6b);
-      color: white;
-    }
-
-    .btn-home:hover, .btn-show-error:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
-
-    .error-message {
-      margin-top: 1.5rem;
-      padding: 1rem;
-      background-color: #f8d7da;
-      color: #721c24;
-      border-radius: 10px;
-      display: none; /* hidden by default */
-    }
-
-    .illustration {
-      margin-top: 2rem;
-      max-width: 300px;
-      opacity: 0.85;
-    }
-
-    @media(max-width: 768px){
-      .error-container h1 {
-        font-size: 4.5rem;
-      }
-      .illustration {
-        max-width: 200px;
+  <link rel="shortcut icon" href="/images/fevicon.png" type="image/x-icon">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'luxury-black': '#121212',
+            'luxury-cream': '#f8f5f0',
+            'gold-600': '#d4af37',
+          },
+          fontFamily: {
+            'serif': ['Playfair Display', 'serif'],
+            'sans': ['Inter', 'sans-serif'],
+          }
+        }
       }
     }
-  </style>
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
 </head>
-<body>
-  <div class="error-container">
-    <h1>500</h1>
-    <p class="fs-4">Oops! Something went wrong on our server.</p>
-    <p class="text-muted mb-4">Please try again later or go back to the previous page.</p>
+<body class="bg-luxury-cream min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-2xl w-full bg-white rounded-[3rem] shadow-2xl overflow-hidden p-12 text-center relative">
+    
+    <div class="relative z-10">
+      <img src="/images/logo.avif" class="w-48 mx-auto mb-16" alt="Venicara">
+      
+      <div class="mb-12">
+        <h1 class="text-[12rem] font-serif font-black text-red-500 leading-none opacity-5 select-none absolute left-1/2 -translate-x-1/2 -top-16">500</h1>
+        <h2 class="text-4xl font-serif font-bold text-luxury-black mb-4 uppercase tracking-tight">Technical Disturbance</h2>
+        <p class="text-gray-500 text-lg italic max-w-sm mx-auto">Our atelier is currently experiencing a rare complication. Our master perfumers are working to resolve it.</p>
+      </div>
 
-    <!-- Buttons -->
-    <button class="btn btn-home btn-lg shadow" onclick="history.back()">Go Back</button>
-    <button id="showErrorBtn" class="btn btn-show-error btn-lg shadow">Show Error</button>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-6 mb-12">
+        <button onclick="history.back()" class="w-full sm:w-auto px-10 py-5 bg-luxury-black text-white rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 transition shadow-xl group">
+          <i class="fa-solid fa-rotate-left mr-3 group-hover:-rotate-45 transition-transform"></i>
+          Try Again
+        </button>
+        <button id="showErrorBtn" class="w-full sm:w-auto px-10 py-5 border-2 border-red-100 text-red-600 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-red-50 transition">
+          Debug View
+        </button>
+      </div>
 
-    <!-- Div to display error -->
-    <div id="errorDiv" class="error-message">
-     <%=message|| "500 Internal Server Error: Something went wrong!"%>
+      <div id="errorDiv" class="hidden text-left bg-red-50 border border-red-100 rounded-2xl p-6 overflow-x-auto">
+        <p class="text-[10px] font-mono text-red-700 leading-relaxed break-all">
+          <%= message || "500 Internal Server Error: An unexpected complication occurred within our alchemy labs." %>
+        </p>
+      </div>
     </div>
-
   </div>
 
-  <!-- JS -->
   <script>
     const showErrorBtn = document.getElementById('showErrorBtn');
     const errorDiv = document.getElementById('errorDiv');
 
     showErrorBtn.addEventListener('click', () => {
-      errorDiv.style.display = errorDiv.style.display === 'none' ? 'block' : 'none';
+      errorDiv.classList.toggle('hidden');
     });
   </script>
 </body>

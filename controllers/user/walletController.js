@@ -2,15 +2,22 @@ const crypto = require("crypto");
 const Wallet = require("../../models/Wallet");
 const WalletTransaction = require("../../models/WalletTransaction"); // separate transaction log
 const razorpay = require("../../config/payment"); // configured Razorpay instance
+const User = require("../../models/User");
 const handleError = require("../../helpers/handleError");
 
 const showWallet = async (req, res) => {
   try {
-    let wallet = await Wallet.findOne({ userId: req.session.user.id });
-    if (!wallet)
-      wallet = await Wallet.create({ userId: req.session.user.id, balance: 0 });
+    const [wallet, user] = await Promise.all([
+      Wallet.findOne({ userId: req.session.user.id }),
+      User.findById(req.session.user.id)
+    ]);
+    
+    if (!wallet) {
+      const newWallet = await Wallet.create({ userId: req.session.user.id, balance: 0 });
+      return res.render("userPages/wallet", { wallet: newWallet, user });
+    }
 
-    res.render("userPages/wallet", { wallet });
+    res.render("userPages/wallet", { wallet, user });
   } catch (err) {
     handleError(res, "showWallet", err);
   }
@@ -142,17 +149,21 @@ const showTransactionHistory = async (req, res) => {
     }
 
     
-    const transactions = await WalletTransaction.find(filter)
-    .skip((page-1)*limit)
-    .limit(limit)
-    .sort({ createdAt: -1 })
-    .lean();
+    const [transactions, user] = await Promise.all([
+      WalletTransaction.find(filter)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .sort({ createdAt: -1 })
+        .lean(),
+      User.findById(req.session.user.id)
+    ]);
     
     const totalTransactions = await WalletTransaction.countDocuments(filter)
     const totalPages = Math.ceil(totalTransactions/limit)
 
     res.render("userPages/walletTransaction", {
        transactions,
+       user,
        search:null,
        count:(page-1)*limit,
        totalPages,

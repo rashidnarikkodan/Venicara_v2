@@ -1,198 +1,195 @@
-<%- include('../partials/admin/header.ejs')%>
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
-/>
+<%- include('../partials/admin/header.ejs') %>
 
-<main class="container-fluid py-4 flex-grow-1 min-vh-100 bg-light">
-
-  <!-- Filter Buttons -->
-  <div class="row mb-4">
-    <div class="col-12 d-flex flex-wrap gap-2 justify-content-center justify-content-md-start">
-      <a href="/admin/dashboard?filter=daily" class="btn btn-sm <%= filter==='daily' ? 'btn-dark' : 'btn-outline-dark'%>">Daily</a>
-      <a href="/admin/dashboard?filter=weekly" class="btn btn-sm <%= filter==='weekly' ? 'btn-dark' : 'btn-outline-dark'%>">Weekly</a>
-      <a href="/admin/dashboard?filter=monthly" class="btn btn-sm <%= filter==='monthly' ? 'btn-dark' : 'btn-outline-dark'%>">Monthly</a>
-      <a href="/admin/dashboard?filter=yearly" class="btn btn-sm <%= filter==='yearly' ? 'btn-dark' : 'btn-outline-dark'%>">Yearly</a>
-    </div>
-  </div>
-
-  <!-- Title -->
-  <div class="row mb-3">
-    <div class="col-12 text-center text-md-start">
-      <h4 class="fw-bold">
-        <%= filter.charAt(0).toUpperCase() + filter.slice(1) %> Reports
-      </h4>
-    </div>
-  </div>
-
-  <!-- Stats Cards -->
-  <div class="row g-3 mb-4">
-    <!-- Total Sales -->
-    <div class="col-6 col-md-3">
-      <div class="card shadow-sm border-0 rounded-4 h-100 text-center" style="background:#fba6bf69;">
-        <div class="card-body">
-          <i class="bi bi-currency-dollar fs-3 text-danger mb-2"></i>
-          <p class="small text-muted mb-1">Total Sales</p>
-          <h4 class="fw-bold">₹<%= dashboardData.totalSales %></h4>
+<div class="space-y-10 animate-fade-in">
+  
+  <!-- KPI Overview -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Total Revenue -->
+    <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2rem] shadow-sm border border-gray-100 dark:border-white/5 group hover:border-gold-500/30 transition-all duration-300">
+      <div class="flex items-center justify-between mb-4">
+        <div class="w-12 h-12 bg-gold-500/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+          <i class="fa-solid fa-indian-rupee-sign text-gold-600 dark:text-gold-400 text-xl"></i>
         </div>
+        <span class="text-[10px] font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">+12.5%</span>
       </div>
+      <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">Total Revenue</p>
+      <h3 class="text-2xl font-serif font-bold dark:text-white tracking-tight">₹<%= dashboardData.totalSales %></h3>
     </div>
 
-    <!-- Orders Delivered -->
-    <div class="col-6 col-md-3">
-      <div class="card shadow-sm border-0 rounded-4 h-100 text-center" style="background:#e3d2959d;">
-        <div class="card-body">
-          <i class="bi bi-truck fs-3 text-warning mb-2"></i>
-          <p class="small text-muted mb-1">Orders Delivered</p>
-          <h4 class="fw-bold"><%= dashboardData.totalOrders %></h4>
+    <!-- Total Orders -->
+    <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2rem] shadow-sm border border-gray-100 dark:border-white/5 group hover:border-gold-500/30 transition-all duration-300">
+      <div class="flex items-center justify-between mb-4">
+        <div class="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+          <i class="fa-solid fa-bag-shopping text-blue-600 dark:text-blue-400 text-xl"></i>
         </div>
+        <span class="text-[10px] font-bold text-blue-500 bg-blue-500/10 px-2 py-1 rounded-full">Active</span>
       </div>
+      <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">Total Orders</p>
+      <h3 class="text-2xl font-serif font-bold dark:text-white tracking-tight"><%= dashboardData.totalOrders %></h3>
     </div>
 
     <!-- Products Sold -->
-    <div class="col-6 col-md-3">
-      <div class="card shadow-sm border-0 rounded-4 h-100 text-center" style="background:#a0efa089;">
-        <div class="card-body">
-          <i class="bi bi-box-seam fs-3 text-success mb-2"></i>
-          <p class="small text-muted mb-1">Products Sold</p>
-          <h4 class="fw-bold"><%= dashboardData.productsSold %></h4>
+    <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2rem] shadow-sm border border-gray-100 dark:border-white/5 group hover:border-gold-500/30 transition-all duration-300">
+      <div class="flex items-center justify-between mb-4">
+        <div class="w-12 h-12 bg-green-500/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+          <i class="fa-solid fa-boxes-stacked text-green-600 dark:text-green-400 text-xl"></i>
         </div>
+        <span class="text-[10px] font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">Stocked</span>
       </div>
+      <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">Products Sold</p>
+      <h3 class="text-2xl font-serif font-bold dark:text-white tracking-tight"><%= dashboardData.productsSold %></h3>
     </div>
 
     <!-- New Customers -->
-    <div class="col-6 col-md-3">
-      <div class="card shadow-sm border-0 rounded-4 h-100 text-center" style="background:#754fc649;">
-        <div class="card-body">
-          <i class="bi bi-person-plus fs-3 text-primary mb-2"></i>
-          <p class="small text-muted mb-1">New Customers</p>
-          <h4 class="fw-bold"><%= dashboardData.newCustomers %></h4>
+    <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2rem] shadow-sm border border-gray-100 dark:border-white/5 group hover:border-gold-500/30 transition-all duration-300">
+      <div class="flex items-center justify-between mb-4">
+        <div class="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+          <i class="fa-solid fa-people-group text-purple-600 dark:text-purple-400 text-xl"></i>
         </div>
+        <span class="text-[10px] font-bold text-purple-500 bg-purple-500/10 px-2 py-1 rounded-full">Growing</span>
       </div>
+      <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">New Customers</p>
+      <h3 class="text-2xl font-serif font-bold dark:text-white tracking-tight"><%= dashboardData.newCustomers %></h3>
     </div>
   </div>
 
-  <!-- Charts and Top Products -->
-  <div class="row g-4">
-
-    <!-- Charts Section -->
-    <div class="col-12 col-lg-9">
-      <div class="row g-4">
-        <!-- Products Sold Chart -->
-        <div class="col-12">
-          <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-body">
-              <h6 class="fw-semibold mb-3">
-                Products Sold (<%= filter.charAt(0).toUpperCase() + filter.slice(1) %>)
-              </h6>
-              <div style="height: 300px;">
-                <canvas id="productSoldChart"></canvas>
-              </div>
-            </div>
+  <!-- Analytics Section -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+    
+    <!-- Charts Container -->
+    <div class="lg:col-span-2 space-y-10">
+      <!-- Revenue Trends -->
+      <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2rem] shadow-sm border border-gray-100 dark:border-white/5">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h4 class="text-lg font-serif font-bold dark:text-white">Revenue Performance</h4>
+            <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Historical data analytics</p>
+          </div>
+          <div class="flex bg-gray-100 dark:bg-luxury-black p-1 rounded-xl">
+            <a href="?filter=daily" class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all <%= filter==='daily' ? 'bg-white dark:bg-luxury-charcoal shadow-sm text-gold-600' : 'text-gray-400 hover:text-gray-600' %>">Daily</a>
+            <a href="?filter=weekly" class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all <%= filter==='weekly' ? 'bg-white dark:bg-luxury-charcoal shadow-sm text-gold-600' : 'text-gray-400 hover:text-gray-600' %>">Weekly</a>
+            <a href="?filter=monthly" class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all <%= filter==='monthly' ? 'bg-white dark:bg-luxury-charcoal shadow-sm text-gold-600' : 'text-gray-400 hover:text-gray-600' %>">Monthly</a>
+            <a href="?filter=yearly" class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all <%= filter==='yearly' ? 'bg-white dark:bg-luxury-charcoal shadow-sm text-gold-600' : 'text-gray-400 hover:text-gray-600' %>">Yearly</a>
           </div>
         </div>
+        <div class="h-80 w-full">
+          <canvas id="revenueChart"></canvas>
+        </div>
+      </div>
 
-        <!-- Revenue Chart -->
-        <div class="col-12">
-          <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-body">
-              <h6 class="fw-semibold mb-3">
-                Revenue (<%= filter.charAt(0).toUpperCase() + filter.slice(1) %>)
-              </h6>
-              <div style="height: 300px;">
-                <canvas id="revenueChart"></canvas>
-              </div>
-            </div>
-          </div>
+      <!-- Inventory & Sales Trends -->
+      <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2rem] shadow-sm border border-gray-100 dark:border-white/5">
+        <div class="mb-8">
+          <h4 class="text-lg font-serif font-bold dark:text-white">Sales & Fulfillment</h4>
+          <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Products sold vs returns vs cancellations</p>
+        </div>
+        <div class="h-80 w-full">
+          <canvas id="productSoldChart"></canvas>
         </div>
       </div>
     </div>
 
-    <!-- Top Products Section -->
-    <div class="col-12 col-lg-3">
-      <div class="card shadow-sm border-0 rounded-4 h-100">
-        <div class="card-body">
-          <p class="fw-bold fs-5 text-center mb-3">Top 10 Products</p>
-          <div class="d-flex flex-column gap-2">
-            <% dashboardData.topProducts.forEach((product) => { %>
-              <div class="d-flex align-items-center gap-2 p-2 rounded-4 bg-light">
-                <img src="<%= product.img[0]?.url %>" alt="product" class="img-fluid rounded-circle" style="width:45px; height:45px; object-fit:cover;">
-                <div class="flex-grow-1">
-                  <span class="fw-semibold"><%= product.name %></span><br>
-                  <small class="text-success"><%= product.totalSold %> sold</small>
-                </div>
+    <!-- Top Products Sidebar -->
+    <div class="space-y-6">
+      <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2rem] shadow-sm border border-gray-100 dark:border-white/5 h-full">
+        <h4 class="text-lg font-serif font-bold dark:text-white mb-8">Bestsellers</h4>
+        
+        <div class="space-y-6">
+          <% dashboardData.topProducts.forEach((product, idx) => { %>
+            <div class="flex items-center space-x-4 group cursor-pointer">
+              <div class="relative">
+                <img src="<%= product.img[0]?.url %>" alt="<%= product.name %>" class="w-14 h-14 rounded-2xl object-cover shadow-md group-hover:scale-105 transition-transform">
+                <span class="absolute -top-2 -right-2 w-6 h-6 bg-gold-500 text-luxury-black text-[10px] font-bold flex items-center justify-center rounded-lg shadow-lg border-2 border-white dark:border-luxury-charcoal">
+                  #<%= idx + 1 %>
+                </span>
               </div>
-            <% }) %>
-          </div>
+              <div class="flex-1 overflow-hidden">
+                <p class="text-sm font-bold dark:text-gray-200 truncate leading-tight"><%= product.name %></p>
+                <p class="text-[10px] text-gold-600 dark:text-gold-400 font-bold uppercase tracking-widest mt-1"><%= product.totalSold %> Units Sold</p>
+              </div>
+              <div class="text-right">
+                <i class="fa-solid fa-chevron-right text-[10px] text-gray-300 group-hover:text-gold-500 transition-colors"></i>
+              </div>
+            </div>
+          <% }) %>
         </div>
+
+        <a href="/admin/products" class="mt-10 block w-full text-center py-4 rounded-2xl bg-gray-50 dark:bg-luxury-black text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gold-600 transition-colors border border-dashed border-gray-200 dark:border-white/5">
+          View Detailed Inventory
+        </a>
       </div>
     </div>
 
   </div>
-</main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+  // Common Chart Config
+  Chart.defaults.font.family = "'Inter', sans-serif";
+  Chart.defaults.color = document.documentElement.classList.contains('dark') ? '#9ca3af' : '#6b7280';
+  
+  const isDark = document.documentElement.classList.contains('dark');
+  const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+
   // Products Sold Chart
   new Chart(document.getElementById("productSoldChart"), {
     type: "line",
     data: {
       labels: <%- JSON.stringify(dashboardData.productsSoldLabels) %>,
       datasets: [{
-        label: "Products Sold",
+        label: "Sold",
         data: <%- JSON.stringify(dashboardData.productsSoldData) %>,
-        borderColor: "#0d6efd",
-        backgroundColor: "rgba(13,110,253,0.1)",
+        borderColor: "#d4af37",
+        backgroundColor: "rgba(212, 175, 55, 0.1)",
         tension: 0.4,
         fill: true,
-        pointBackgroundColor: "#0d6efd"
+        pointRadius: 4,
+        pointBackgroundColor: "#d4af37"
       },{
-        label: "Products Returned",
+        label: "Returned",
         data: <%- JSON.stringify(dashboardData.productsReturnedData) %>,
-        borderColor: "#dc3545",
-        backgroundColor: "rgba(220, 53, 69,0.1)",
+        borderColor: "#ef4444",
+        backgroundColor: "rgba(239, 68, 68, 0.05)",
         tension: 0.4,
         fill: true,
-        pointBackgroundColor: "#dc3545"
-      },{
-        label: "Products Cancelled",
-        data: <%- JSON.stringify(dashboardData.productsCancelledData) %>,
-        borderColor: "#fd7e14",
-        backgroundColor: "rgba(253, 126, 20,0.1)",
-        tension: 0.4,
-        fill: true,
-        pointBackgroundColor: "#fd7e14"
+        pointRadius: 0
       }]
     },
-    options: { maintainAspectRatio: false, responsive: true, plugins: { legend: { display: true } } }
+    options: { 
+      maintainAspectRatio: false, 
+      responsive: true,
+      plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 6, font: { size: 10, weight: 'bold' } } } },
+      scales: {
+        y: { grid: { color: gridColor }, ticks: { font: { size: 10 } } },
+        x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+      }
+    }
   });
 
   // Revenue Chart
   new Chart(document.getElementById("revenueChart"), {
-    type: "line",
+    type: "bar",
     data: {
       labels: <%- JSON.stringify(dashboardData.revenueLabels) %>,
       datasets: [{
         label: "Revenue",
         data: <%- JSON.stringify(dashboardData.revenueChartData) %>,
-        borderColor: "#28a745",
-        backgroundColor: "rgba(40,167,69,0.1)",
-        tension: 0.4,
-        fill: true,
-        pointBackgroundColor: "#28a745"
-      },{
-        label: "Refund",
-        data: <%- JSON.stringify(dashboardData.refundChartData) %>,
-        borderColor: "#c42b23",
-        backgroundColor: "rgba(196, 43, 35, 0.1)",
-        tension: 0.4,
-        fill: true,
-        pointBackgroundColor: "#c42b23"
+        backgroundColor: "#d4af37",
+        borderRadius: 8,
+        barThickness: 20
       }]
     },
-    options: { maintainAspectRatio: false, responsive: true, plugins: { legend: { display: true } } }
+    options: { 
+      maintainAspectRatio: false, 
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { grid: { color: gridColor }, ticks: { font: { size: 10 } } },
+        x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+      }
+    }
   });
 </script>
 
-<%- include('../partials/admin/footer.ejs')%>
+<%- include('../partials/admin/footer.ejs') %>

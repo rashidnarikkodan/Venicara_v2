@@ -1,171 +1,159 @@
-<%-include('../partials/user/header.ejs')%>
+<%- include("../partials/user/header.ejs") %>
 
-<style>
-  body {
-    background-color: #fff;
-    font-family: Arial, sans-serif;
-  }
-  .shopping-bag-title {
-    font-weight: bold;
-    text-align: center;
-    margin: 30px 0;
-    font-size: 1.8rem;
-    letter-spacing: 2px;
-  }
-  .card {
-    border: none;
-  }
-  .item-img {
-    max-width: 100px;
-  }
-  .order-summary {
-    background: #f5f5f5;
-    padding: 20px;
-    border-radius: 6px;
-  }
-  .order-summary h5 {
-    font-weight: bold;
-    margin-bottom: 20px;
-  }
-  .order-summary .summary-line {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: .5rem;
-    font-size:small;
-  }
-  .apply-btn {
-    background: black;
-    color: white;
-    border: none;
-  }
-  .in-stock {
-    color: green;
-    font-size: 0.9rem;
-  }
-  .remove-btn {
-    font-size: 0.85rem;
-    color: red;
-    background: none;
-    border: none;
-    padding: 0;
-    text-decoration: underline;
-    cursor: pointer;
-  }
-</style>
-
-<main style="min-height: 90vh;">
-  <div class="px-md-5 px-3">
-    <div class="shopping-bag-title">SELECT ADDRESS</div>
-    <div class="row">
-      <!-- Left Side: Shopping Items -->
-      <div class="col-lg-9">
-  <% if (addresses && addresses.length > 0) { %>
-    <div class="p-3 bg-light rounded-3">
-      <% addresses.forEach((addr, i) => { %>
-        <div class="card mb-3 border-0 shadow-sm <%= i === 0 ? 'bg-light' : '' %>">
-          <div class="card-body d-flex align-items-start">
-            <!-- Radio button -->
-            <div class="form-check me-3">
-              <input class="form-check-input" type="radio" name="selectedAddress" 
-                     id="address_<%= addr._id %>" 
-                     value="<%= addr._id %>" 
-                     <%= i === 0 ? 'checked' : '' %>>
-            </div>
-
-            <!-- Address details -->
-            <div class="flex-grow-1">
-              <h6 class="mb-1 fw-bold">
-                <%= addr.fullName %> &nbsp; <%= addr.mobile %>
-              </h6>
-              <p class="mb-1 small text-muted">
-                <%= addr.address %>, <%= addr.city %>, <%= addr.pin %>
-              </p>
-            </div>
-
-            <!-- Address type + edit -->
-            <div class="text-end">
-              <span class="badge bg-secondary"><%= addr.type %></span>
-              <a href="/checkout/address/edit/<%= addr._id %>" class="ms-2 text-decoration-none">
-                ✎
-              </a>
-            </div>
-          </div>
+<main class="bg-white min-h-screen py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Checkout Progress -->
+    <div class="mb-12">
+      <div class="flex items-center justify-center space-x-4 mb-8">
+        <div class="flex items-center text-luxury-black font-bold text-xs tracking-widest uppercase">
+          <span class="w-8 h-8 rounded-full bg-luxury-black text-white flex items-center justify-center mr-3">1</span>
+          <span class="hidden sm:inline">Address</span>
         </div>
-      <% }) %>
-
-      <!-- Add new address button -->
-      <div class="text-center mt-3">
-        <a href="/checkout/address/new" class="btn btn-outline-dark w-100 rounded-3">
-          + Add a new address
-        </a>
+        <div class="w-8 sm:w-12 h-px bg-luxury-black"></div>
+        <div class="flex items-center text-gray-400 font-bold text-xs tracking-widest uppercase">
+          <span class="w-8 h-8 rounded-full border-2 border-gray-100 flex items-center justify-center mr-3">2</span>
+          <span class="hidden sm:inline">Payment</span>
+        </div>
+        <div class="w-8 sm:w-12 h-px bg-gray-100"></div>
+        <div class="flex items-center text-gray-400 font-bold text-xs tracking-widest uppercase">
+          <span class="w-8 h-8 rounded-full border-2 border-gray-100 flex items-center justify-center mr-3">3</span>
+          <span class="hidden sm:inline">Review</span>
+        </div>
       </div>
+      <h1 class="text-3xl font-serif font-bold text-luxury-black text-center mb-2">Shipping Details</h1>
+      <p class="text-gray-500 text-center text-sm">Select where your luxury fragrance should be delivered.</p>
     </div>
-  <% } else { %>
-    <div class="alert alert-info">No addresses found. Add a new one.</div>
-    <a href="/checkout/address/new" class="btn btn-dark">+ Add a new address</a>
-  <% } %>
-</div>
 
-
-      <!-- Right Side: Order Summary -->
-      <div class="col-md-3">
-        <div class="order-summary shadow-sm">
-          <h5>Order Summary</h5>
-
-        <% let total = 0;
-        items.forEach((item,index) => { 
-        let lineTotal = (item.variant.finalAmount)* item.quantity;
-        total += lineTotal; %> 
-          <div class="summary-line">
-            <span
-              ><%= item.quantity %> × <%= item.product.name %> (<%=
-              item.variant.volume %>ml)</span
-            >
-            <span
-              >Rs.<%= ((item.variant.finalAmount) *
-              item.quantity).toLocaleString() %></span
-            >
+    <div class="flex flex-col lg:flex-row gap-16">
+      <!-- Address Selection -->
+      <div class="flex-1">
+        <% if (addresses && addresses.length > 0) { %>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <% addresses.forEach((addr, i) => { %>
+              <label class="relative group cursor-pointer">
+                <input type="radio" name="selectedAddress" value="<%= addr._id %>" class="peer sr-only" <%= i === 0 ? 'checked' : '' %>>
+                <div class="h-full border-2 border-gray-100 rounded-2xl p-6 transition-all duration-300 peer-checked:border-gold-500 peer-checked:bg-gold-50/30 hover:border-gray-200 shadow-sm hover:shadow-md">
+                  <div class="flex justify-between items-start mb-4">
+                    <span class="bg-luxury-black text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest"><%= addr.type %></span>
+                    <a href="/checkout/address/edit/<%= addr._id %>" class="text-gray-400 hover:text-luxury-black transition p-1">
+                      <i class="fa-solid fa-pen-to-square text-sm"></i>
+                    </a>
+                  </div>
+                  <h3 class="text-luxury-black font-bold mb-1"><%= addr.fullName %></h3>
+                  <p class="text-gray-500 text-sm leading-relaxed mb-4">
+                    <%= addr.address %>,<br>
+                    <%= addr.city %>, <%= addr.pin %><br>
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-tighter mt-2 block">Mobile: <%= addr.mobile %></span>
+                  </p>
+                  <div class="absolute top-4 right-4 opacity-0 peer-checked:opacity-100 transition-opacity">
+                    <i class="fa-solid fa-circle-check text-gold-500 text-xl"></i>
+                  </div>
+                </div>
+              </label>
+            <% }) %>
+            
+            <!-- Add New Address Card -->
+            <a href="/checkout/address/new" class="group border-2 border-dashed border-gray-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:border-gold-400 hover:bg-gold-50/20 transition-all duration-300 min-h-[200px]">
+              <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-gold-100 transition duration-300">
+                <i class="fa-solid fa-plus text-gray-400 group-hover:text-gold-600"></i>
+              </div>
+              <span class="text-sm font-bold text-gray-500 group-hover:text-gold-600 transition tracking-widest uppercase">Add New Address</span>
+            </a>
           </div>
-          <% }) %>
+        <% } else { %>
+          <div class="bg-gray-50 rounded-3xl p-12 text-center border-2 border-dashed border-gray-200">
+            <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
+              <i class="fa-solid fa-location-dot text-3xl text-gray-200"></i>
+            </div>
+            <h2 class="text-xl font-serif font-bold text-luxury-black mb-4">No addresses saved yet</h2>
+            <p class="text-gray-500 mb-8 max-w-xs mx-auto">Please add a shipping address to continue with your order.</p>
+            <a href="/checkout/address/new" class="inline-block bg-luxury-black text-white px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-gold-600 transition shadow-lg">
+              Add New Address
+            </a>
+          </div>
+        <% } %>
+      </div>
 
-          <div class="summary-line fw-semibold " style="font-size: 12px;">
-            <span>Total Amount</span><span>₹<%=total%></span>
+      <!-- Order Summary Sidebar -->
+      <div class="w-full lg:w-96">
+        <div class="bg-luxury-cream rounded-3xl p-8 border border-gold-100 sticky top-24">
+          <h2 class="text-xl font-serif font-bold text-luxury-black mb-8 pb-4 border-b border-gold-200/50">Order Summary</h2>
+          
+          <div class="space-y-6 mb-8 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+            <% let subtotal = 0; items.forEach(item => { 
+               let itemTotal = item.variant.finalAmount * item.quantity;
+               subtotal += itemTotal;
+            %>
+              <div class="flex gap-4">
+                <div class="w-16 h-20 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-gray-100">
+                  <img src="<%= item.product.images[0].url %>" class="w-full h-full object-cover" alt="<%= item.product.name %>">
+                </div>
+                <div class="flex-1">
+                  <h4 class="text-xs font-bold text-luxury-black mb-1 line-clamp-1"><%= item.product.name %></h4>
+                  <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1"><%= item.quantity %> × <%= item.variant.volume %>ML</p>
+                  <p class="text-xs font-bold text-gold-700">Rs.<%= itemTotal.toLocaleString() %></p>
+                </div>
+              </div>
+            <% }) %>
           </div>
 
-          <div class="summary-line text-success">
-            <span>Delivery Charges</span><span>₹<%=deliveryCharge%></span>
+          <div class="space-y-4 mb-8 pt-6 border-t border-gold-200/50">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500">Subtotal</span>
+              <span class="font-bold text-luxury-black">Rs.<%= subtotal.toLocaleString() %></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500">Shipping</span>
+              <span class="text-green-600 font-bold uppercase tracking-widest text-[10px]">Rs.<%= deliveryCharge %></span>
+            </div>
           </div>
 
-          <div class="summary-line fw-bold fs-5">
-            <span>Total</span><span>Rs.<%=total+deliveryCharge%></span>
+          <div class="flex justify-between items-center mb-10 pt-6 border-t border-luxury-black/10">
+            <span class="text-lg font-serif font-bold text-luxury-black">Total</span>
+            <span class="text-2xl font-bold text-gold-700">Rs.<%= (subtotal + deliveryCharge).toLocaleString() %></span>
           </div>
-          <div class="d-flex justify-content-center">
-            <button id="continue" class="btn btn-dark text-decoration-none w-100">CONTINUE</button>
+
+          <button id="continue" class="block w-full bg-luxury-black text-white text-center py-5 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-gold-600 transition shadow-xl disabled:bg-gray-300 disabled:cursor-not-allowed" <%= !addresses || !addresses.length ? 'disabled' : '' %>>
+            Continue to Payment
+          </button>
+          
+          <div class="mt-6 flex items-center justify-center space-x-4 opacity-30 grayscale">
+            <i class="fa-brands fa-cc-visa text-2xl"></i>
+            <i class="fa-brands fa-cc-mastercard text-2xl"></i>
+            <i class="fa-brands fa-cc-apple-pay text-2xl"></i>
+            <i class="fa-solid fa-shield-halved text-xl"></i>
           </div>
         </div>
       </div>
     </div>
   </div>
 </main>
+
 <script>
   document.getElementById('continue').addEventListener('click', async (e) => {
     e.preventDefault();
 
-    // 1. Get selected radio value
     const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked')?.value;
 
     if (!selectedAddress) {
-      showAlert('error',"Please select an address.");
+      if(typeof Notyf !== 'undefined') {
+        new Notyf().error("Please select an address.");
+      } else {
+        alert("Please select an address.");
+      }
       return;
     }
 
-    // 2. Send fetch request
+    const btn = e.currentTarget;
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i> Processing...';
+
     try {
       const response = await fetch('/checkout/address/selectAddress', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'   // 👈 required
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ selectedAddress })
       });
 
@@ -174,13 +162,24 @@
       if (data.status) {
         window.location.href = "/checkout/paymentMethod";
       } else {
-        showAlert('error',data.message || "Something went wrong.");
+        if(typeof Notyf !== 'undefined') {
+          new Notyf().error(data.message || "Something went wrong.");
+        } else {
+          alert(data.message || "Something went wrong.");
+        }
+        btn.disabled = false;
+        btn.innerHTML = originalText;
       }
     } catch (err) {
       console.error(err);
-      showAlert('error',"Server error.");
+      if(typeof Notyf !== 'undefined') {
+        new Notyf().error("Server error. Please try again.");
+      }
+      btn.disabled = false;
+      btn.innerHTML = originalText;
     }
   });
 </script>
 
-<%-include('../partials/user/footer.ejs')%>
+<%- include("../partials/user/footer.ejs") %>
+

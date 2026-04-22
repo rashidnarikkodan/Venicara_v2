@@ -1,198 +1,156 @@
-<%- include('../partials/admin/header.ejs')%>
+<%- include('../partials/admin/header.ejs') %>
 
-<main class="flex-grow-1 min-vh-100 p-3">
-  <div class="container">
-    <div class="p-4">
-      <h3>Referrals</h3>
+<div class="space-y-10 animate-fade-in pb-20">
+  
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div>
+      <h1 class="text-3xl font-serif font-bold dark:text-white">Referral Ecosystem</h1>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 font-medium uppercase tracking-widest">Monitor organic growth and incentive distribution</p>
     </div>
-    <div class="row g-3 mb-4">
+  </div>
+
+  <!-- KPI Grid -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Total Referrals -->
+    <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5 group hover:border-gold-500/30 transition-all">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Total Outreach</p>
+      <h3 class="text-2xl font-serif font-bold dark:text-white tracking-tight"><%= data.referredCount || 0 %></h3>
+      <div class="mt-4 flex items-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+        <span class="text-gold-500 mr-1"><i class="fa-solid fa-users"></i></span>
+        Network Volume
+      </div>
+    </div>
+
+    <!-- Active Referrers -->
+    <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5 group hover:border-gold-500/30 transition-all">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Active Referrers</p>
+      <h3 class="text-2xl font-serif font-bold dark:text-white tracking-tight"><%= data.referrerCount || 0 %></h3>
+      <div class="mt-4 flex items-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+        <span class="text-blue-500 mr-1"><i class="fa-solid fa-user-plus"></i></span>
+        Growth Agents
+      </div>
+    </div>
+
+    <!-- Total Paid -->
+    <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5 group hover:border-gold-500/30 transition-all">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Total Rewarded</p>
+      <h3 class="text-2xl font-serif font-bold text-green-600 dark:text-green-400 tracking-tight">₹<%= data.totalPaid %></h3>
+      <div class="mt-4 flex items-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+        <span class="text-green-500 mr-1"><i class="fa-solid fa-check-double"></i></span>
+        Distributed
+      </div>
+    </div>
+
+    <!-- Pending Rewards -->
+    <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5 group hover:border-gold-500/30 transition-all">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Pending Rewards</p>
+      <h3 class="text-2xl font-serif font-bold text-orange-500 tracking-tight">₹<%= data.totalPending %></h3>
+      <div class="mt-4 flex items-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+        <span class="text-orange-500 mr-1"><i class="fa-solid fa-clock-rotate-left"></i></span>
+        In Pipeline
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Table -->
+  <div class="bg-white dark:bg-luxury-charcoal rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden">
+    <div class="p-8 border-b border-gray-100 dark:border-white/5 flex items-center justify-between">
+      <h3 class="text-lg font-serif font-bold dark:text-white">Growth Ledger</h3>
+      <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400"><%= referrals.length %> Engagements</span>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-gray-50 dark:bg-luxury-black/30 border-b border-gray-100 dark:border-white/5">
+            <th class="px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">No.</th>
+            <th class="px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Referrer</th>
+            <th class="px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Access Key</th>
+            <th class="px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 text-center">Invites</th>
+            <th class="px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Reward Status</th>
+            <th class="px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50 dark:divide-white/5">
+          <% referrals.forEach((referral, idx) => { %>
+            <tr class="group hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+              <td class="px-8 py-6 text-xs font-mono font-bold text-gray-400"><%= idx + 1 + (currentPage - 1) * limit %></td>
+              <td class="px-8 py-6">
+                <span class="text-sm font-bold dark:text-white leading-tight uppercase tracking-wider"><%= referral.referrer || 'N/A' %></span>
+              </td>
+              <td class="px-8 py-6">
+                <span class="text-[10px] font-mono font-bold text-gold-600 dark:text-gold-400"><%= referral.referralCodeUsed || 'N/A' %></span>
+              </td>
+              <td class="px-8 py-6 text-center">
+                <span class="text-sm font-bold dark:text-gray-300"><%= referral.referred || 0 %></span>
+              </td>
+              <td class="px-8 py-6">
+                <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest <%= referral.status === 'pending' ? 'bg-orange-500/10 text-orange-600' : 'bg-green-500/10 text-green-600' %>">
+                  <%= referral.status %>
+                </span>
+              </td>
+              <td class="px-8 py-6 text-right">
+                <% if(referral.status === 'pending') { %>
+                  <button onclick="approveReward(this)" data-id="<%= referral._id %>" class="px-6 py-2.5 bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black text-[10px] font-bold uppercase tracking-widest rounded-xl hover:scale-105 transition-transform shadow-md">
+                    Verify & Release
+                  </button>
+                <% } else if(referral.status === 'claimed') { %>
+                   <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400 italic">Disbursement Finalized</span>
+                <% } else { %>
+                   <span class="text-[10px] font-bold uppercase tracking-widest text-green-600">Verification Approved</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="px-8 py-6 bg-gray-50/50 dark:bg-white/5 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
+      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+        Record Sync: Page <%= currentPage %>
+      </p>
       
-      <!-- Total Referrals Card -->
-      <div class="col-12 col-sm-6 col-md-3">
-        <div class="card h-100 shadow-sm border-0">
-          <div class="card-body text-center">
-            <i class="fa-solid fa-users fs-5 text-primary mb-3"></i>
-            <p class="card-text fs-4 fw-bold text-primary mb-0"><%= data.referredCount || 0 %></p>
-            <p class="card-title fw-semibold text-dark mb-2">Total Referrals</p>
-          </div>
+      <div class="flex items-center space-x-2">
+        <% if (currentPage > 1) { %>
+          <a href="?page=<%= currentPage - 1 %>&limit=<%= limit %>" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/5 shadow-sm text-gray-500 hover:text-gold-500 transition-all">
+            <i class="fa-solid fa-chevron-left text-xs"></i>
+          </a>
+        <% } %>
+        <div class="px-4 py-2 bg-white dark:bg-luxury-charcoal rounded-xl border border-gray-100 dark:border-white/5 shadow-sm text-xs font-bold dark:text-white">
+          <%= currentPage %>
         </div>
-      </div>
-
-      <!-- Referred Users Card -->
-      <div class="col-12 col-sm-6 col-md-3">
-        <div class="card h-100 shadow-sm border-0">
-          <div class="card-body text-center">
-            <i class="fa-solid fa-user-plus fs-5 text-info mb-3"></i>
-            <p class="card-text fs-4 fw-bold text-info mb-0"><%= data.referrerCount || 0 %></p>
-            <p class="card-title fw-semibold text-dark mb-2">Referred Users</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Total Rewards Paid Card -->
-      <div class="col-12 col-sm-6 col-md-3">
-        <div class="card h-100 shadow-sm border-0">
-          <div class="card-body text-center">
-            <i class="fa-solid fa-dollar-sign fs-5 text-success mb-3"></i>
-            <p class="card-text fs-4 fw-bold text-success mb-0"><%= data.totalPaid %></p>
-            <p class="card-title fw-semibold text-dark mb-2">Total Rewards Paid</p>
-          </div>
-        </div>
-      </div>
-      <!-- Pending Rewards Card -->
-      <div class="col-12 col-sm-6 col-md-3">
-        <div class="card h-100 shadow-sm border-0">
-          <div class="card-body text-center">
-            <i class="fa-solid fa-clock fs-5 text-warning mb-3"></i>
-            <p class="card-text fs-4 fw-bold text-warning mb-0"><%= data.totalPending %></p>
-            <p class="card-title fw-semibold text-dark mb-2">Pending Rewards</p>
-          </div>
-        </div>
+        <% if (currentPage < totalPages) { %>
+          <a href="?page=<%= currentPage + 1 %>&limit=<%= limit %>" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/5 shadow-sm text-gray-500 hover:text-gold-500 transition-all">
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </a>
+        <% } %>
       </div>
     </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <div class="table-responsive shadow rounded bg-white">
-          <table class="table table-hover align-middle mb-0">
-            <thead class="table-dark">
-              <tr>
-                <th class="text-center p-3">No.</th>
-                <th class="text-center p-3">Referrer Name</th>
-                <th class="text-center p-3">Referral Code</th>
-                <th class="text-center p-3">Referred Users</th>
-                <th class="text-center p-3">Reward Status</th>
-                <th class="text-center p-3">Reward Amount</th>
-                <th class="text-center p-3">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% let count = 0; referrals.forEach(referral => { %>
-                <% count++; %>
-                <tr>
-                  <td class="text-center"><%= count %></td>
-                  <td class="text-center"><%= referral.referrer || 'N/A' %></td>
-                  <td class="text-center"><%= referral.referralCodeUsed || 'N/A' %></td>
-                  <td class="text-center"><%= referral.referred || 0 %></td>
-                  <td class="text-center <%= referral.status === 'pending' ? 'text-primary' : 'text-success' %>"><%= referral.status || 'N/A' %></td>
-                  <td class="text-center"><%= referral.amount || 0 %></td>
-                  <td class="text-center">
-                    <button onclick="approveReward(this)" data-id="<%= referral._id %>" class="btn btn-sm btn-outline-primary <%= referral.status === 'claimed' ? 'disabled' : '' %>">
-                      <%= referral.status === 'claimed' ? 'Claimed' : (referral.status === 'pending' ? 'Approve' : 'Approved') %>
-                    </button>
-                  </td>
-                </tr>
-              <% }); %>
-              <% if (referrals.length === 0) { %>
-                <tr>
-                  <td colspan="7" class="text-center p-4">No referrals found.</td>
-                </tr>
-              <% } %>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <% if (totalPages > 0) { %>
-      <div class="d-flex justify-content-end mt-4">
-        <nav aria-label="Page navigation">
-          <ul class="pagination justify-content-end flex-wrap p-3">
-            <!-- Previous Button -->
-            <% if (currentPage > 1) { %>
-              <li class="page-item">
-                <a class="page-link bg-dark" href="?page=<%= currentPage - 1 %>&limit=<%= limit %>">
-                  <i class="fa-solid fa-caret-left text-white"></i>
-                </a>
-              </li>
-            <% } else { %>
-              <li class="page-item disabled">
-                <span class="page-link bg-dark">
-                  <i class="fa-solid fa-caret-left text-white"></i>
-                </span>
-              </li>
-            <% } %>
-
-            <!-- Left Page (if exists) -->
-            <% if (currentPage - 1 >= 1) { %>
-              <li class="page-item">
-                <a class="page-link" href="?page=<%= currentPage - 1 %>&limit=<%= limit %>">
-                  <%= currentPage - 1 %>
-                </a>
-              </li>
-            <% } %>
-
-            <!-- Current Page -->
-            <li class="page-item active">
-              <span class="page-link bg-primary text-white border-0">
-                <%= currentPage %>
-              </span>
-            </li>
-
-            <!-- Right Page (if exists) -->
-            <% if (currentPage + 1 <= totalPages) { %>
-              <li class="page-item">
-                <a class="page-link" href="?page=<%= currentPage + 1 %>&limit=<%= limit %>">
-                  <%= currentPage + 1 %>
-                </a>
-              </li>
-            <% } %>
-
-            <!-- Next Button -->
-            <% if (currentPage < totalPages) { %>
-              <li class="page-item">
-                <a class="page-link bg-dark" href="?page=<%= currentPage + 1 %>&limit=<%= limit %>">
-                  <i class="fa-solid fa-caret-right text-white"></i>
-                </a>
-              </li>
-            <% } else { %>
-              <li class="page-item disabled">
-                <span class="page-link bg-dark">
-                  <i class="fa-solid fa-caret-right text-white"></i>
-                </span>
-              </li>
-            <% } %>
-          </ul>
-        </nav>
-      </div>
-    <% } %>
   </div>
-</main>
-  </div>
+</div>
 
 <script>
   async function approveReward(btn) {
     const id = btn.getAttribute('data-id');
     if (!id || btn.disabled) return;
+    
     try {
-      const res = await fetch(`/admin/referrals/${id}`, {
-        method: "PATCH"
-      });
+      const res = await fetch(`/admin/referrals/${id}`, { method: "PATCH" });
       const data = await res.json();
       if (data.success) {
-        btn.innerHTML = 'Approved';
-        btn.classList.remove('btn-outline-primary');
-        btn.classList.add('btn-success');
+        btn.innerHTML = '<i class="fa-solid fa-circle-check mr-2"></i>Approved';
+        btn.classList.add('bg-green-500', 'text-white');
         btn.disabled = true;
-        setTimeout(() => window.location.reload(), 1000);
+        setTimeout(() => location.reload(), 800);
       } else {
-        // Assuming showAlert is defined globally; fallback to console
-        if (typeof showAlert === 'function') {
-          showAlert('error', 'Unable to approve: ' + (data.message || 'Unknown error'));
-        } else {
-          console.error('Unable to approve:', data.message || 'Unknown error');
-          alert('Unable to approve: ' + (data.message || 'Unknown error'));
-        }
+        new Notyf().error(data.message || 'Verification failed');
       }
     } catch (error) {
-      console.error('Error approving reward:', error);
-      if (typeof showAlert === 'function') {
-        showAlert('error', 'Network error occurred');
-      } else {
-        alert('Network error occurred');
-      }
+      new Notyf().error('Network synchronization failure');
     }
   }
 </script>
 
-<%- include('../partials/admin/footer.ejs')%>
+<%- include('../partials/admin/footer.ejs') %>

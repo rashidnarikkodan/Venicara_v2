@@ -1,267 +1,175 @@
-<%- include('../partials/admin/header.ejs')%>
-<style>
-  /* Responsive User Management */
-  @media (max-width: 767.98px) {
-    .users-table thead {
-      display: none;
-    }
-    .users-table tr {
-      display: block;
-      margin-bottom: 1.5rem;
-      border: 1px solid #dee2e6;
-      border-radius: 0.25rem;
-      padding: 0.5rem;
-      background-color: #fff;
-      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    }
-    .users-table td {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      text-align: right !important;
-      border-top: 1px solid #dee2e6;
-      padding: 0.75rem 1rem;
-    }
-    .users-table td:first-child {
-      border-top: none;
-    }
-    .users-table td::before {
-      content: attr(data-label);
-      font-weight: bold;
-      text-transform: uppercase;
-      color: #6c757d;
-      flex: 0 0 40%;
-      text-align: left;
-    }
-    .users-table .status-btn {
-      width: 100% !important;
-      margin: 0 !important;
-    }
-  }
+<%- include('../partials/admin/header.ejs') %>
 
-  /* Search Form Mobile */
-  @media (max-width: 767.98px) {
-    .search-form {
-      flex-direction: column !important;
-      width: 100% !important;
-    }
-    .search-form input {
-      width: 100% !important;
-      margin-bottom: 0.5rem !important;
-    }
-    .search-form button {
-      width: 100% !important;
-    }
-  }
-
-  /* Mobile Layout */
-  @media (max-width: 575.98px) {
-    .main-container {
-      padding: 0.5rem !important;
-    }
-    h1 {
-      font-size: 1.5rem !important;
-      text-align: center !important;
-    }
-    .fs-2 {
-      font-size: 1.75rem !important;
-    }
-    .header-row {
-      flex-direction: column !important;
-      gap: 1rem !important;
-      text-align: center !important;
-    }
-  }
-
-  /* Modal Mobile */
-  @media (max-width: 575.98px) {
-    .modal-dialog {
-      margin: 0.5rem !important;
-    }
-  }
-</style>
-
-<main class="flex-grow-1 min-vh-100 p-3 main-container">
-  <div class="container-fluid">
-    <!-- Header with Search -->
-    <div class="row align-items-center header-row mb-5">
-      <div class="col-12 col-md-6">
-        <h1 class="mb-3 mb-md-0">User Management</h1>
-      </div>
-      <div class="col-12 col-md-6">
-        <form action="/admin/customers" method="GET" class="search-form d-flex justify-content-end gap-2 w-100">
-          <input type="text" 
-                 name="search" 
-                 class="form-control" 
-                 placeholder="Search by name/email..." 
-                 value="<%= search %>">
-          <button class="btn btn-dark">Search</button>
+<div class="space-y-8 animate-fade-in">
+  
+  <!-- Header Section -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div>
+      <h1 class="text-3xl font-serif font-bold dark:text-white">Customer Relations</h1>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 font-medium uppercase tracking-widest">Manage your luxury fragrance clientele</p>
+    </div>
+    
+    <div class="flex items-center space-x-4">
+      <div class="relative group">
+        <form action="/admin/customers" method="GET" class="flex items-center">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 text-gray-400 group-focus-within:text-gold-500 transition-colors"></i>
+          <input 
+            type="text" 
+            name="search" 
+            placeholder="Search by name/email..." 
+            value="<%= search %>"
+            class="pl-11 pr-4 py-3 bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/5 rounded-2xl outline-none focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all text-sm min-w-[300px] dark:text-white shadow-sm"
+          >
         </form>
       </div>
     </div>
+  </div>
 
-    <!-- Users Table -->
-    <div class="table-responsive shadow rounded-3 bg-white">
-      <table class="table table-hover align-middle mb-0 users-table">
-        <thead class="table-dark">
-          <tr>
-            <th class="text-center p-3">No.</th>
-            <th class="text-center p-3">Customer</th>
-            <th class="text-center p-3">Email</th>
-            <th class="text-center p-3">Customer ID</th>
-            <th class="text-center p-3">Verified</th>
-            <th class="text-center p-3">Created On</th>
-            <th class="text-center p-3">Status</th>
+  <!-- Customers Table -->
+  <div class="bg-white dark:bg-luxury-charcoal rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-gray-100 dark:border-white/5">
+            <th class="px-8 py-6 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">No.</th>
+            <th class="px-8 py-6 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Client Profile</th>
+            <th class="px-8 py-6 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Access Key</th>
+            <th class="px-8 py-6 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Verification</th>
+            <th class="px-8 py-6 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Joined</th>
+            <th class="px-8 py-6 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500 text-right">Status</th>
           </tr>
         </thead>
-        <tbody>
-          <% users.forEach(user=> { %>
-            <%count++%>
-            <tr>
-              <td data-label="No." class="text-center"><%= count %></td>
-              <td data-label="Customer"><%= user.name %></td>
-              <td data-label="Email"><%= user.email %></td>
-              <td data-label="Customer ID"><%= user.userId %></td>
-              <td data-label="Verified">
-                <span class="badge <%= user.isVerified ? 'bg-success' : 'bg-danger' %>">
-                  <%= user.isVerified ? 'Verified' : 'Not verified' %>
-                </span>
+        <tbody class="divide-y divide-gray-50 dark:divide-white/5">
+          <% users.forEach((user, idx) => { %>
+            <tr class="group hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+              <td class="px-8 py-6 text-xs font-mono font-bold text-gray-400"><%= idx + 1 + (currentPage - 1) * limit %></td>
+              <td class="px-8 py-6">
+                <div class="flex items-center space-x-4">
+                  <div class="w-10 h-10 bg-luxury-black dark:bg-gold-500/10 rounded-full flex items-center justify-center text-white dark:text-gold-500 font-bold text-xs uppercase">
+                    <%= user.name.slice(0, 2) %>
+                  </div>
+                  <div>
+                    <p class="text-sm font-bold dark:text-white leading-tight"><%= user.name %></p>
+                    <p class="text-[10px] text-gray-400 font-bold lowercase tracking-widest mt-0.5"><%= user.email %></p>
+                  </div>
+                </div>
               </td>
-              <td data-label="Created On"><%= user.createdAt.toLocaleDateString() %></td>
-              <td data-label="Status">
-                <button type="button"
-                        onclick="showConfirmModal('<%=user._id%>', '<%= user.isBlocked ? 'User will be Activated' : 'User will be Blocked' %>')"
-                        class="status-btn alert px-3 py-1 w-100 <%= user.isBlocked ? 'alert-danger text-danger' : 'alert-success text-success' %>">
-                  <%= user.isBlocked ? 'Blocked' : 'Active' %>
+              <td class="px-8 py-6">
+                <span class="text-xs font-mono text-gray-500 dark:text-gray-400">ID_<%= user.userId %></span>
+              </td>
+              <td class="px-8 py-6">
+                <div class="flex items-center space-x-2">
+                  <span class="w-2 h-2 rounded-full <%= user.isVerified ? 'bg-green-500' : 'bg-red-500' %>"></span>
+                  <span class="text-[10px] font-bold uppercase tracking-widest <%= user.isVerified ? 'text-green-600' : 'text-red-500' %>">
+                    <%= user.isVerified ? 'Verified' : 'Unverified' %>
+                  </span>
+                </div>
+              </td>
+              <td class="px-8 py-6">
+                <span class="text-xs font-bold dark:text-gray-300"><%= user.createdAt.toLocaleDateString() %></span>
+              </td>
+              <td class="px-8 py-6 text-right">
+                <button 
+                  onclick="showConfirmModal('<%=user._id%>', '<%= user.isBlocked ? 'Access will be restored for ' + user.name : 'Customer access will be revoked for ' + user.name %>')"
+                  class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl transition-all border <%= user.isBlocked ? 'bg-red-50 dark:bg-red-500/10 text-red-600 border-red-100 dark:border-red-500/20' : 'bg-green-50 dark:bg-green-500/10 text-green-600 border-green-100 dark:border-green-500/20' %>"
+                >
+                  <i class="fa-solid <%= user.isBlocked ? 'fa-user-slash' : 'fa-user-check' %> text-xs"></i>
+                  <span class="text-[10px] font-bold uppercase tracking-widest"><%= user.isBlocked ? 'Blocked' : 'Active' %></span>
                 </button>
               </td>
             </tr>
-            <% }) %>
+          <% }) %>
         </tbody>
       </table>
     </div>
-  </div>
 
-  <!-- Pagination -->
-  <div class="d-flex justify-content-end mt-4">
-    <nav aria-label="Page navigation">
-      <ul class="pagination justify-content-end flex-wrap p-3">
-        <!-- Previous Button -->
+    <!-- Pagination -->
+    <div class="px-8 py-6 bg-gray-50/50 dark:bg-white/5 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
+      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+        Total Clients: <%= users.length %>
+      </p>
+      
+      <div class="flex items-center space-x-2">
         <% if (currentPage > 1) { %>
-          <li class="page-item">
-            <a class="page-link bg-dark" 
-               href="?page=<%= currentPage - 1 %>&limit=<%= limit %>&search=<%= search %>">
-              <i class="fa-solid fa-caret-left text-white"></i>
-            </a>
-          </li>
-        <% } else { %>
-          <li class="page-item disabled">
-            <span class="page-link bg-dark">
-              <i class="fa-solid fa-caret-left text-white"></i>
-            </span>
-          </li>
+          <a href="?page=<%= currentPage - 1 %>&limit=<%= limit %>&search=<%= search %>" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/5 shadow-sm text-gray-500 hover:text-gold-500 transition-all">
+            <i class="fa-solid fa-chevron-left text-xs"></i>
+          </a>
         <% } %>
+        
+        <div class="px-4 py-2 bg-white dark:bg-luxury-charcoal rounded-xl border border-gray-100 dark:border-white/5 shadow-sm text-xs font-bold dark:text-white">
+          <%= currentPage %>
+        </div>
 
-        <!-- Left Page -->
-        <% if (currentPage - 1 >= 1) { %>
-          <li class="page-item">
-            <a class="page-link" 
-               href="?page=<%= currentPage - 1 %>&limit=<%= limit %>&search=<%= search %>">
-              <%= currentPage - 1 %>
-            </a>
-          </li>
-        <% } %>
-
-        <!-- Current Page -->
-        <li class="page-item active">
-          <span class="page-link bg-white text-dark border-0">
-            <%= currentPage %>
-          </span>
-        </li>
-
-        <!-- Right Page -->
-        <% if (currentPage + 1 <= totalPages) { %>
-          <li class="page-item">
-            <a class="page-link" 
-               href="?page=<%= currentPage + 1 %>&limit=<%= limit %>&search=<%= search %>">
-              <%= currentPage + 1 %>
-            </a>
-          </li>
-        <% } %>
-
-        <!-- Next Button -->
         <% if (currentPage < totalPages) { %>
-          <li class="page-item">
-            <a class="page-link bg-dark" 
-               href="?page=<%= currentPage + 1 %>&limit=<%= limit %>&search=<%= search %>">
-              <i class="fa-solid fa-caret-right text-white"></i>
-            </a>
-          </li>
-        <% } else { %>
-          <li class="page-item disabled">
-            <span class="page-link bg-dark">
-              <i class="fa-solid fa-caret-right text-white"></i>
-            </span>
-          </li>
+          <a href="?page=<%= currentPage + 1 %>&limit=<%= limit %>&search=<%= search %>" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/5 shadow-sm text-gray-500 hover:text-gold-500 transition-all">
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </a>
         <% } %>
-      </ul>
-    </nav>
+      </div>
+    </div>
   </div>
+</div>
 
-  <!-- Confirmation Modal -->
-  <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-dark">
-        <div class="modal-header bg-dark text-white">
-          <h5 class="modal-title" id="confirmLabel">Are you sure?</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+<!-- Modal -->
+<div id="confirmModal" class="fixed inset-0 z-[100] hidden">
+  <div class="absolute inset-0 bg-luxury-black/60 backdrop-blur-sm"></div>
+  <div class="absolute inset-0 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-luxury-charcoal w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-zoom-in">
+      <div class="p-10 text-center">
+        <div class="w-20 h-20 bg-gold-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i class="fa-solid fa-user-gear text-3xl text-gold-600 dark:text-gold-400"></i>
         </div>
-        <div class="modal-body">
-          <p id="confirmMessage" class="text-center"></p>
-        </div>
-        <div class="modal-footer justify-content-center">
-          <button type="button" data-bs-dismiss="modal" class="btn btn-outline-dark">Cancel</button>
-          <button type="button" class="btn btn-dark" id="yes" data-userId="">Confirm</button>
+        <h3 class="text-xl font-serif font-bold dark:text-white mb-2">Access Control</h3>
+        <p id="confirmMessage" class="text-sm text-gray-500 dark:text-gray-400 font-medium px-4"></p>
+        
+        <div class="grid grid-cols-2 gap-4 mt-10">
+          <button onclick="closeModal()" class="py-4 rounded-2xl bg-gray-50 dark:bg-luxury-black text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-luxury-black transition-all">
+            Dismiss
+          </button>
+          <button id="confirmActionBtn" class="py-4 rounded-2xl bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black text-[10px] font-bold uppercase tracking-widest hover:bg-gold-600 transition-all shadow-lg shadow-gold-500/20">
+            Apply Change
+          </button>
         </div>
       </div>
     </div>
   </div>
-</main>
-  </div>
+</div>
+
 <script>
+  let targetUserId = null;
+
   function showConfirmModal(userId, message) {
-    const modalEl = document.getElementById("confirmModal");
-    const messageEl = document.getElementById("confirmMessage");
-    const yesBtn = document.getElementById("yes");
-    
-    messageEl.textContent = message;
-    yesBtn.setAttribute('data-userId', userId);
-    
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
+    targetUserId = userId;
+    document.getElementById('confirmMessage').textContent = message;
+    document.getElementById('confirmModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
   }
 
-  document.getElementById('yes').addEventListener('click', (e) => {
-    const userId = e.target.getAttribute('data-userId');
-    toggleUserStatus(userId);
+  function closeModal() {
+    document.getElementById('confirmModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+  }
+
+  document.getElementById('confirmActionBtn').addEventListener('click', () => {
+    if (targetUserId) {
+      toggleUserStatus(targetUserId);
+    }
   });
 
-  function toggleUserStatus(userId) {
-    fetch(`/admin/customers/${userId}/toggle?_method=PATCH`, {
-      method: 'PATCH'
-    })
-    .then(response => {
-      if (response.ok) {
+  async function toggleUserStatus(userId) {
+    try {
+      const res = await fetch(`/admin/customers/${userId}/toggle?_method=PATCH`, {
+        method: 'PATCH'
+      });
+      if (res.ok) {
         location.reload();
       } else {
-        showAlert("error",'Failed to update user status');
+        new Notyf().error('Failed to update client status');
       }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('An error occurred');
-    });
+    } catch (err) {
+      new Notyf().error('Network synchronization error');
+    }
   }
 </script>
 
-<%- include('../partials/admin/footer.ejs')%>
+<%- include('../partials/admin/footer.ejs') %>

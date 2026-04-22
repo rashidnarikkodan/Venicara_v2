@@ -1,284 +1,189 @@
 <%- include('../partials/admin/header.ejs') %>
-<style>
-  .card {
-    border-radius: 12px;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-  }
-  .card h4 {
-    font-weight: 700;
-    letter-spacing: 0.5px;
-  }
-  .table thead th {
-    color: #fff;
-    border: none;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
-    text-align: center;
-    padding: 1rem !important;
-  }
-  .table tbody tr:hover {
-    background-color: #e9f5ff;
-    transition: background-color 0.2s;
-  }
-  .table td, .table th {
-    vertical-align: middle;
-    text-align: center;
-  }
-  #durationFilter option {
-    padding: 10px 14px;
-    font-weight: 400;
-    color: #374151;
-    background: #fff;
-    border: none;
-  }
-  .text-success { color: #198754 !important; }
-  .text-danger { color: #dc3545 !important; }
-  .text-warning { color: #ffc107 !important; }
-  .text-primary { color: #0d6efd !important; }
-  .text-info { color: #0dcaf0 !important; }
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    main {
-      max-width: 100% !important;
-      padding: 1.5rem !important;
-    }
-    .container-fluid {
-      padding: 0 10px;
-    }
-    .card h4 {
-      font-size: 1.2rem;
-    }
-    .card {
-      padding: 0.75rem !important;
-    }
-    .form-select, .form-control {
-      font-size: 0.9rem;
-    }
-    .d-flex.flex-wrap {
-      flex-direction: column;
-      align-items: stretch !important;
-    }
-    .w-auto {
-      width: 100% !important;
-    }
-    .btn {
-      width: 100%;
-      margin-bottom: 0.5rem;
-    }
-    .text-md-end {
-      justify-content: center !important;
-    }
-  }
-  @media (max-width: 576px) {
-    h2 {
-      font-size: 1.5rem;
-    }
-    .text-muted {
-      font-size: 0.9rem;
-    }
-    .form-label {
-      font-size: 0.85rem;
-    }
-    .table {
-      font-size: 0.8rem;
-    }
-    .table thead th {
-      font-size: 0.75rem;
-      padding: 0.5rem !important;
-    }
-    .table td {
-      padding: 0.5rem !important;
-    }
-  }
-</style>
-<main class="flex-grow-1 min-vh-100 p-3" style="max-width: 80%; margin: 0 auto;">
-  <div class="container-fluid">
-    <div class="mb-3 text-center">
-      <h2 class="fw-bold">Sales Report</h2>
-      <p class="text-muted">View detailed sales statistics and export reports.</p>
+
+<div class="space-y-10 animate-fade-in pb-20">
+  
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div>
+      <h1 class="text-3xl font-serif font-bold dark:text-white">Financial Analytics</h1>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 font-medium uppercase tracking-widest">Global sales audit and fiscal performance</p>
     </div>
-    <div class="row align-items-center mb-4 g-3">
-      <div class="col-lg-8 col-md-7 col-12">
-        <form id="formDate" action="/admin/salesReport" method="GET">
-          <div class="d-flex flex-wrap gap-2 align-items-center w-100 ">
-            <label for="durationFilter" class="form-label fw-semibold me-2 mb-0">Filter:</label>
-            <select class="form-select w-auto" id="durationFilter" name="filter">
-              <option value="daily" <%= filter === 'daily' ? 'selected' : '' %>>Today</option>
-              <option value="weekly" <%= filter === 'weekly' ? 'selected' : '' %>>This Week</option>
-              <option value="monthly" <%= filter === 'monthly' ? 'selected' : '' %>>This Month</option>
-              <option value="yearly" <%= filter === 'yearly' ? 'selected' : '' %>>This Year</option>
-              <option value="custom" <%= filter === 'custom' ? 'selected' : '' %>>Custom</option>
-            </select>
-            <div id="customDateRange" class="<%= filter === 'custom' ? '' : 'd-none' %> ms-3">
-              <input name="startDate" type="date" class="form-control d-md-inline-block  w-auto" max="<%= today %>" value="<%= startDate || '' %>">
-              <span class="mx-2 fw-semibold">to</span>
-              <input name="endDate" type="date" class="form-control d-md-inline-block w-auto" max="<%= today %>" value="<%= endDate || '' %>">
-            </div>
-            <div>
-              <button type="submit" id="formBtn" class="btn btn-dark">Apply</button>
-            </div>
-            <div>
-              <a href="/admin/salesReport" class="btn btn-outline-dark">Cancel</a>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="col-lg-4 col-md-5 col-12 text-md-end d-flex justify-content-md-end gap-2">
-        <form action="/admin/salesReport/export/excel" method="POST">
-          <button type="submit" class="btn btn-outline-dark w-auto">
-            <i class="bi bi-file-earmark-excel"></i> Export Excel
-          </button>
-        </form>
-        <form action="/admin/salesReport/export/pdf" method="POST">
-          <button type="submit" class="btn btn-dark w-auto">
-            <i class="bi bi-file-earmark-pdf"></i> Export PDF
-          </button>
-        </form>
-      </div>
-      <div class="text-danger text-center" id="dateError"></div>
+    
+    <div class="flex items-center space-x-3">
+      <form action="/admin/salesReport/export/excel" method="POST">
+        <button type="submit" class="flex items-center space-x-2 px-6 py-3 bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/5 rounded-2xl text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gold-600 transition-all shadow-sm">
+          <i class="fa-solid fa-file-excel text-green-600"></i>
+          <span>Excel</span>
+        </button>
+      </form>
+      <form action="/admin/salesReport/export/pdf" method="POST">
+        <button type="submit" class="flex items-center space-x-2 px-6 py-3 bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-gold-600 transition-all shadow-lg">
+          <i class="fa-solid fa-file-pdf"></i>
+          <span>PDF Report</span>
+        </button>
+      </form>
     </div>
-    <div class="row g-3 mb-4">
-      <div class="col-md-3 col-sm-4 col-6">
-        <div class="card shadow-sm text-center p-3">
-          <h6 class="text-muted mb-2">Total Orders</h6>
-          <h4 class="fw-bold"><%= data.totalOrders %></h4>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5">
+    <form id="formDate" action="/admin/salesReport" method="GET" class="flex flex-wrap items-center gap-6">
+      <div class="flex items-center space-x-4">
+        <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Timeframe</label>
+        <div class="relative">
+          <select id="durationFilter" name="filter" class="pl-4 pr-10 py-3 bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/5 rounded-2xl outline-none focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all text-sm font-bold dark:text-white appearance-none min-w-[150px]">
+            <option value="daily" <%= filter === 'daily' ? 'selected' : '' %>>Today</option>
+            <option value="weekly" <%= filter === 'weekly' ? 'selected' : '' %>>This Week</option>
+            <option value="monthly" <%= filter === 'monthly' ? 'selected' : '' %>>This Month</option>
+            <option value="yearly" <%= filter === 'yearly' ? 'selected' : '' %>>This Year</option>
+            <option value="custom" <%= filter === 'custom' ? 'selected' : '' %>>Custom Range</option>
+          </select>
+          <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-xs"></i>
         </div>
       </div>
-      <div class="col-md-3 col-sm-4 col-6">
-        <div class="card shadow-sm text-center p-3">
-          <h6 class="text-muted mb-2">Products Sold</h6>
-          <h4 class="fw-bold"><%= data.totalProductSold %></h4>
+
+      <div id="customDateRange" class="<%= filter === 'custom' ? 'flex' : 'hidden' %> items-center space-x-4 animate-fade-in">
+        <div class="flex items-center space-x-2">
+          <input name="startDate" type="date" max="<%= today %>" value="<%= startDate || '' %>" class="px-4 py-3 bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/5 rounded-2xl text-sm dark:text-white outline-none focus:border-gold-500">
+          <span class="text-gray-400 text-xs font-bold uppercase">to</span>
+          <input name="endDate" type="date" max="<%= today %>" value="<%= endDate || '' %>" class="px-4 py-3 bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/5 rounded-2xl text-sm dark:text-white outline-none focus:border-gold-500">
         </div>
       </div>
-      <div class="col-md-3 col-sm-4 col-6">
-        <div class="card shadow-sm text-center p-3">
-          <h6 class="text-muted mb-2">Customers</h6>
-          <h4 class="fw-bold"><%= data.totalCustomers %></h4>
-        </div>
+
+      <div class="flex items-center space-x-3 ml-auto">
+        <a href="/admin/salesReport" class="px-6 py-3 bg-white dark:bg-luxury-black border border-gray-100 dark:border-white/5 rounded-2xl text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors">Reset</a>
+        <button type="submit" id="formBtn" class="px-8 py-3 bg-luxury-black dark:bg-luxury-black text-white rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-gold-600 transition-all border border-transparent hover:border-gold-500">Apply Filter</button>
       </div>
-      <div class="col-md-3 col-sm-4 col-6">
-        <div class="card shadow-sm text-center p-3">
-          <h6 class="text-muted mb-2">Cancelled Orders</h6>
-          <h4 class="fw-bold text-danger"><%= data.totalCancelled %></h4>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-4 col-6">
-        <div class="card shadow-sm text-center p-3">
-          <h6 class="text-muted mb-2">Returned Orders</h6>
-          <h4 class="fw-bold text-warning"><%= data.totalReturned %></h4>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-4 col-6">
-        <div class="card shadow-sm text-center p-3">
-          <h6 class="text-muted mb-2">Cancelled (Product)</h6>
-          <h4 class="fw-bold text-primary"><%= data.totalProductCancelled %></h4>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-4 col-6">
-        <div class="card shadow-sm text-center p-3">
-          <h6 class="text-muted mb-2">Returned (Products)</h6>
-          <h4 class="fw-bold text-primary"><%= data.totalProductReturned %></h4>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-4 col-6">
-        <div class="card shadow-sm text-center p-3">
-          <h6 class="text-muted mb-2">Discounts (Product)</h6>
-          <h4 class="fw-bold text-primary">₹<%= data.totalDiscountPerProduct.toFixed(2) %></h4>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-4 col-6">
-        <div class="card shadow-sm text-center p-3">
-          <h6 class="text-muted mb-2">Discounts (Order)</h6>
-          <h4 class="fw-bold text-primary">₹<%= data.totalDiscountPerOrder.toFixed(2) %></h4>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-4 col-6">
-        <div class="card shadow-sm text-center p-3">
-          <h6 class="text-muted mb-2">Total Revenue</h6>
-          <h4 class="fw-bold text-success">₹<%= data.totalRevenue.toFixed(2) %></h4>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-4 col-6">
-        <div class="card shadow-sm text-center p-3">
-          <h6 class="text-muted mb-2">Total Refunds</h6>
-          <h4 class="fw-bold text-danger">₹<%= data.totalRefund.toFixed(2) %></h4>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-4 col-6">
-        <div class="card shadow-sm text-center p-3">
-          <h6 class="text-muted mb-2">AOV</h6>
-          <h4 class="fw-bold text-info">₹<%= data.AverageOrderValue.toFixed(2) %></h4>
-        </div>
+    </form>
+    <p id="dateError" class="text-[10px] text-red-500 font-bold uppercase mt-4 ml-1"></p>
+  </div>
+
+  <!-- KPI Grid -->
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <!-- Total Revenue -->
+    <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5 group hover:border-gold-500/30 transition-all">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Net Revenue</p>
+      <h3 class="text-2xl font-serif font-bold text-green-600 dark:text-green-400 tracking-tight">₹<%= data.totalRevenue.toFixed(2) %></h3>
+      <div class="mt-4 flex items-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+        <span class="text-green-500 mr-1"><i class="fa-solid fa-arrow-up-right"></i></span>
+        Settled Earnings
       </div>
     </div>
-    <div class="table-responsive mt-5 shadow-sm rounded">
-      <table class="table table-bordered table-striped align-middle mb-0">
-        <thead class="table-dark">
-          <tr>
-            <th>Order ID</th>
-            <th>Date</th>
-            <th>Customer</th>
-            <th>Products</th>
-            <th>Payment</th>
-            <th>Status</th>
-            <th>Subtotal</th>
-            <th>Discount</th>
-            <th>Coupon Off</th>
-            <th>Total</th>
+
+    <!-- Total Orders -->
+    <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5 group hover:border-gold-500/30 transition-all">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Total Orders</p>
+      <h3 class="text-2xl font-serif font-bold dark:text-white tracking-tight"><%= data.totalOrders %></h3>
+      <div class="mt-4 flex items-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+        <span class="text-blue-500 mr-1"><i class="fa-solid fa-bag-shopping"></i></span>
+        Volume
+      </div>
+    </div>
+
+    <!-- Average Order Value -->
+    <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5 group hover:border-gold-500/30 transition-all">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Avg. Order Value</p>
+      <h3 class="text-2xl font-serif font-bold dark:text-white tracking-tight">₹<%= data.AverageOrderValue.toFixed(2) %></h3>
+      <div class="mt-4 flex items-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+        <span class="text-gold-500 mr-1"><i class="fa-solid fa-chart-line"></i></span>
+        AOV Efficiency
+      </div>
+    </div>
+
+    <!-- Total Discounts -->
+    <div class="bg-white dark:bg-luxury-charcoal p-8 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5 group hover:border-gold-500/30 transition-all">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Total Discounts</p>
+      <h3 class="text-2xl font-serif font-bold text-red-500 tracking-tight">₹<%= (data.totalDiscountPerProduct + data.totalDiscountPerOrder).toFixed(2) %></h3>
+      <div class="mt-4 flex items-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+        <span class="text-red-500 mr-1"><i class="fa-solid fa-tags"></i></span>
+        Promotional Impact
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Table -->
+  <div class="bg-white dark:bg-luxury-charcoal rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden">
+    <div class="p-8 border-b border-gray-100 dark:border-white/5 flex items-center justify-between">
+      <h3 class="text-lg font-serif font-bold dark:text-white">Transaction Log</h3>
+      <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400"><%= orders.length %> Records Found</span>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-gray-50 dark:bg-luxury-black/30 border-b border-gray-100 dark:border-white/5">
+            <th class="px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Order ID</th>
+            <th class="px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Client</th>
+            <th class="px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Method</th>
+            <th class="px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Status</th>
+            <th class="px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 text-right">Revenue</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-gray-50 dark:divide-white/5">
           <% orders.forEach(order => { %>
-            <tr>
-              <td><%= order.orderId %></td>
-              <td><%= order.createdAt.toLocaleDateString("en-US", {day: "2-digit",month: "short",year: "numeric"}) %></td>
-              <td><%= order.userId?.name %></td>
-              <td><%= order.products.reduce((s,p)=>s+p.quantity,0) %></td>
-              <td><%= order.payment.method %></td>
-              <td class="<%= order.status === 'delivered' ? 'text-success' : (order.status === 'cancelled' ? 'text-danger' : 'text-warning') %>">
-                <%= order.status.charAt(0).toUpperCase()+order.status.slice(1) %>
+            <tr class="group hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+              <td class="px-8 py-6">
+                <div class="flex flex-col">
+                  <span class="text-xs font-bold dark:text-white">#<%= order.orderId %></span>
+                  <span class="text-[10px] text-gray-400 font-medium"><%= order.createdAt.toLocaleDateString() %></span>
+                </div>
               </td>
-              <td>₹<%= order.products.reduce((s,p)=>s+p.basePrice*p.quantity,0) %> <%=order.deliveryCharge?`+${order.deliveryCharge}`:''%></td>
-              <td>₹<%= order.productDiscount.toFixed(2) %></td>
-              <td><%=order.couponDiscount? ((order.totalOrderPrice*order.couponDiscount)/100).toFixed(2):'No Coupon'%></td>
-              <td>₹<%= order.finalAmount.toFixed(2) %></td>
+              <td class="px-8 py-6 text-sm font-bold dark:text-gray-300"><%= order.userId?.name %></td>
+              <td class="px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-gray-500"><%= order.payment.method %></td>
+              <td class="px-8 py-6">
+                <% 
+                  let statusColor = 'text-gray-500 bg-gray-500/10';
+                  if(order.status === 'delivered') statusColor = 'text-green-600 bg-green-500/10';
+                  if(order.status === 'cancelled') statusColor = 'text-red-600 bg-red-500/10';
+                %>
+                <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest <%= statusColor %>">
+                  <%= order.status %>
+                </span>
+              </td>
+              <td class="px-8 py-6 text-right">
+                <span class="text-sm font-bold dark:text-white">₹<%= order.finalAmount.toFixed(2) %></span>
+              </td>
             </tr>
           <% }) %>
         </tbody>
       </table>
     </div>
   </div>
-</main>
-  </div>
+</div>
+
 <script>
-  document.getElementById('durationFilter').addEventListener('change', function () {
-    const customRange = document.getElementById('customDateRange');
-    if (this.value === 'custom') {
-      customRange.classList.remove('d-none');
-    } else {
-      customRange.classList.add('d-none');
-    }
-  });
+  const durationFilter = document.getElementById('durationFilter');
   const customDateRange = document.getElementById('customDateRange');
-  const startDateInput = customDateRange.querySelector('input[name="startDate"]');
-  const endDateInput = customDateRange.querySelector('input[name="endDate"]');
-  const dateErrorDiv = document.getElementById('dateError');
-  const btn = document.getElementById('formBtn');
-  customDateRange.addEventListener('change', function () {
-    btn.disabled = false;
-    dateErrorDiv.textContent = '';
-    const startDate = new Date(startDateInput.value);
-    const endDate = new Date(endDateInput.value);
-    if (startDateInput.value && endDateInput.value && startDate > endDate) {
-      dateErrorDiv.textContent = 'Invalid range — start date cannot be later than end date. You can\’t apply this filter.';
-      endDateInput.value = '';
-      btn.disabled = true;
+  const startDateInput = document.querySelector('input[name="startDate"]');
+  const endDateInput = document.querySelector('input[name="endDate"]');
+  const dateError = document.getElementById('dateError');
+  const formBtn = document.getElementById('formBtn');
+
+  durationFilter.addEventListener('change', function() {
+    if (this.value === 'custom') {
+      customDateRange.classList.remove('hidden');
+      customDateRange.classList.add('flex');
+    } else {
+      customDateRange.classList.add('hidden');
+      customDateRange.classList.remove('flex');
     }
   });
+
+  function validateDates() {
+    dateError.textContent = '';
+    formBtn.disabled = false;
+    
+    if (startDateInput.value && endDateInput.value) {
+      const start = new Date(startDateInput.value);
+      const end = new Date(endDateInput.value);
+      if (start > end) {
+        dateError.textContent = 'Temporal paradox: Start date cannot exceed end date.';
+        formBtn.disabled = true;
+      }
+    }
+  }
+
+  startDateInput.addEventListener('change', validateDates);
+  endDateInput.addEventListener('change', validateDates);
 </script>
+
 <%- include('../partials/admin/footer.ejs') %>

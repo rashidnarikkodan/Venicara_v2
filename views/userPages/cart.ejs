@@ -1,139 +1,126 @@
-<%-include('../partials/user/header.ejs')%>
+<%- include('../partials/user/header.ejs') %>
 
-<style>
-body {
-  background-color: #fff;
-  font-family: Arial, sans-serif;
-}
+<main class="bg-white min-h-screen py-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h1 class="text-3xl font-serif font-bold text-luxury-black mb-12 tracking-tight">Shopping Bag</h1>
 
-.shopping-bag-title {
-  font-weight: bold;
-  text-align: center;
-  margin: 30px 0;
-  font-size: 1.8rem;
-  letter-spacing: 2px;
-}
+    <div class="flex flex-col lg:flex-row gap-12">
+      <% if(items.length > 0) { %>
+        <!-- Cart Items -->
+        <div class="flex-1 space-y-6">
+          <% items.forEach((item, index) => { %>
+            <div class="group bg-white border border-gray-100 rounded-2xl p-6 transition hover:shadow-md" data-stock="<%= item.variant.stock %>">
+              <div class="flex flex-col sm:flex-row items-center gap-8">
+                <!-- Product Image -->
+                <div class="w-32 h-40 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0">
+                  <a href="/products/<%= item.product._id %>">
+                    <img src="<%= item.product.images[0].url %>" class="w-full h-full object-cover transition duration-500 group-hover:scale-110" alt="<%= item.product.name %>" />
+                  </a>
+                </div>
 
-.card {
-  border: none;
-}
+                <!-- Item Info -->
+                <div class="flex-1 w-full text-center sm:text-left">
+                  <div class="flex flex-col sm:flex-row sm:justify-between items-start mb-4">
+                    <div>
+                      <h3 class="text-lg font-serif font-bold text-luxury-black mb-1"><%= item.product.name %></h3>
+                      <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2"><%= item.variant.volume %>ML</p>
+                    </div>
+                    <div class="text-right w-full sm:w-auto mt-2 sm:mt-0">
+                      <p class="text-lg font-bold text-luxury-black">Rs.<%= item.variant.finalAmount %></p>
+                    </div>
+                  </div>
 
-.item-img {
-  max-width: 100px;
-}
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                    <!-- Stock Status -->
+                    <div class="flex items-center space-x-2">
+                      <span class="w-2 h-2 rounded-full <%= item.variant.stock >= item.quantity ? 'bg-green-500' : 'bg-red-500' %>"></span>
+                      <span class="text-xs font-medium <%= item.variant.stock >= item.quantity ? 'text-green-600' : 'text-red-600' %>">
+                        <%= item.variant.stock >= item.quantity ? 'In Stock' : (item.variant.stock > 0 ? `Only ${item.variant.stock} left` : 'Out of Stock') %>
+                      </span>
+                    </div>
 
-.order-summary {
-  background: #f5f5f5;
-  padding: 20px;
-  border-radius: 6px;
-}
-
-.order-summary h5 {
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-.summary-line {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-  font-size: x-small;
-}
-
-.apply-btn {
-  background: black;
-  color: white;
-  border: none;
-}
-
-.in-stock {
-  color: green;
-  font-size: 0.9rem;
-}
-
-.remove-btn {
-  font-size: 0.85rem;
-  color: red;
-  background: none;
-  border: none;
-  padding: 0;
-  text-decoration: underline;
-  cursor: pointer;
-}
-</style>
-
-<main style="min-height:90vh">
-  <div class="shopping-bag-title">SHOPPING BAG</div>
-  <div class="px-5">
-    <div class="row">
-      <% if(items.length>0) { %>
-      <div class="col-lg-9">
-        <% items.forEach((item, index) => { %>
-<div class="card mb-4 p-3 shadow-sm" data-stock="<%= item.variant.stock %>">
-  <div class="row align-items-center g-2">
-    <div class="col-12 col-sm-4 col-md-2 text-center text-sm-start">
-      <a href="/products/<%=item.product._id%>">
-        <img src="<%= item.product.images[0].url %>" class="img-fluid item-img rounded-4" alt="<%= item.product.name %>" style="max-height:120px; width:auto;" />
-      </a>
-    </div>
-    <div class="col-12 col-sm-8 col-md-6">
-      <h6 class="mb-1"><%= item.product.name %></h6>
-      <small><%= item.variant.volume %> ML</small>
-      <p class="text-muted qty-text mb-1">Qty : <%=item.quantity%></p>
-      <p class="mb-1">
-        <span class="text-muted">Arrives in 3–5 business days </span>
-        <span id="stock" class="<%= item.variant.stock >= item.quantity ? 'text-success' : 'text-danger' %>">
-          <%= item.variant.stock >= item.quantity
-              ? 'In stock'
-              : item.variant.volume == 0
-              ? 'Out of stock'
-              : `Out of stock - few item${item.variant.stock > 1 ? 's' : ''} left` %>
-        </span>
-      </p>
-      <small class="text-muted">Free Delivery</small>
-    </div>
-    <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
-      <p class="fw-bold mb-2">Rs.<%= item.variant.finalAmount || 0 %></p>
-      <div class="d-flex align-items-center justify-content-md-end justify-content-start mb-3 gap-2">
-        <button class="btn btn-outline-secondary btn-sm decrease" data-cart-id="<%= item._id %>">-</button>
-        <span class="quantity px-2"><%= item.quantity %></span>
-        <button class="btn btn-outline-secondary btn-sm increase" data-cart-id="<%= item._id %>" <% if(item.variant.stock === 0) { %> disabled <% } %>>+</button>
-      </div>
-      <p class="text-muted mb-2 subtotal">Subtotal: Rs.<%= ((item.variant.finalAmount || 0) * item.quantity).toLocaleString() %></p>
-        <button type="button" onclick="removeItem('/cart/remove/<%= item._id %>',this)" class="btn btn-dark py-1 px-2" style="font-size: small;">Remove</button>
-    </div>
-  </div>
-</div>
-        <% }) %>
-      </div>
-
-      <!-- Order Summary -->
-      <div class="col-md-3">
-        <div class="order-summary shadow-sm">
-          <h5>Order Summary</h5>
-          <% items.forEach(item => { %>
-            <div class="summary-line" data-cart-id="<%= item._id %>" data-name="<%= item.product.name %>" data-volume="<%= item.variant.volume %>">
-              <span><%= item.quantity %> × <%= item.product.name %> (<%= item.variant.volume %>ml)</span>
-              <span>Rs.<%= ((item.variant.finalAmount || 0) * item.quantity).toLocaleString() %></span>
+                    <!-- Quantity Control -->
+                    <div class="flex items-center space-x-4">
+                      <div class="flex items-center bg-gray-50 rounded-full px-2 py-1 border border-gray-100">
+                        <button class="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-white hover:shadow-sm transition decrease" data-cart-id="<%= item._id %>" <%= item.quantity <= 1 ? 'disabled' : '' %>>
+                          <i class="fa-solid fa-minus text-xs"></i>
+                        </button>
+                        <span class="w-10 text-center font-bold text-sm quantity"><%= item.quantity %></span>
+                        <button class="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-white hover:shadow-sm transition increase" data-cart-id="<%= item._id %>" <%= item.quantity >= Math.min(5, item.variant.stock) ? 'disabled' : '' %>>
+                          <i class="fa-solid fa-plus text-xs"></i>
+                        </button>
+                      </div>
+                      
+                      <button onclick="removeItem('/cart/remove/<%= item._id %>', this)" class="text-gray-400 hover:text-red-500 transition-colors">
+                        <i class="fa-regular fa-trash-can"></i>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="mt-4 pt-4 border-t border-gray-50 flex justify-between items-center">
+                    <span class="text-xs text-gray-400 italic">Arrives in 3-5 business days</span>
+                    <span class="text-sm font-bold text-gold-600 subtotal">Subtotal: Rs.<%= (item.variant.finalAmount * item.quantity).toLocaleString() %></span>
+                  </div>
+                </div>
+              </div>
             </div>
           <% }) %>
-          <div class="summary-line text-success">
-            <span>Delivery Charges</span><span>Free</span>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="w-full lg:w-96">
+          <div class="bg-luxury-cream rounded-3xl p-8 border border-gold-100 sticky top-24">
+            <h2 class="text-xl font-serif font-bold text-luxury-black mb-8 pb-4 border-b border-gold-200/50">Order Summary</h2>
+            
+            <div class="space-y-4 mb-8">
+              <div class="flex justify-between text-sm text-gray-600">
+                <span>Subtotal</span>
+                <span class="font-bold text-luxury-black subtotal-amount">Rs.<%= total.toLocaleString() %></span>
+              </div>
+              <div class="flex justify-between text-sm text-gray-600">
+                <span>Shipping</span>
+                <span class="shipping-charge font-bold uppercase tracking-widest text-[10px] <%= total > 7000 ? 'text-green-600' : 'text-luxury-black' %>">
+                  <%= total > 7000 ? 'Free' : 'Rs.500' %>
+                </span>
+              </div>
+              <div class="flex justify-between text-sm text-gray-600">
+                <span>Tax Estimate</span>
+                <span class="font-bold text-luxury-black">Rs.0</span>
+              </div>
+            </div>
+
+            <div class="flex justify-between items-center mb-10 pt-6 border-t border-gold-200/50">
+              <span class="text-lg font-serif font-bold text-luxury-black">Total</span>
+              <span class="text-2xl font-bold text-gold-700 grand-total">Rs.<%= (total + (total > 7000 ? 0 : 500)).toLocaleString() %></span>
+            </div>
+
+            <a href="/checkout/address" class="block w-full bg-luxury-black text-white text-center py-5 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-gold-600 transition shadow-xl mb-4">
+              Proceed to Checkout
+            </a>
+            
+            <p class="text-center text-[10px] text-gray-400 uppercase tracking-widest">Secure Payment Processing</p>
           </div>
-          <div class="summary-line fw-bold fs-5">
-            <span>Total</span><span>Rs.<%= total.toLocaleString() %></span>
-          </div>
-          <div class="d-flex justify-content-center">
-            <a href="/checkout/address" class="btn fw-bold btn-dark text-decoration-none w-100">CONTINUE</a>
+          
+          <div class="mt-8 p-6 bg-gray-50 rounded-2xl border border-gray-100">
+            <h4 class="text-xs font-bold uppercase tracking-widest text-luxury-black mb-4 flex items-center">
+              <i class="fa-solid fa-gift mr-2 text-gold-600"></i>
+              Promo Code
+            </h4>
+            <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-4">You can apply your luxury discount codes during the final checkout step.</p>
+            <a href="/checkout/address" class="text-[10px] font-bold text-gold-600 uppercase tracking-widest hover:underline">Apply Coupons Now <i class="fa-solid fa-arrow-right ml-1"></i></a>
           </div>
         </div>
-      </div>
-
       <% } else { %>
-        <div class="col-12 text-center my-5">
-          <h4 class="mb-3">Your cart is empty</h4>
-          <p class="text-muted">Looks like you haven’t added anything to your cart yet.</p>
-          <a href="/shop" class="btn btn-dark mt-3">Start Shopping</a>
+        <!-- Empty State -->
+        <div class="w-full py-32 text-center bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+          <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
+            <i class="fa-solid fa-bag-shopping text-3xl text-gray-300"></i>
+          </div>
+          <h2 class="text-2xl font-serif font-bold text-luxury-black mb-4">Your bag is empty</h2>
+          <p class="text-gray-500 mb-10 max-w-sm mx-auto">Looks like you haven't added any artisanal fragrances to your collection yet.</p>
+          <a href="/shop" class="inline-block bg-luxury-black text-white px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-gold-600 transition shadow-lg">
+            Start Shopping
+          </a>
         </div>
       <% } %>
     </div>
@@ -141,116 +128,88 @@ body {
 </main>
 
 <script>
+  // Quantity Update Functions
+  async function updateQuantity(cartId, action, btn) {
+    const card = btn.closest("[data-stock]");
+    const quantitySpan = card.querySelector(".quantity");
+    const decBtn = card.querySelector(".decrease");
+    const incBtn = card.querySelector(".increase");
+    const stock = Number(card.dataset.stock);
+
+    // Loading state
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
+    btn.disabled = true;
+    card.classList.add("opacity-50");
+
+    try {
+      const res = await fetch(`/cart/${action}/${cartId}`, { method: "PATCH" });
+      const data = await res.json();
+
+      if (data.success) {
+        quantitySpan.textContent = data.newQuantity;
+        decBtn.disabled = data.newQuantity <= 1;
+        incBtn.disabled = data.newQuantity >= Math.min(5, stock);
+
+        card.querySelector(".subtotal").textContent = `Subtotal: Rs.${data.lineTotal.toLocaleString()}`;
+        
+        // Update Summary
+        document.querySelector(".subtotal-amount").textContent = `Rs.${data.total.toLocaleString()}`;
+        
+        const shipping = data.total > 7000 ? 0 : 500;
+        const shippingEl = document.querySelector(".shipping-charge");
+        shippingEl.textContent = shipping === 0 ? 'Free' : `Rs.${shipping}`;
+        shippingEl.className = `shipping-charge font-bold uppercase tracking-widest text-[10px] ${shipping === 0 ? 'text-green-600' : 'text-luxury-black'}`;
+        
+        document.querySelector(".grand-total").textContent = `Rs.${(data.total + shipping).toLocaleString()}`;
+        
+        new Notyf().success('Bag updated');
+      } else {
+        new Notyf().error(data.message);
+      }
+    } catch(err) {
+      new Notyf().error('Failed to update quantity');
+    } finally {
+      btn.innerHTML = originalContent;
+      btn.disabled = action === 'increase' ? quantitySpan.textContent >= Math.min(5, stock) : quantitySpan.textContent <= 1;
+      card.classList.remove("opacity-50");
+    }
+  }
+
   document.querySelectorAll(".increase").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const cartId = btn.dataset.cartId;
-      const card = btn.closest(".card");
-      const quantitySpan = card.querySelector(".quantity");
-      const decBtn = card.querySelector(".decrease");
-      const stock = Number(card.dataset.stock);
-
-      try {
-        const res = await fetch(`/cart/increase/${cartId}`, { method: "PATCH" });
-        const data = await res.json();
-
-        if (data.success) {
-          quantitySpan.textContent = data.newQuantity;
-          decBtn.disabled = data.newQuantity <= 1;
-          const maxQty = Math.min(5, stock);
-          btn.disabled = data.newQuantity >= maxQty;
-
-          card.querySelector(".qty-text").textContent = `Qty : ${data.newQuantity}`;
-          card.querySelector(".subtotal").textContent = `Subtotal: Rs.${data.lineTotal.toLocaleString()}`;
-
-          // Update summary line
-          const summaryLine = document.querySelector(`.summary-line[data-cart-id="${cartId}"]`);
-          if(summaryLine){
-            const spans = summaryLine.querySelectorAll("span");
-            spans[0].textContent = `${data.newQuantity} × ${summaryLine.dataset.name} (${summaryLine.dataset.volume}ml)`;
-            spans[1].textContent = `Rs.${data.lineTotal.toLocaleString()}`;
-          }
-
-          document.querySelector(".summary-line.fw-bold.fs-5 span:last-child").textContent = `Rs.${data.total.toLocaleString()}`;
-        } else {
-          shoeAlert('error',data.message);
-        }
-      } catch(err) { console.error(err); }
-    });
+    btn.addEventListener("click", () => updateQuantity(btn.dataset.cartId, 'increase', btn));
   });
 
   document.querySelectorAll(".decrease").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const cartId = btn.dataset.cartId;
-      const card = btn.closest(".card");
-      const quantitySpan = card.querySelector(".quantity");
-      const incBtn = card.querySelector(".increase");
-      const stock = Number(card.dataset.stock);
-
-      try {
-        const res = await fetch(`/cart/decrease/${cartId}`, { method: "PATCH" });
-        const data = await res.json();
-
-        if (data.success) {
-          quantitySpan.textContent = data.newQuantity;
-          btn.disabled = data.newQuantity <= 1;
-          incBtn.disabled = data.newQuantity >= Math.min(5, stock);
-
-          card.querySelector(".qty-text").textContent = `Qty : ${data.newQuantity}`;
-          card.querySelector(".subtotal").textContent = `Subtotal: Rs.${data.lineTotal.toLocaleString()}`;
-
-          // Update summary line
-          const summaryLine = document.querySelector(`.summary-line[data-cart-id="${cartId}"]`);
-          if(summaryLine){
-            const spans = summaryLine.querySelectorAll("span");
-            spans[0].textContent = `${data.newQuantity} × ${summaryLine.dataset.name} (${summaryLine.dataset.volume}ml)`;
-            spans[1].textContent = `Rs.${data.lineTotal.toLocaleString()}`;
-          }
-
-          document.querySelector(".summary-line.fw-bold.fs-5 span:last-child").textContent = `Rs.${data.total.toLocaleString()}`;
-          console.log(data.stock)
-          console.log(data.newQuantity)
-          if(Number(data.stock)>=Number(data.newQuantity)){
-            document.getElementById('stock').innerHTML = 'In Stock'
-            document.getElementById('stock').classList.remove('text-danger', 'text-success')
-            document.getElementById('stock').classList.add('text-success')
-          }else if(data.stock == 0){
-            document.getElementById('stock').innerHTML = `Out of Stock`
-            document.getElementById('stock').classList.remove('text-danger', 'text-success')
-            document.getElementById('stock').classList.add('text-danger')
-            
-          }
-          else{
-            document.getElementById('stock').innerHTML = `Out of Stock - few items left`
-            document.getElementById('stock').classList.remove('text-danger', 'text-success')
-            document.getElementById('stock').classList.add('text-danger')
-          }
-          
-        }
-      } catch(err){ console.error(err); }
-    });
+    btn.addEventListener("click", () => updateQuantity(btn.dataset.cartId, 'decrease', btn));
   });
 
-  async function removeItem(url,btn){
-    try{
+  async function removeItem(url, btn) {
+    if(!confirm('Remove this item from your bag?')) return;
 
-      const res = await fetch(url,{
-        method:'DELETE',
-    })
-    const data = await res.json()
-    if(data.status){
-      showAlert('success',data.message)
-      const card = btn.closest('.card')
-      if(card) card.remove()
-      updateCartCount()
-      const have = document.getElementsByClassName('card')
-    if(!have||!have.length||have.length<1) window.location.replace('/cart')
-    }else{
-      showAlert('error',data.message)
+    try {
+      const res = await fetch(url, { method: 'DELETE' });
+      const data = await res.json();
+      if(data.status) {
+        const card = btn.closest(".group");
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+          card.remove();
+          if(document.querySelectorAll("[data-stock]").length === 0) {
+            window.location.reload();
+          }
+        }, 300);
+        updateCartCount();
+        new Notyf().success('Item removed');
+      } else {
+        new Notyf().error(data.message);
+      }
+    } catch(error) {
+      new Notyf().error('Failed to remove item');
     }
-  }catch(error){
-    console.log(error)
-  }
   }
 </script>
 
-<%-include('../partials/user/footer.ejs')%>
+<%- include('../partials/user/footer.ejs') %>
+

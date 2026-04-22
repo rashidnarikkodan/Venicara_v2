@@ -1,106 +1,109 @@
-<%- include('../partials/user/header.ejs') %>
-<%- include('../partials/user/sidebarProfile.ejs') %>
+<%- include("../partials/user/header.ejs") %>
 
-<main class="flex-grow-1 bg-white w-100 justify-content-center d-flex">
+<main class="bg-white min-h-screen py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col lg:flex-row gap-12">
+      
+      <%- include("../partials/user/sidebarProfile.ejs") %>
 
-    <div class="profile-card rounded-5 shadow p-4 p-md-5 bg-white">
-      <!-- Header -->
-      <div class="text-center mb-5">
-        <p class="fs-2 fw-bold mb-1">Profile</p>
-        <small class="text-muted">Manage your personal information</small>
-      </div>
+      <!-- Profile Content -->
+      <div class="flex-1">
+        <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+          <!-- Profile Banner/Header -->
+          <div class="h-32 bg-luxury-black relative">
+            <div class="absolute -bottom-12 left-8 sm:left-12">
+              <div class="w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-3xl p-1 shadow-2xl">
+                <div class="w-full h-full bg-luxury-cream rounded-2xl flex items-center justify-center text-luxury-black text-4xl font-serif font-bold border border-gold-100">
+                  <% if (user.photoUrl) { %>
+                    <img src="<%= user.photoUrl %>" alt="Profile" class="w-full h-full rounded-2xl object-cover">
+                  <% } else { %>
+                    <%= user.name.charAt(0) %>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      <!-- Profile Image -->
-      <div class="row justify-content-center mb-4">
-        <div class="col-auto">
-          <div class="position-relative">
-            <div class="profile-img rounded-circle overflow-hidden d-flex align-items-center justify-content-center"
-                 style="width:100px; height:100px; cursor:pointer;background: rgb(202, 202, 202);">
-              <% if (user.photoUrl) { %>
-                <img src="<%= user.photoUrl%>" alt="Profile" loading="lazy"
-                     class="w-100 h-100 rounded-circle" style="object-fit: cover;">
-              <% } else { %>
-                <span class="text-white fs-1 fw-bold"><%= user.name.charAt(0) %></span>
-              <% } %>
+          <div class="p-8 sm:p-12 pt-16 sm:pt-20">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-6">
+              <div>
+                <h1 class="text-3xl font-serif font-bold text-luxury-black mb-2 uppercase tracking-tight"><%= user.name %></h1>
+                <p class="text-gray-500 text-sm italic">Manage your personal information and account preferences.</p>
+              </div>
+              <a href="/profile/edit" class="bg-luxury-black text-white px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-gold-600 transition shadow-lg">
+                Edit Profile
+              </a>
+            </div>
+
+            <!-- Profile Details Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div class="space-y-2">
+                <label class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Full Name</label>
+                <div class="p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus-within:bg-white focus-within:border-gold-300">
+                  <%= user.name %>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <label class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Email Address</label>
+                <div class="p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus-within:bg-white focus-within:border-gold-300">
+                  <%= user.email %>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <label class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Mobile Number</label>
+                <div class="p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus-within:bg-white focus-within:border-gold-300">
+                  <%= user.mobile || 'Not updated' %>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <label class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Gender</label>
+                <div class="p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus-within:bg-white focus-within:border-gold-300">
+                  <%= user.gender || 'Not specified' %>
+                </div>
+              </div>
+            </div>
+
+            <!-- Security Section -->
+            <div class="mt-16 pt-12 border-t border-gray-50">
+              <h2 class="text-xl font-serif font-bold text-luxury-black mb-8 uppercase tracking-tighter">Security & Access</h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex items-center justify-between p-6 bg-luxury-cream rounded-2xl border border-gold-100">
+                  <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-gold-600 shadow-sm">
+                      <i class="fa-solid fa-shield-halved text-xl"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm font-bold text-luxury-black uppercase tracking-tight">Password</p>
+                      <p class="text-[10px] text-gray-400 uppercase font-medium">Securely hidden</p>
+                    </div>
+                  </div>
+                  <a href="/profile/changePass" class="text-[10px] font-bold text-gold-600 uppercase tracking-widest hover:text-gold-700 transition underline underline-offset-8">
+                    Update
+                  </a>
+                </div>
+
+                <div class="flex items-center justify-between p-6 bg-red-50/30 rounded-2xl border border-red-100">
+                  <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-red-400 shadow-sm">
+                      <i class="fa-solid fa-trash-can text-xl"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm font-bold text-red-500 uppercase tracking-tight">Account</p>
+                      <p class="text-[10px] text-red-400 uppercase font-medium">Danger Zone</p>
+                    </div>
+                  </div>
+                  <a href="/profile/delete" class="text-[10px] font-bold text-red-500 uppercase tracking-widest hover:text-red-700 transition underline underline-offset-8">
+                    Deactivate
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- Profile Details -->
-      <div class="row justify-content-center">
-        <div class="col-12 col-sm-10 col-md-8">
-          <div class="mb-3 row align-items-center">
-            <label class="col-4 col-sm-3 fw-bold">Name:</label>
-            <div class="col-8 col-sm-9 rounded-3 px-3 py-2 bg-light fw-semibold"><%= user.name %></div>
-          </div>
-          <div class="mb-3 row align-items-center">
-            <label class="col-4 col-sm-3 fw-bold">Email:</label>
-            <div class="col-8 col-sm-9 rounded-3 px-3 py-2 bg-light fw-semibold"><%= user.email %></div>
-          </div>
-          <div class="mb-3 row align-items-center">
-            <label class="col-4 col-sm-3 fw-bold">Phone:</label>
-            <div class="col-8 col-sm-9 rounded-3 px-3 py-2 bg-light fw-semibold"><%= user.mobile || 'Not updated' %></div>
-          </div>
-          <div class="mb-3 row align-items-center">
-            <label class="col-4 col-sm-3 fw-bold">Gender:</label>
-            <div class="col-8 col-sm-9 rounded-3 px-3 py-2 bg-light fw-semibold"><%= user.gender || 'Not specified' %></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Edit Button -->
-      <div class="row justify-content-center mt-4">
-        <div class="col-auto">
-          <a href="/profile/edit" class="btn btn-dark px-4 py-2">Edit Profile</a>
-        </div>
-      </div>
-
     </div>
+  </div>
 </main>
-</div>
 
-<style>
-  .profile-card {
-    width:700px;
-    height:fit-content
-  }
+<%- include("../partials/user/footer.ejs") %>
 
-  .profile-img img {
-    transition: transform 0.3s;
-  }
-
-  .profile-img:hover img {
-    transform: scale(1.05);
-  }
-
-  label {
-    font-size: 1rem;
-  }
-
-  .fw-semibold {
-    font-weight: 500;
-  }
-
-  @media (max-width: 576px) {
-    .profile-card {
-      padding: 2rem 1.5rem !important;
-    }
-    .fs-2 {
-      font-size: 1.5rem !important;
-    }
-    .profile-img {
-      width: 80px !important;
-      height: 80px !important;
-    }
-    label {
-      font-size: 0.9rem;
-    }
-    .fw-semibold {
-      font-size: 0.9rem;
-    }
-  }
-</style>
-
-<script src="/js/userHeader.js"></script>
-<%- include('../partials/user/footer.ejs') %>

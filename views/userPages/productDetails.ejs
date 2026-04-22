@@ -1,489 +1,314 @@
 <%- include("../partials/user/header.ejs") %>
-  <style>
-    .thumb {
-      cursor: pointer;
-      transition: transform 0.3s ease;
-    }
 
-    .thumb:hover {
-      transform: scale(1.1);
-    }
-
-    .small-container {
-      position: relative;
-    }
-
-    #lens {
-      position: absolute;
-      width: 150px;
-      height: 100px;
-      background: rgba(0, 0, 0, 0.2);
-      pointer-events: none;
-      display: none;
-    }
-
-    .zoom-container {
-      position: absolute;
-      top: 10%;
-      right: 0;
-      border: 1px solid #ccc;
-      background-repeat: no-repeat;
-      margin-left: 20px;
-      backdrop-filter: blur(5px); 
-    }
-
-    .breadcrumb-item+.breadcrumb-item::before {
-      content: ">";
-      font-weight: bolder;
-      color: #6c757d;
-      padding: 0 .5rem;
-    }
-
-    .relatedProducts {
-      transition: transform .3s ease;
-    }
-
-    .relatedProducts:hover {
-      transform: scale(1.1);
-    }
-    .related-scroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch; /* smooth on iOS */
-}
-
-.related-scroll::-webkit-scrollbar {
-  display: none; /* hide scrollbar on mobile */
-}
-    #imageZoom{
-      width:60%
-    }
-  
+<main class="bg-white min-h-screen py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     
+    <!-- Breadcrumbs -->
+    <nav class="flex mb-8 text-xs font-bold uppercase tracking-widest text-gray-400">
+      <a href="/home" class="hover:text-gold-600 transition">Home</a>
+      <span class="mx-3">/</span>
+      <a href="/shop" class="hover:text-gold-600 transition">Shop</a>
+      <span class="mx-3">/</span>
+      <% if(product.category) { %>
+        <a href="/shop?category=<%= product.category._id %>" class="hover:text-gold-600 transition"><%= product.category.name %></a>
+        <span class="mx-3">/</span>
+      <% } %>
+      <span class="text-luxury-black"><%= product.name %></span>
+    </nav>
 
-     @media (min-width: 768px) { /* md breakpoint */
-    .d-flex.flex-column a.btn {
-      width: 50% !important;
-    }
- 
-  }
-  @media (max-width:576px){
-    #imageZoom{
-      width:100%
-    }
-  }
-  </style>
-  <main class="flex-grow-1 bg-light w-100">
+    <div class="flex flex-col lg:flex-row gap-16">
+      
+      <!-- Left: Image Gallery -->
+      <div class="flex-1">
+        <div class="flex flex-col-reverse lg:flex-row gap-4">
+          <!-- Thumbnails -->
+          <div class="flex lg:flex-col gap-4 overflow-x-auto lg:overflow-visible">
+            <% product.images.forEach((image, index) => { %>
+              <button class="thumbnail-btn flex-shrink-0 w-20 h-24 rounded-lg overflow-hidden border-2 transition <%= index === 0 ? 'border-gold-500' : 'border-transparent' %>" data-src="<%= image.url %>">
+                <img src="<%= image.url %>" alt="<%= product.name %>" class="w-full h-full object-cover">
+              </button>
+            <% }) %>
+          </div>
 
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-md-7 text-center p-4">
-          <div class="row">
-            <div id="imageZoom" class="col-12 p-4 mx-md-auto small-container">
-              <img id="mainImg" src="<%= product.images[0].url%>" class="img-fluid rounded-4 shadow" alt="Product Image" />
-              <div id="lens"></div>
+          <!-- Main Image -->
+          <div class="flex-1 relative group bg-gray-50 rounded-2xl overflow-hidden border border-gray-100">
+            <div id="imageZoom" class="aspect-[4/5] relative cursor-zoom-in">
+              <img id="mainImg" src="<%= product.images[0].url %>" class="w-full h-full object-cover transition-transform duration-500" alt="<%= product.name %>" />
+              <div id="lens" class="absolute w-40 h-40 bg-white/20 border border-white/50 pointer-events-none hidden rounded-full shadow-2xl backdrop-blur-sm"></div>
             </div>
-            <div style="right:2rem;width:50%;height:40rem"
-              class="zoom-container d-none z-3 rounded-5 border-secondary" id="zoomBox"></div>
-            <div class="col-md-12">
-              <div class="row justify-content-center">
-                <%product.images.forEach((image)=>{%>
-                  <div class="col-md-3 col-4">
-                    <img src="<%=image.url%>" class="img-fluid rounded-4 thumb shadow" alt="<%=product.name%>">
-                  </div>
-                  <%})%>
+            <!-- Zoom Preview Box (Desktop) -->
+            <div id="zoomBox" class="absolute inset-0 z-50 pointer-events-none hidden bg-no-repeat bg-white rounded-2xl border border-gray-200 shadow-2xl"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Product Details -->
+      <div class="flex-1">
+        <div class="sticky top-24">
+          <div class="mb-8">
+            <h3 class="text-xs font-bold tracking-[0.3em] uppercase text-gold-600 mb-2"><%= product.category.name %></h3>
+            <h1 class="text-4xl md:text-5xl font-serif font-bold text-luxury-black mb-4"><%= product.name %></h1>
+            
+            <div class="flex items-center space-x-4">
+              <div class="flex items-center bg-gold-50 px-3 py-1 rounded-full border border-gold-100">
+                <span class="text-gold-700 font-bold text-sm">★ <%= averageRating || '0.0' %></span>
+              </div>
+              <span class="text-gray-400 text-sm font-medium"><%= reviews.length %> Reviews</span>
+              <span class="h-4 w-px bg-gray-200"></span>
+              <span class="text-green-600 text-sm font-bold uppercase tracking-widest">In Stock</span>
+            </div>
+          </div>
+
+          <!-- Price & Discounts -->
+          <div class="mb-10 flex items-baseline space-x-4">
+            <span id="variantPrice" class="text-3xl font-bold text-luxury-black">Rs.<%= Math.min(...product.variants.map(v => v.finalAmount)) %></span>
+            <span id="variantBasePrice" class="text-xl text-gray-300 line-through">Rs.<%= Math.min(...product.variants.map(v => v.basePrice)) %></span>
+            <span id="variantPerc" class="bg-gold-500 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-tighter">
+              <%= Math.round(product.variants[0].finalDiscount) %>% OFF
+            </span>
+          </div>
+
+          <!-- Variant Selection -->
+          <div class="mb-10">
+            <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Select Size</h4>
+            <div class="flex flex-wrap gap-3">
+              <% product.variants.sort((a,b)=>a.volume-b.volume).forEach((variant, index)=> { %>
+                <button class="variant-btn px-8 py-3 rounded-xl border-2 transition-all duration-300 text-sm font-bold <%= index === 0 ? 'border-luxury-black bg-luxury-black text-white' : 'border-gray-100 hover:border-gold-400 text-gray-600' %>"
+                  data-price="<%= variant.finalAmount %>" 
+                  data-volume="<%= variant.volume %>"
+                  data-baseprice="<%= variant.basePrice %>" 
+                  data-discount="<%= variant.finalDiscount %>"
+                  data-stock="<%= variant.stock %>" 
+                  data-id="<%= variant._id %>">
+                  <%= variant.volume %>ML
+                </button>
+              <% }) %>
+            </div>
+          </div>
+
+          <!-- CTAs -->
+          <div class="flex flex-col sm:flex-row gap-4 mb-12">
+            <button onclick="addToCart(this,'/cart/addToCart/<%=product._id%>')" 
+                    data-variant-id="<%= product.variants[0]._id %>" 
+                    id="addToCart"
+                    class="flex-1 bg-luxury-black text-white py-5 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-gold-600 transition duration-300 shadow-xl flex items-center justify-center space-x-3">
+              <i class="fa-solid fa-cart-shopping"></i>
+              <span>Add to Shopping Bag</span>
+            </button>
+            <button onclick="addToWishlist(this,'/wishlist/api/add/<%=product._id%>')" 
+                    data-variant-id="<%= product.variants[0]._id %>" 
+                    id="addToWishlist"
+                    class="w-full sm:w-20 h-16 border-2 border-gray-100 rounded-full flex items-center justify-center hover:border-gold-500 hover:text-gold-500 transition duration-300">
+              <i class="fa-regular fa-heart text-2xl"></i>
+            </button>
+          </div>
+
+          <!-- Product Tabs -->
+          <div class="border-t border-gray-100 pt-8">
+            <div class="flex space-x-10 mb-6 border-b border-gray-50 pb-4">
+              <button onclick="switchTab('description')" class="tab-btn active text-sm font-bold uppercase tracking-widest text-luxury-black relative" id="tab-description">
+                Description
+                <span class="absolute -bottom-4 left-0 w-full h-1 bg-gold-400 rounded-full"></span>
+              </button>
+              <button onclick="switchTab('reviews')" class="tab-btn text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-luxury-black transition" id="tab-reviews">
+                Reviews (<%= reviews.length %>)
+              </button>
+            </div>
+            
+            <div id="tab-content" class="text-gray-500 leading-relaxed text-sm space-y-4">
+              <p><%= product.description %></p>
+              <div class="flex flex-wrap gap-2 mt-4">
+                <% product.tags.forEach(tag => { %>
+                  <span class="bg-luxury-cream px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border border-gray-100 text-gold-700">#<%= tag %></span>
+                <% }) %>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-md-5 p-5">
-          <nav aria-label="breadcrumb" class="d-md-block d-none">
-            <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="/home" class="text-decoration-none text-muted">Home</a></li>
-              <li class="breadcrumb-item"><a href="/shop" class="text-decoration-none text-muted">Shop</a></li>
-              <% if(product.category) { %>
-                <li class="breadcrumb-item">
-                  <a class="text-decoration-none text-muted" href="/shop?category=<%= product.category._id %>">
-                    <%= product.category.name %>
-                  </a>
-                </li>
-                <% } %>
-                  <% if(product) { %>
-                    <li class="breadcrumb-item active" aria-current="page">
-                      <%= product.name %>
-                    </li>
-                    <% } %>
-            </ol>
-          </nav>
-          <!-- Product Name -->
-          <h3 class="text-uppercase">
-            <%= product.name%>
-          </h3>
-          <p class="fs-5 text-muted ">A fragrance crafted for <%=product.category.name%>
-          </p>
-          <div id="variantDetails" class="mt-3">
-            <div class="d-flex align-items-center mb-3">
-              <span class="rounded-5 me-2 text-white bg-success px-3 py-1 fw-bold d-flex align-items-center">
-                &#x2606; <%=averageRating||'No Rating'%>
-              </span>
-              <span class="text-muted fw-semibold fs-5">
-                (<%=reviews.length%>)
-              </span>
-            </div>
-            <div>
-              <span id="variantPrice" class="fw-bold fs-4">RS. <%= Math.min(...product.variants.map(v=>v.finalAmount))%></span>
-              <span id="variantBasePrice" class="ms-2 me-2 fw-semibold fs-5 text-muted text-decoration-line-through">₹
-                <%=Math.min(...product.variants.map(v=>v.basePrice))%>
-              </span>
-              <span id="variantPerc" class="rounded text-success fw-bold p-1">
-            <%= product.variants.reduce((min, v) => {
-           return  parseInt(v.volume) < parseInt(min.volume) ? v : min}, product.variants[0]).finalDiscount %>% off
-          </span>
-            </div>
-            <div>
-              <span id="variantStock" class="text-danger fs-4 fw-bold">
-                <%=!product.isAvailable?'Product not Available': product.variants.reduce((min, v)=>
-                 v.finalAmount < min.finalAmount ? v : min).stock <= 0 ? 'Out of Stock':''%>
-              </span>
-            </div>
-          </div>
+      </div>
+    </div>
 
-          <%const lowestVariant = product.variants.reduce((min, v) => v.finalAmount < min.finalAmount ? v : min, product.variants[0])%>
-
-          <div class="d-flex flex-column mt-3 gap-2 align-items-start">
-            <button class="btn btn-dark rounded-5 w-50 fw-bold" 
-                onclick="addToWishlist(this,'/wishlist/api/add/<%=product._id%>')" 
-                data-variant-id="<%= lowestVariant._id %>" 
-                data-source="details" 
-                style="padding:1rem 2rem"
-                id="addToWishlist">
-              <span>ADD TO WISHLIST</span>
-            </button>
-            <button onclick="addToCart(this,'/cart/addToCart/<%=product._id%>')" 
-                data-variant-id="<%= lowestVariant._id %>" 
-                class="btn btn-dark rounded-5 w-50 fw-bold" 
-                style="padding:1rem 3rem"
-                id="addToCart">
-              <span>ADD TO CART</span>
-            </button>
-          </div>
-
-          <!-- Variant buttons -->
-          <div class="mt-4">
-            <% product.variants.sort((a,b)=>a.finalAmount-b.finalAmount).forEach((variant, index)=> { %>
-              <button class="btn btn-outline-dark rounded-5 variant-btn <%= index === 0 ? 'active' : '' %>"
-                data-price="<%= variant.finalAmount%>" data-volume="<%= variant.volume %>"
-                data-basePrice="<%= variant.basePrice%>" data-discount="<%= variant.finalDiscount %>"
-                data-stock="<%=variant.stock%>" data-isAvailable="<%=product.isAvailable%>"
-                data-id="<%=variant._id%>">
-                <%= variant.volume %>ML
-              </button>
-              <% }) %>
-          </div>
-
-          <!-- description and reviews -->
-          <div>
-            <p class="mb-1 mt-4 fs-5">
-              <span onclick="callDescription()" class="text-black fw-semibold product-tab"
-                data-description="<%=product.description%>" data-tags="<%=product.tags%>">
-                Descriptipn
-              </span>
-              <span onclick="callReviews()" class="ms-3 product-tab">
-                Reviews
-              </span>
-            </p>
-            <hr class="mt-0">
-            <div id="content">
-              <p style="font-size: large;" id="productDescription">
-                <%=product.description%>
-              </p>
-              <p class="mt-2" id="productTags">
-                <span class="fw-bold ">Highlights </span>:
-              <ul>
-                <% product.tags.forEach(t=> { %>
-                  <li style="font-size: large;">
-                    <%=t.charAt(0).toUpperCase()+t.slice(1)%>
-                  </li>
-                  <% }) %>
-              </ul>
-              </p>
-            </div>
-          </div>
-        </div>
-        <hr>
-<div class="col-md-12">
-  <h3 class="p-5 ms-5">YOU MAY ALSO LIKE</h3>
-
-  <!-- Scrollable container -->
-  <div class="related-scroll px-3 pb-5">
-    <div class="d-flex flex-row flex-nowrap">
-      <% relatedProducts.forEach(product => { %>
-        <div class="relatedProducts me-3" style="flex: 0 0 auto; width: 220px;">
-          <a href="/products/<%=product._id%>" 
-             class="card text-decoration-none p-3 rounded-4 border-0 shadow"
-             style="background:white">
-            <img src="<%=product.images[0]?.url%>" class="card-img-top rounded-4" alt="Product Image">
-            <div class="card-body p-0 pt-3">
-              <h6 class="card-title mb-1"><%=product.name%></h6>
-              <p class="text-muted mb-2" style="font-size:0.85rem;">
-                Category: <%=product.category.name%>
-              </p>
-              <p class="mb-0 justify-content-between d-flex align-items-center">
-                <span>
-                  <span class="text-success fw-bold">
-                    ₹<%=Math.min(...product.variants.map(v => v.finalAmount))%>
-                  </span>
-                  <span class="text-muted text-decoration-line-through">
-                    ₹<%=Math.min(...product.variants.map(v => v.basePrice))%>
-                  </span>
-                  <span class="text-success fw-bold">
-                    <%= product.variants.reduce((min, v) => {
-                         return parseInt(v.volume) < parseInt(min.volume) ? v : min;
-                       }, product.variants[0]).finalDiscount %>% off
-                  </span>
-                </span>
-              </p>
-            </div>
-          </a>
-        </div>
-      <% }) %>
+    <!-- Related Products -->
+    <div class="mt-32">
+      <div class="flex items-end justify-between mb-12">
+        <h2 class="text-3xl font-serif font-bold text-luxury-black">You May Also Like</h2>
+        <a href="/shop" class="text-xs font-bold uppercase tracking-widest text-gold-600 border-b border-gold-400 pb-1">Shop All</a>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <% relatedProducts.slice(0, 4).forEach(related => { %>
+          <%- include('../partials/user/productCard.ejs', { product: related }) %>
+        <% }) %>
+      </div>
     </div>
   </div>
-</div>
-      </div>
-  </main>
-  <script>
-    // image like gallary
-    const mainImg = document.getElementById('mainImg');
-    const thumbs = document.getElementsByClassName('thumb');
-    for (let i = 0; i < thumbs.length; i++) {
-      thumbs[i].addEventListener('click', function () {
-        mainImg.src = this.src;
-      })
-    }
+</main>
 
-  function initVariantSelection() {
-  const variantButtons = document.querySelectorAll(".variant-btn");
-  const variantPrice = document.getElementById("variantPrice");
-  const variantBasePrice = document.getElementById("variantBasePrice");
-  const variantPerc = document.getElementById("variantPerc");
-  const variantStock = document.getElementById("variantStock");
-  const variantId = document.getElementById("variantId");
-  const addToWishlist = document.getElementById("addToWishlist");
-  const addToCart = document.getElementById("addToCart");
+<script>
+  // Image Gallery & Zoom
+  const mainImg = document.getElementById('mainImg');
+  const lens = document.getElementById('lens');
+  const zoomBox = document.getElementById('zoomBox');
+  const thumbnails = document.querySelectorAll('.thumbnail-btn');
 
-  if (!variantButtons.length) return;
-
-  variantButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      // 1. Remove active class from all buttons
-      variantButtons.forEach((b) => b.classList.remove("active"));
-
-      // 2. Add active class to selected button
-      btn.classList.add("active");
-
-      // 3. Read variant data attributes
-      const price = btn.dataset.price;
-      const basePrice = btn.dataset.baseprice;
-      const percentage = btn.dataset.discount;
-      const stock = parseInt(btn.dataset.stock);
-      const isAvailable = btn.dataset.isavailable === "true";
-      const id = btn.dataset.id;
-
-      // 4. Update UI fields (if exist)
-      if (variantPrice) variantPrice.textContent = `₹${price}`;
-      if (variantBasePrice) variantBasePrice.textContent = `₹${basePrice}`;
-      if (variantPerc) variantPerc.textContent = `${Math.round(percentage)}% off`;
-
-      if (variantStock) {
-        if (!isAvailable) variantStock.textContent = "Product not available";
-        else if (stock <= 0) variantStock.textContent = "Out of stock";
-        else variantStock.textContent = "";
-      }
-
-      if (variantId) variantId.value = id;
-
-      // 5. Update "Add to Cart" and "Wishlist" buttons with selected variant
-      if (addToCart) addToCart.dataset.variantId = id;
-      if (addToWishlist) addToWishlist.dataset.variantId = id;
+  thumbnails.forEach(btn => {
+    btn.addEventListener('click', () => {
+      mainImg.src = btn.dataset.src;
+      thumbnails.forEach(b => b.classList.replace('border-gold-500', 'border-transparent'));
+      btn.classList.replace('border-transparent', 'border-gold-500');
     });
   });
-}
 
-// Initialize when DOM is ready
-document.addEventListener("DOMContentLoaded", initVariantSelection);
+  const zoomContainer = document.getElementById('imageZoom');
+  zoomContainer.addEventListener('mousemove', moveLens);
+  zoomContainer.addEventListener('mouseenter', () => { lens.style.display = 'block'; zoomBox.style.display = 'block'; });
+  zoomContainer.addEventListener('mouseleave', () => { lens.style.display = 'none'; zoomBox.style.display = 'none'; });
 
+  function moveLens(e) {
+    const rect = zoomContainer.getBoundingClientRect();
+    let x = e.clientX - rect.left;
+    let y = e.clientY - rect.top;
 
-    const productTab = document.querySelectorAll('.product-tab')
-    productTab.forEach(tab => {
-      tab.addEventListener("click", () => {
-        productTab.forEach(t => t.classList.remove("fw-semibold", "text-black"));
-        tab.classList.add("fw-semibold", "text-black");
-      });
+    x = Math.max(lens.offsetWidth / 2, Math.min(x, zoomContainer.offsetWidth - lens.offsetWidth / 2));
+    y = Math.max(lens.offsetHeight / 2, Math.min(y, zoomContainer.offsetHeight - lens.offsetHeight / 2));
+
+    lens.style.left = `${x - lens.offsetWidth / 2}px`;
+    lens.style.top = `${y - lens.offsetHeight / 2}px`;
+
+    const cx = zoomBox.offsetWidth / lens.offsetWidth;
+    const cy = zoomBox.offsetHeight / lens.offsetHeight;
+
+    zoomBox.style.backgroundImage = `url('${mainImg.src}')`;
+    zoomBox.style.backgroundSize = `${zoomContainer.offsetWidth * cx}px ${zoomContainer.offsetHeight * cy}px`;
+    zoomBox.style.backgroundPosition = `-${(x - lens.offsetWidth / 2) * cx}px -${(y - lens.offsetHeight / 2) * cy}px`;
+  }
+
+  // Variant Selection
+  const variantBtns = document.querySelectorAll('.variant-btn');
+  variantBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      variantBtns.forEach(b => b.classList.remove('bg-luxury-black', 'text-white', 'border-luxury-black'));
+      btn.classList.add('bg-luxury-black', 'text-white', 'border-luxury-black');
+      
+      document.getElementById('variantPrice').innerText = `Rs.${btn.dataset.price}`;
+      document.getElementById('variantBasePrice').innerText = `Rs.${btn.dataset.baseprice}`;
+      document.getElementById('variantPerc').innerText = `${Math.round(btn.dataset.discount)}% OFF`;
+      
+      document.getElementById('addToCart').dataset.variantId = btn.dataset.id;
+      document.getElementById('addToWishlist').dataset.variantId = btn.dataset.id;
     });
+  });
 
-    //call reviews
-    async function callReviews() {
-      const content = document.getElementById('content')
+  // Tabs
+  function switchTab(tab) {
+    const content = document.getElementById('tab-content');
+    const descBtn = document.getElementById('tab-description');
+    const revBtn = document.getElementById('tab-reviews');
+
+    if(tab === 'description') {
+      content.innerHTML = `<p><%= product.description %></p><div class="flex flex-wrap gap-2 mt-4"><% product.tags.forEach(tag => { %><span class="bg-luxury-cream px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border border-gray-100 text-gold-700">#<%= tag %></span><% }) %></div>`;
+      descBtn.classList.add('text-luxury-black');
+      descBtn.classList.remove('text-gray-400');
+      descBtn.querySelector('span').classList.remove('hidden');
+      revBtn.classList.add('text-gray-400');
+      revBtn.classList.remove('text-luxury-black');
+      revBtn.querySelector('span')?.classList.add('hidden');
+    } else {
       content.innerHTML = `
-      <div class="container my-4">
-  <h4 class="fw-bold"><%= averageRating %></h4>
-  <div class="text-warning fs-4">
-    <% for(let i=1; i<=5; i++){ %>
-      <% if(i <= Math.round(averageRating)) { %>
-        &#9733;
-      <% } else { %>
-        &#9734;
-      <% } %>
-    <% } %>
-  </div>
-  <p>Product Rating</p>
-
-  <div>
-    <% for(let i=5; i>=1; i--){ %>
-      <div class="d-flex align-items-center">
-        <span class="me-2"><%= i %> ★</span>
-        <div class="progress flex-grow-1 me-2">
-          <div class="progress-bar bg-success" style="width:<%= ratingPercentages[i] %>%"></div>
-        </div>
-        <span><%= ratingPercentages[i] %>%</span>
-      </div>
-    <% } %>
-  </div>
-</div>
-
-
-  <hr>
-
-  <!-- Reviews -->
-  <div class="mt-3">
-    <%reviews.forEach((r)=>{%>
-    <div class="d-flex mb-3">
-      <div class="me-2">👤</div>
-      <div>
-        <strong><%=r.name%></strong>
-        <div class="text-warning">
-          <% for(let i = 1; i <= 5; i++) { %>
-            <% if(i <= r.rating) { %>
-              &#9733; <!-- filled star -->
-            <% } else { %>
-              &#9734; <!-- empty star -->
-            <% } %>
+        <div class="space-y-8">
+          <% if(reviews.length === 0) { %>
+            <p class="italic">No reviews yet. Be the first to share your experience.</p>
+          <% } else { %>
+            <% reviews.forEach(review => { %>
+              <div class="border-b border-gray-50 pb-6">
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-gold-100 rounded-full flex items-center justify-center text-gold-700 font-bold text-xs"><%= review.name.charAt(0) %></div>
+                    <span class="text-sm font-bold text-luxury-black"><%= review.name %></span>
+                  </div>
+                  <div class="flex text-gold-400 text-xs">
+                    <% for(let i=1; i<=5; i++) { %>
+                      <i class="fa-<%= i <= review.rating ? 'solid' : 'regular' %> fa-star"></i>
+                    <% } %>
+                  </div>
+                </div>
+                <p class="text-sm text-gray-500 leading-relaxed"><%= review.message %></p>
+              </div>
+            <% }) %>
           <% } %>
         </div>
-
-        <p><%=r.message%></p>
-        </div>
-        </div>
-    <%})%>
-</div>
-`
+      `;
+      revBtn.classList.add('text-luxury-black');
+      revBtn.classList.remove('text-gray-400');
+      if(!revBtn.querySelector('span')) {
+        const span = document.createElement('span');
+        span.className = 'absolute -bottom-4 left-0 w-full h-1 bg-gold-400 rounded-full';
+        revBtn.appendChild(span);
+      }
+      descBtn.classList.add('text-gray-400');
+      descBtn.classList.remove('text-luxury-black');
+      descBtn.querySelector('span').classList.add('hidden');
     }
-    async function callDescription() {
-      const content = document.getElementById('content')
-      content.innerHTML = `
-      <p style="font-size: large;" id="productDescription"><%=product.description%></p>
-              <p class="mt-2" id="productTags">
-                <span class="fw-bold ">Highlights </span>:
-                <ul>
-                  <% product.tags.forEach(t => { %>
-                   <li style="font-size: large;"><%=t.charAt(0).toUpperCase()+t.slice(1)%></li>
-                  <% }) %>
-                </ul>
-              </p>
-      `
-    }
-
-
-    //image magnifier
-    //main img already taken
-    const lens = document.getElementById("lens");
-    const zoomBox = document.getElementById("zoomBox");
-
-    mainImg.addEventListener("mouseenter", () => {
-      lens.style.display = "block"
-      zoomBox.classList.remove('d-none')
-    });
-    mainImg.addEventListener("mouseleave", () => {
-      lens.style.display = "none"
-      zoomBox.classList.add('d-none')
-    })
-
-
-
-    mainImg.addEventListener("mousemove", function (e) {
-      const rect = mainImg.getBoundingClientRect();
-      let x = e.clientX - rect.left;
-      let y = e.clientY - rect.top;
-
-      // Keep lens centered on cursor
-      lens.style.left = x - lens.offsetWidth / 2 + "px";
-      lens.style.top = y - lens.offsetHeight / 2 + "px";
-
-      // Show zoomed image
-      zoomBox.style.backgroundImage = `url('${mainImg.src}')`;
-      zoomBox.style.backgroundSize = `${mainImg.width * 3}px ${mainImg.height * 3}px`;
-      zoomBox.style.backgroundPosition =
-        `-${x * 3 - zoomBox.offsetWidth / 2}px -${y * 3 - zoomBox.offsetHeight / 2}px`;
-    });
-
-
-async function addToCart(btn, url) {
-  // Prevent multiple clicks
-  if (btn.disabled) return;
-  btn.disabled = true;
-  btn.textContent = 'Adding...'; // optional visual feedback
-
-  try {
-    const variantId = btn.getAttribute('data-variant-id');
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ variantId })
-    });
-
-    const data = await res.json();
-
-    if (data.status) {
-      showAlert('success', data.message);
-      updateCartCount();
-    } else {
-      showAlert('error', data.message);
-    }
-  } catch (error) {
-    console.error(error);
-    showAlert('error', 'Something went wrong. Try again.');
-  } finally {
-    // Re-enable after all operations
-    btn.disabled = false;
-    btn.textContent = 'ADD TO CART'; // restore text
   }
-}
 
-    async function addToWishlist(btn,url){
-        if (btn.disabled) return;
-          btn.disabled = true;
-          btn.textContent = 'Adding...'; // optional visual feedback
-      try{
-        const variantId = btn.getAttribute('data-variant-id')
-        const source = btn.getAttribute('data-source')
-        const res = await fetch(url,{
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({variantId,source})
-        })
-        const data = await res.json()
-        if(data.status){
-          showAlert('success',data.message)
-        }else{
-          showAlert('error',data.message)
-        }
-      }catch(error){
-        console.log(error)
-      } finally {
-    // Re-enable after all operations
-    btn.disabled = false;
-    btn.textContent = 'ADD TO WISHLIST'; // restore text
-  }
+  // Cart & Wishlist Logic
+  async function addToCart(btn, url) {
+    if (btn.disabled) return;
+    btn.disabled = true;
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i><span>Adding...</span>';
+
+    try {
+      const variantId = btn.getAttribute('data-variant-id');
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ variantId })
+      });
+
+      const data = await res.json();
+      if (data.status) {
+        new Notyf().success(data.message);
+        updateCartCount();
+      } else {
+        new Notyf().error(data.message);
+      }
+    } catch (error) {
+      new Notyf().error('Failed to add to cart');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalContent;
     }
-  </script>
-  <%- include("../partials/user/footer.ejs") %>
+  }
+
+  async function addToWishlist(btn, url) {
+    if (btn.disabled) return;
+    btn.disabled = true;
+    const icon = btn.querySelector('i');
+    icon.className = 'fa-solid fa-spinner animate-spin text-2xl';
+
+    try {
+      const variantId = btn.getAttribute('data-variant-id');
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ variantId })
+      });
+
+      const data = await res.json();
+      if (data.status) {
+        new Notyf().success(data.message);
+        icon.className = 'fa-solid fa-heart text-2xl text-gold-500';
+      } else {
+        new Notyf().error(data.message);
+        icon.className = 'fa-regular fa-heart text-2xl';
+      }
+    } catch (error) {
+      new Notyf().error('Failed to update wishlist');
+      icon.className = 'fa-regular fa-heart text-2xl';
+    } finally {
+      btn.disabled = false;
+    }
+  }
+</script>
+
+<%- include("../partials/user/footer.ejs") %>

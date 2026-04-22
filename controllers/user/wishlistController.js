@@ -2,21 +2,29 @@ const Wishlist = require("../../models/Wishlist");
 const Product = require("../../models/Product");
 const handleError = require('../../helpers/handleError')
 const Cart=require('../../models/Cart')
+const User = require("../../models/User");
 
 const show = async (req, res) => {
   try {
     const wishlistDocs = await Wishlist.find({ userId: req.session.user.id })
-      .populate("productId", "name price variants images") // only bring what you need
+      .populate({
+        path: "productId",
+        match: { isDeleted: false, isAvailable: true },
+        select: "name basePrice variants images"
+      })
       .sort({ createdAt: -1 });
 
-    const wishlistItems = wishlistDocs.map(doc => ({
+    const wishlistItems = wishlistDocs
+      .filter(doc => doc.productId) // Only keep items where product passed the match filter
+      .map(doc => ({
       _id: doc._id,
       product: doc.productId,
       variant: doc.productId?.variants?.id(doc.variantId) || null,
       createdAt:doc.createdAt
     }));
 
-    res.render("userPages/wishlist", { items: wishlistItems });
+    const user = await User.findById(req.session.user.id);
+    res.render("userPages/wishlist", { items: wishlistItems, user });
   } catch (err) {
     handleError(res, "showWishlist", err);
   }

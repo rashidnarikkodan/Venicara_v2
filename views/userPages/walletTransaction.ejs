@@ -1,125 +1,101 @@
-<%- include('../partials/user/header.ejs') %>
-<%- include('../partials/user/sidebarProfile.ejs') %>
+<%- include("../partials/user/header.ejs") %>
 
-<main class="w-100 justify-content-center d-flex px-md-2 px-0">
-  <div class="container">
-    <!-- Header + Search -->
-    <div class="row align-items-center mb-4 g-3">
-      <div class="col-12 col-md-6">
-        <h1 class="fs-3 fw-bold">Transaction History</h1>
-      </div>
-      <div class="col-12 col-md-6">
-        <!-- <form action="/wallet/history" method="GET" class="d-flex flex-column flex-sm-row gap-2">
-          <input type="text" name="search" class="form-control flex-fill" placeholder="Search..." value="<%= search %>">
-          <button class="btn btn-dark w-100 w-sm-auto">Search</button>
-        </form> -->
-      </div>
-    </div>
+<main class="bg-white min-h-screen py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col lg:flex-row gap-12">
+      
+      <%- include("../partials/user/sidebarProfile.ejs") %>
 
-    <!-- Transactions Table -->
-    <div class="table-responsive shadow rounded-3 bg-white">
-      <table class="table table-hover align-middle mb-0">
-        <thead class="table-dark">
-          <tr>
-            <th class="text-center p-2">Transaction</th>
-            <th class="text-center p-2">Date</th>
-            <th class="text-center p-2">Status</th>
-            <th class="text-center p-2">Amount</th>
-            <th class="text-center p-2">Last Balance</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% transactions.forEach(transaction=> { %>
-            <%count++%>
-            <tr>
-              <td class="text-center fw-semibold"><%= transaction.type.charAt(0).toUpperCase()+transaction.type.slice(1) %></td>
-              <td class="text-center"><%= transaction.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></td>
-              <td class="text-center fw-bold <%= transaction.status === 'pending' ? 'text-primary' : (transaction.status === 'success' ? 'text-success' : 'text-danger')%>">
-                <%= transaction.status %>
-              </td>
-              <td class="text-center fw-semibold <%=transaction.type == 'credit'?'text-success':'text-danger'%>">
-                <%=transaction.type == 'credit'?'+':'-'%>₹<%= transaction.amount/100 %>
-              </td>
-              <td class="text-center">₹<%= transaction.lastBalance%></td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    </div>
+      <!-- Wallet Transaction Content -->
+      <div class="flex-1">
+        <div class="mb-10">
+          <h1 class="text-3xl font-serif font-bold text-luxury-black mb-2 uppercase tracking-tight">Transaction History</h1>
+          <p class="text-gray-500 text-sm italic">A complete record of your wallet activities.</p>
+        </div>
 
-    <!-- Pagination -->
-    <div class="d-flex justify-content-center justify-content-md-end mt-3">
-      <nav aria-label="Page navigation">
-        <ul class="pagination flex-wrap p-2">
-          <!-- Previous -->
-          <% if (page> 1) { %>
-            <li class="page-item">
-              <a class="page-link bg-dark" href="?page=<%= page - 1 %>&limit=<%= limit %>">
-                <i class="fa-solid fa-caret-left text-white"></i>
+        <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="bg-gray-50/50">
+                  <th class="px-8 py-5 text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em]">Type</th>
+                  <th class="px-8 py-5 text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em]">Date</th>
+                  <th class="px-8 py-5 text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em]">Status</th>
+                  <th class="px-8 py-5 text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] text-right">Amount</th>
+                  <th class="px-8 py-5 text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] text-right">Balance After</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-50">
+                <% if(transactions && transactions.length > 0) { %>
+                  <% transactions.forEach(transaction => { %>
+                    <tr class="hover:bg-gray-50/30 transition">
+                      <td class="px-8 py-6">
+                        <span class="text-xs font-bold text-luxury-black uppercase tracking-tight"><%= transaction.type %></span>
+                      </td>
+                      <td class="px-8 py-6">
+                        <p class="text-xs text-gray-600"><%= transaction.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></p>
+                      </td>
+                      <td class="px-8 py-6">
+                        <% 
+                           let statusColor = 'bg-gray-50 text-gray-500 border-gray-100';
+                           if(transaction.status === 'success') statusColor = 'bg-green-50 text-green-600 border-green-100';
+                           if(transaction.status === 'failed') statusColor = 'bg-red-50 text-red-500 border-red-100';
+                           if(transaction.status === 'pending') statusColor = 'bg-gold-50 text-gold-600 border-gold-100';
+                        %>
+                        <span class="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border <%= statusColor %>">
+                           <%= transaction.status %>
+                        </span>
+                      </td>
+                      <td class="px-8 py-6 text-right">
+                        <p class="text-sm font-bold <%= transaction.type === 'credit' ? 'text-green-600' : 'text-red-500' %> tracking-tight">
+                          <%= transaction.type === 'credit' ? '+' : '-' %> Rs.<%= (transaction.amount/100).toLocaleString() %>
+                        </p>
+                      </td>
+                      <td class="px-8 py-6 text-right">
+                        <p class="text-xs font-bold text-luxury-black">Rs.<%= transaction.lastBalance.toLocaleString() %></p>
+                      </td>
+                    </tr>
+                  <% }) %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="5" class="px-8 py-32 text-center">
+                       <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                          <i class="fa-solid fa-receipt text-2xl text-gray-200"></i>
+                       </div>
+                       <p class="text-gray-400 text-xs uppercase tracking-[0.2em] font-bold">No transactions recorded yet.</p>
+                    </td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="mt-12 flex justify-center sm:justify-end">
+          <nav class="inline-flex space-x-2">
+            <% if (page > 1) { %>
+              <a href="?page=<%= page - 1 %>&limit=<%= limit %>" class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-100 text-luxury-black hover:border-gold-500 hover:text-gold-600 transition">
+                <i class="fa-solid fa-chevron-left text-xs"></i>
               </a>
-            </li>
-          <% } else { %>
-            <li class="page-item disabled">
-              <span class="page-link bg-dark"><i class="fa-solid fa-caret-left text-white"></i></span>
-            </li>
-          <% } %>
-
-          <!-- Left Page -->
-          <% if (page - 1>= 1) { %>
-            <li class="page-item"><a class="page-link" href="?page=<%= page - 1 %>&limit=<%= limit %>"><%= page - 1 %></a></li>
-          <% } %>
-
-          <!-- Current Page -->
-          <li class="page-item active">
-            <span class="page-link bg-white text-dark border-0"><%= page %></span>
-          </li>
-
-          <!-- Right Page -->
-          <% if (page + 1 <=totalPages) { %>
-            <li class="page-item"><a class="page-link" href="?page=<%= page + 1 %>&limit=<%= limit %>"><%= page + 1 %></a></li>
-          <% } %>
-
-          <!-- Next -->
-          <% if (page < totalPages) { %>
-            <li class="page-item">
-              <a class="page-link bg-dark" href="?page=<%= page + 1 %>&limit=<%= limit %>">
-                <i class="fa-solid fa-caret-right text-white"></i>
+            <% } %>
+            
+            <% for(let i=1; i<=totalPages; i++) { %>
+              <a href="?page=<%= i %>&limit=<%= limit %>" class="w-10 h-10 flex items-center justify-center rounded-full <%= page == i ? 'bg-luxury-black text-white shadow-lg' : 'bg-white border border-gray-100 text-luxury-black hover:bg-gray-50' %> text-[10px] font-bold transition">
+                <%= i %>
               </a>
-            </li>
-          <% } else { %>
-            <li class="page-item disabled">
-              <span class="page-link bg-dark"><i class="fa-solid fa-caret-right text-white"></i></span>
-            </li>
-          <% } %>
-        </ul>
-      </nav>
+            <% } %>
+
+            <% if (page < totalPages) { %>
+              <a href="?page=<%= page + 1 %>&limit=<%= limit %>" class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-100 text-luxury-black hover:border-gold-500 hover:text-gold-600 transition">
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+              </a>
+            <% } %>
+          </nav>
+        </div>
+      </div>
     </div>
   </div>
 </main>
 
-<style>
-  /* Default (desktop/tablet) */
-table th, table td {
-  padding: 1rem !important; /* comfortable spacing */
-  font-size: 1rem;
-}
-
-/* Mobile tweaks */
-@media (max-width: 576px) {
-  .table-responsive {
-    margin-left: -12px;  /* cancel container padding */
-    margin-right: -12px;
-  }
-  .table {
-    width: 100% !important; /* occupy full screen */
-  }
-  table th, table td {
-    font-size: 0.85rem;
-    padding: 0.4rem !important; /* tighter spacing */
-  }
-  h1 {
-    font-size: 1.4rem;
-  }
-}
-
-</style>
+<%- include("../partials/user/footer.ejs") %>

@@ -110,7 +110,7 @@ const removeFromCart = async (req, res) => {
     await Cart.findByIdAndDelete(id);
     res.status(200).json({status:true,message: "Item removed from cart"})
   } catch (err) {
-    res.status(500).json({status:false,message:"serevr error"});
+    res.status(500).json({status:false,message:"Server error"});
   }
 };
 
@@ -121,7 +121,7 @@ const increaseQuantity = async (req, res) => {
     const cartItem = await Cart.findById(cartId).populate("productId");
     if (!cartItem) return res.status(404).json({ success: false, message: "Item not found" });
 
-    const variant = cartItem.productId.variants.find(v => v._id.toString() === cartItem.variantId.toString());
+    const variant = cartItem.productId?.variants?.find(v => v._id.toString() === cartItem.variantId.toString());
     if (!variant) return res.status(404).json({ success: false, message: "Variant not found" });
 
     const maxQty = Math.min(5, variant.stock);
@@ -135,9 +135,9 @@ const increaseQuantity = async (req, res) => {
     const price = variant.finalAmount || 0;
     const lineTotal = price * cartItem.quantity;
 
-    const cartItems = await Cart.find({ userId: cartItem.userId }).populate("productId");
+    const cartItems = await Cart.find({ userId: cartItem.userId, status: "active" }).populate("productId");
     const total = cartItems.reduce((sum, item) => {
-      const v = item.productId.variants.find(vv => vv._id.toString() === item.variantId.toString());
+      const v = item.productId?.variants?.find(vv => vv._id.toString() === item.variantId.toString());
       return sum + ((v?.finalAmount || 0) * item.quantity);
     }, 0);
 
@@ -153,26 +153,22 @@ const decreaseQuantity = async (req, res) => {
     const { cartId } = req.params;
     const cartItem = await Cart.findById(cartId).populate("productId");
     if (!cartItem) return res.status(404).json({ success: false, message: "Item not found" });
-    const product = await Product.findById(cartItem.productId)
 
     if (cartItem.quantity > 1) {
       cartItem.quantity -= 1;
       await cartItem.save();
     }
 
-    const variant = product.variants.find(v => v._id.toString() === cartItem.variantId.toString());
+    const variant = cartItem.productId?.variants?.find(v => v._id.toString() === cartItem.variantId.toString());
     const price = variant?.finalAmount || 0;
     const lineTotal = price * cartItem.quantity;
-    const stock = variant.stock
+    const stock = variant?.stock || 0;
 
-
-    const cartItems = await Cart.find({ userId: cartItem.userId }).populate("productId");
+    const cartItems = await Cart.find({ userId: cartItem.userId, status: "active" }).populate("productId");
     const total = cartItems.reduce((sum, item) => {
-      const v = item.productId.variants.find(vv => vv._id.toString() === item.variantId.toString());
+      const v = item.productId?.variants?.find(vv => vv._id.toString() === item.variantId.toString());
       return sum + ((v?.finalAmount || 0) * item.quantity);
     }, 0);
-
-
 
     res.json({ success: true, newQuantity: cartItem.quantity, stock, lineTotal, total });
   } catch (err) {

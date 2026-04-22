@@ -1,199 +1,219 @@
-<%- include('../partials/admin/header.ejs')%>
-<style>
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .container {
-      padding: 0 15px;
-    }
-    .w-75 {
-      width: 100% !important;
-    }
-    .p-5 {
-      padding: 1.5rem !important;
-    }
-    .variantSection .row {
-      flex-direction: column;
-    }
-    .variantSection .col-md-3 {
-      width: 100%;
-    }
-    #previewContainer {
-      flex-direction: column;
-      align-items: center;
-    }
-    #addImgDiv {
-      padding: 2rem !important;
-    }
-    .btn {
-      width: 100%;
-      margin-bottom: 0.5rem;
-    }
-    .d-flex.justify-content-end {
-      flex-direction: column;
-      align-items: stretch;
-    }
-  }
-  @media (max-width: 576px) {
-    h1 {
-      font-size: 1.5rem;
-    }
-    .form-label {
-      font-size: 0.9rem;
-    }
-    .form-control, .form-select {
-      font-size: 0.9rem;
-    }
-    #addImgDiv {
-      padding: 1.5rem !important;
-    }
-    small {
-      font-size: 0.75rem;
-    }
-  }
-</style>
-<main class="flex-fill">
-  <div class="container my-4 d-flex justify-content-center">
-    <div class="w-75 p-5 rounded-4" style="background:rgb(166, 166, 166)">
-      <h1 class="mb-4">Add Product</h1>
-      <div class="alert alert-danger d-none" id="addProductError"></div>
-      <form id="addProductForm" method="post" action="/admin/products/add" enctype="multipart/form-data">
-        <div class="mb-3">
-          <label class="form-label">Product Name</label>
-          <input type="text" id="name" name="name" class="form-control" placeholder="eg :- Blue de Chanel">
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Product Description</label>
-          <textarea name="description" id="description" class="form-control" rows="4"
-            placeholder="Write your description here..."></textarea>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Product Images</label>
-          <div class="rounded-3 border p-4 bg-light">
-            <input type="file" name="images" multiple accept="image/*" id="imgInput" hidden>
-            <div class="border rounded p-5 text-center position-relative"
-              style="cursor:pointer;background: rgb(205, 205, 205);" id="addImgDiv">
-              <i class="fa-solid fa-images fa-2x z-5"></i>
-              <div>Add Images</div>
-              <small>Select only 3 images</small>
-            </div>
-            <div id="previewContainer" class="d-flex justify-content-center gap-2 mt-3 flex-wrap"></div>
-          </div>
-        </div>
-        <div class="row mb-4 g-3">
-          <div class="col-md-4 col-12">
-            <label class="form-label">Category</label>
-            <select name="categoryId" id="category" class="form-select">
-              <option selected disabled>Select Category</option>
-              <% categories.forEach(category=> { %>
-                <option value="<%= category._id %>">
-                  <%= category.name %>
-                </option>
-              <% }) %>
-            </select>
-          </div>
-          <div class="col-md-4 col-12">
-            <label class="form-label">Tags</label>
-            <input name="tags" id="tags" type="text" class="form-control" placeholder="tags(seperate with ',')">
-          </div>
-        </div>
-        <!-- variants -->
-        <p class="mb-0 fw-bold fs-5">Add Variant</p>
-        <div id="variantContainer">
-          <ol>
-            <div class="variantSection">
-              <li>
-                <div class="row mb-3 m-0 g-3">
-                  <div class="col-md-3 col-12">
-                    <label class="form-label">Base Price (₹)</label>
-                    <input name="basePrice" type="number" class="form-control" placeholder="eg :- 5000">
-                  </div>
-                  <div class="col-md-3 col-12">
-                    <label class="form-label">Discount Price (₹)</label>
-                    <input name="discount" type="number" class="form-control" placeholder="eg :- 10(percentage)">
-                  </div>
-                  <div class="col-md-3 col-12">
-                    <label class="form-label">Stock</label>
-                    <input name="stock" type="number" class="form-control" placeholder="eg :- 20">
-                  </div>
-                  <div class="col-md-3 col-12">
-                    <label class="form-label">Volume (ml)</label>
-                    <input name="volume" type="text" class="form-control" placeholder="eg :- 100">
-                  </div>
-                </div>
-              </li>
-            </div>
-          </ol>
-        </div>
-        <button type="button" class="btn btn-dark my-3" onclick="addVariant(document.querySelector('#addProductForm #variantContainer ol'))">Add Variant</button>
-        <div class="d-flex justify-content-end gap-2">
-          <a href="/admin/products"><button type="button" class="btn btn-outline-secondary">Cancel</button></a>
-          <button type="submit" class="btn btn-primary">Save</button>
-        </div>
-      </form>
+<%- include('../partials/admin/header.ejs') %>
+
+<div class="max-w-5xl mx-auto animate-fade-in">
+  
+  <!-- Page Header -->
+  <div class="flex items-center justify-between mb-10">
+    <div>
+      <h1 class="text-3xl font-serif font-bold dark:text-white">Create New Product</h1>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 font-medium uppercase tracking-widest">Define your fragrance masterpiece</p>
     </div>
+    <a href="/admin/products" class="p-3 bg-white dark:bg-luxury-charcoal rounded-xl border border-gray-100 dark:border-white/5 shadow-sm text-gray-500 hover:text-gold-600 transition-colors">
+      <i class="fa-solid fa-xmark text-lg"></i>
+    </a>
   </div>
-</main>
-  </div>
+
+  <form id="addProductForm" method="post" action="/admin/products/add" enctype="multipart/form-data" class="space-y-8">
+    
+    <!-- General Information -->
+    <div class="bg-white dark:bg-luxury-charcoal p-10 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5">
+      <div class="flex items-center space-x-3 mb-8">
+        <div class="w-10 h-10 bg-gold-500/10 rounded-xl flex items-center justify-center">
+          <i class="fa-solid fa-pen-nib text-gold-600 dark:text-gold-400"></i>
+        </div>
+        <h3 class="text-lg font-serif font-bold dark:text-white">General Information</h3>
+      </div>
+
+      <div class="space-y-6">
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Product Name</label>
+          <input type="text" id="name" name="name" placeholder="eg: Bleu de Chanel" class="w-full px-5 py-4 bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/5 rounded-2xl outline-none focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all text-sm dark:text-white">
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Description</label>
+          <textarea id="description" name="description" rows="5" placeholder="Describe the scent profile, notes, and story..." class="w-full px-5 py-4 bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/5 rounded-2xl outline-none focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all text-sm dark:text-white resize-none"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Category</label>
+            <div class="relative">
+              <select name="categoryId" id="category" class="w-full px-5 py-4 bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/5 rounded-2xl outline-none focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all text-sm dark:text-white appearance-none">
+                <option selected disabled>Select Category</option>
+                <% categories.forEach(category => { %>
+                  <option value="<%= category._id %>"><%= category.name %></option>
+                <% }) %>
+              </select>
+              <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-xs"></i>
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Search Tags</label>
+            <input type="text" id="tags" name="tags" placeholder="eg: woody, fresh, summer" class="w-full px-5 py-4 bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/5 rounded-2xl outline-none focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all text-sm dark:text-white">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Media Assets -->
+    <div class="bg-white dark:bg-luxury-charcoal p-10 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5">
+      <div class="flex items-center space-x-3 mb-8">
+        <div class="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
+          <i class="fa-solid fa-images text-blue-600 dark:text-blue-400"></i>
+        </div>
+        <h3 class="text-lg font-serif font-bold dark:text-white">Media Assets</h3>
+      </div>
+
+      <div class="relative">
+        <input type="file" name="images" multiple accept="image/*" id="imgInput" class="hidden">
+        <div id="addImgDiv" class="border-2 border-dashed border-gray-200 dark:border-white/10 rounded-3xl p-12 text-center hover:border-gold-500 dark:hover:border-gold-500 transition-all cursor-pointer group bg-gray-50/50 dark:bg-luxury-black/30">
+          <div class="w-16 h-16 bg-white dark:bg-luxury-charcoal rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-400 group-hover:text-gold-500 transition-colors"></i>
+          </div>
+          <p class="text-sm font-bold dark:text-white">Click to upload product images</p>
+          <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold mt-1">Recommended: 3 images (JPG, PNG)</p>
+        </div>
+        
+        <div id="previewContainer" class="flex flex-wrap justify-center gap-4 mt-8"></div>
+      </div>
+    </div>
+
+    <!-- Variants System -->
+    <div class="bg-white dark:bg-luxury-charcoal p-10 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5">
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-green-500/10 rounded-xl flex items-center justify-center">
+            <i class="fa-solid fa-layer-group text-green-600 dark:text-green-400"></i>
+          </div>
+          <h3 class="text-lg font-serif font-bold dark:text-white">Variants & Pricing</h3>
+        </div>
+        <button type="button" onclick="addVariant(document.querySelector('#variantList'))" class="text-[10px] font-bold uppercase tracking-widest text-gold-600 hover:text-gold-700 flex items-center">
+          <i class="fa-solid fa-plus-circle mr-2 text-sm"></i> Add Variant
+        </button>
+      </div>
+
+      <div id="variantContainer">
+        <ol id="variantList" class="space-y-4">
+          <li class="p-6 bg-gray-50 dark:bg-luxury-black/40 rounded-2xl border border-gray-100 dark:border-white/5 relative group animate-fade-in-down mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Base Price (₹)</label>
+                <input name="basePrice" type="number" class="w-full px-4 py-3 bg-white dark:bg-luxury-charcoal border border-gray-200 dark:border-white/10 rounded-xl outline-none focus:border-gold-500 transition-all text-sm dark:text-white" placeholder="eg: 5000">
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Discount (%)</label>
+                <input name="discount" type="number" class="w-full px-4 py-3 bg-white dark:bg-luxury-charcoal border border-gray-200 dark:border-white/10 rounded-xl outline-none focus:border-gold-500 transition-all text-sm dark:text-white" placeholder="eg: 10">
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Stock</label>
+                <input name="stock" type="number" class="w-full px-4 py-3 bg-white dark:bg-luxury-charcoal border border-gray-200 dark:border-white/10 rounded-xl outline-none focus:border-gold-500 transition-all text-sm dark:text-white" placeholder="eg: 20">
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Volume (ml)</label>
+                <input name="volume" type="text" class="w-full px-4 py-3 bg-white dark:bg-luxury-charcoal border border-gray-200 dark:border-white/10 rounded-xl outline-none focus:border-gold-500 transition-all text-sm dark:text-white" placeholder="eg: 100">
+              </div>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Error Box -->
+    <div id="addProductError" class="hidden bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-800 dark:text-red-400 px-6 py-4 rounded-2xl flex items-center animate-shake">
+      <i class="fa-solid fa-circle-exclamation mr-3"></i>
+      <span id="errorText"></span>
+    </div>
+
+    <!-- Submission -->
+    <div class="flex items-center justify-end space-x-4 pt-6">
+      <a href="/admin/products" class="px-8 py-4 rounded-2xl bg-white dark:bg-luxury-charcoal text-[10px] font-bold uppercase tracking-widest text-gray-500 border border-gray-100 dark:border-white/5 hover:bg-gray-50 transition-all">
+        Discard Changes
+      </a>
+      <button type="submit" class="px-12 py-4 rounded-2xl bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black text-[10px] font-bold uppercase tracking-widest hover:bg-gold-600 transition-all shadow-xl shadow-gold-500/20">
+        Publish Product
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<script defer src="/js/product.js"></script>
 <script>
   const addProduct = document.getElementById('addProductForm');
-  // Form submission validation
+  
   addProduct.addEventListener('submit', e => {
-    e.preventDefault(); // Stop form submission
+    e.preventDefault();
     const errors = [];
-    // Simple fields
+    
     const name = document.getElementById('name').value.trim();
     const description = document.getElementById('description').value.trim();
-    const category = document.getElementById('category').value.trim();
+    const category = document.getElementById('category').value;
     const tags = document.getElementById('tags').value.trim();
-    if (!name) errors.push('Product name is required.');
-    if (!description) errors.push('Product description is required.');
-    if (!category) errors.push('Please select a category.');
-    if (!tags) errors.push('Tags are required.');
-    // Variant fields
+
+    if (!name) errors.push('Product name is required');
+    if (!description) errors.push('Description is required');
+    if (!category) errors.push('Select a category');
+    if (!tags) errors.push('Search tags are required');
+
     const basePrices = Array.from(document.getElementsByName('basePrice')).map(i => i.value.trim());
     const discounts = Array.from(document.getElementsByName('discount')).map(i => i.value.trim());
     const stocks = Array.from(document.getElementsByName('stock')).map(i => i.value.trim());
     const volumes = Array.from(document.getElementsByName('volume')).map(i => i.value.trim());
+
     volumes.forEach((vol, i) => {
       const bp = Number(basePrices[i]);
       const disc = Number(discounts[i]);
       const st = parseInt(stocks[i]);
-      if (!bp || bp <= 0) errors.push(`Base price must be greater than 0 in variant ${i + 1}.`);
-      if (!st && st !== 0 || st < 0) errors.push(`Stock must be 0 or more in variant ${i + 1}.`);
-      if (!vol) errors.push(`Volume is required in variant ${i + 1}.`);
-      if (disc < 0 || disc > 100) errors.push(`Discount cannot be negative or more than 100 in variant ${i + 1}.`);
+      if (!bp || bp <= 0) errors.push(`Variant ${i + 1}: Invalid base price`);
+      if (isNaN(st) || st < 0) errors.push(`Variant ${i + 1}: Invalid stock`);
+      if (!vol) errors.push(`Variant ${i + 1}: Volume required`);
     });
-    // FormData
-    const formData = new FormData(addProduct);
-    formData.delete('images'); // clear old files
-    getFinalFiles().forEach(file => formData.append('images', file));
-    // Show errors or submit
+
     const errorBox = document.getElementById('addProductError');
+    const errorText = document.getElementById('errorText');
+
     if (errors.length > 0) {
-      errorBox.classList.remove('d-none');
-      errorBox.innerHTML = errors.join('<br>');
+      errorBox.classList.remove('hidden');
+      errorText.innerHTML = errors[0]; // Show first error
+      window.scrollTo({ top: errorBox.offsetTop - 100, behavior: 'smooth' });
     } else {
-      errorBox.classList.add('d-none');
-      errorBox.innerHTML = '';
-      updateInputFiles();
+      errorBox.classList.add('hidden');
+      const formData = new FormData(addProduct);
+      
+      // Update with final file list
+      if (typeof getFinalFiles === 'function') {
+        const finalFiles = getFinalFiles();
+        if (finalFiles.length === 0) {
+          errorBox.classList.remove('hidden');
+          errorText.innerHTML = "At least one product image is required";
+          return;
+        }
+        
+        // Manual DataTransfer to update the file input
+        const dt = new DataTransfer();
+        finalFiles.forEach(file => dt.items.add(file));
+        document.getElementById('imgInput').files = dt.files;
+      }
+      
       addProduct.submit();
     }
   });
-  function updateInputFiles() {
-    const dataTransfer = new DataTransfer();
-    getFinalFiles().forEach(file => dataTransfer.items.add(file));
-    imgInput.files = dataTransfer.files; // overwrite input with cleaned list
-  }
-  document.getElementById('variantContainer').addEventListener('click', (e) => {
-    if (e.target.classList.contains('delete-variant-btn')) {
-      const variantSection = e.target.closest('LI');
-      if (variantSection) variantSection.remove();
+
+  // Handle dynamic variant deletion
+  document.getElementById('variantList').addEventListener('click', (e) => {
+    const deleteBtn = e.target.closest('.delete-variant-btn');
+    if (deleteBtn) {
+      const li = deleteBtn.closest('li');
+      const list = document.getElementById('variantList');
+      if (list.children.length > 1) {
+        li.classList.add('animate-fade-out');
+        setTimeout(() => li.remove(), 300);
+      } else {
+        new Notyf().error('At least one variant is required');
+      }
     }
   });
 </script>
-<%- include('../partials/admin/footer.ejs')%>
+
+<%- include('../partials/admin/footer.ejs') %>

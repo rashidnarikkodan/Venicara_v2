@@ -1,0 +1,37 @@
+<div class="group cursor-pointer">
+  <div class="relative overflow-hidden rounded-2xl aspect-[4/5] bg-gray-100 dark:bg-luxury-charcoal shadow-sm">
+    <img src="<%= product.images && product.images.length > 0 ? product.images[0].url : '/images/placeholder.avif' %>" alt="<%= product.name %>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+    
+    <!-- Wishlist Button -->
+    <button class="wishlist-btn absolute top-4 right-4 w-10 h-10 bg-white/80 dark:bg-luxury-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-luxury-black dark:text-white hover:bg-white dark:hover:bg-luxury-black transition duration-300 shadow-sm z-10" 
+            data-product-id="<%= product._id %>" 
+            data-variant-id="<%= product.variants[0]._id %>">
+      <% if (typeof wishlistIds !== 'undefined' && wishlistIds.includes(product.variants[0]._id.toString())) { %>
+        <i class="fa-solid fa-heart text-gold-500"></i>
+      <% } else { %>
+        <i class="fa-regular fa-heart"></i>
+      <% } %>
+    </button>
+
+    <!-- Quick Actions Overlay -->
+    <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+      <a href="/products/<%= product._id %>" class="px-6 py-2.5 bg-white text-luxury-black rounded-full text-xs font-bold uppercase tracking-widest hover:bg-gold-500 hover:text-white transition duration-300 transform translate-y-4 group-hover:translate-y-0">
+        View Details
+      </a>
+    </div>
+  </div>
+  
+  <div class="mt-5 text-center">
+    <h3 class="text-[10px] tracking-[0.2em] text-gray-400 dark:text-gray-500 uppercase font-bold mb-1"><%= product.category.name %></h3>
+    <a href="/products/<%= product._id %>" class="block">
+      <h2 class="font-serif text-lg font-bold group-hover:text-gold-600 dark:group-hover:text-gold-400 transition duration-300 text-luxury-black dark:text-white"><%= product.name %></h2>
+    </a>
+    <div class="flex items-center justify-center space-x-2 mt-2">
+      <span class="text-gold-700 dark:text-gold-500 font-bold">Rs.<%= Math.min(...product.variants.map(v => v.finalAmount)) %></span>
+      <% if(product.variants[0].finalAmount < product.variants[0].basePrice) { %>
+        <span class="text-gray-300 dark:text-gray-600 text-sm line-through">Rs.<%= product.variants[0].basePrice %></span>
+      <% } %>
+    </div>
+  </div>
+</div>
+

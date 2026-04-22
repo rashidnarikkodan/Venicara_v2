@@ -1,543 +1,278 @@
-<%- include('../partials/user/header.ejs') %>
-<style>
-  @media (max-width: 767.98px) {
-    /* Make all text smaller on mobile */
-    .card,
-    .card * {
-      font-size: 0.8rem !important; /* ~12px */
-    }
-  }
-</style>
+<%- include("../partials/user/header.ejs") %>
 
-<main class="container my-4 min-vh-100">
-  <% if (orders && orders.length > 0) { %> <% orders.forEach(order => { %>
-  <div class="card rounded-3 px-3 px-md-4 py-3 mb-4 shadow">
-    <!-- Order Header -->
-    <div class="d-flex justify-content-between align-items-center mb-2 mb-md-3">
-      <span class="fw-semibold">Order ID : <%=order.orderId%></span>
-      <span class="alert alert-primary py-0 px-2 text-primary m-0"
-        ><%=order.status.charAt(0).toUpperCase() + order.status.slice(1)%></span
-      >
-    </div>
-
-    <!-- Products Section -->
-    <div class="row">
-      <div
-        class="col-12 col-md-9 px-2 px-md-3 py-2 rounded-2"
-        style="background-color: rgb(230, 230, 230)"
-      >
-        <% order.products.forEach((product,index)=>{ %>
-        <div
-          class="row py-2 border-bottom <%=product.status === 'cancelled'?'text-secondary':''%>"
-        >
-          <!-- Product Image -->
-          <a
-            href="/products/<%=product.productId._id%>"
-            class="col-3 col-md-2 d-flex align-items-center justify-content-center mb-2 mb-md-0"
-          >
-            <img
-              src="<%=product?.image%>"
-              alt="Product Image"
-              class="img-fluid rounded"
-              style="max-height: 90%; max-width: 100%"
-            />
-          </a>
-
-          <!-- Product Info -->
-          <div class="col-9 col-md-4">
-            <h6 class="fw-semibold mb-1 fs-6 fs-md-5">
-              <%=product?.productName%>(<%=product?.volume%> ML)
-            </h6>
-            <p class="fw-normal m-0 fs-7 fs-md-6">
-              Price : ₹<%=product.finalAmount%>
-            </p>
-            <p
-              class="mb-0 <%=product.status === 'cancelled'?'text-muted':'text-black'%> fs-7 fs-md-6"
-            >
-              Qty: <%=product.quantity%>
-            </p>
-            <p class="fw-bold mb-0 fs-7 fs-md-6">
-              Total : ₹<%=product.subtotal%>
-            </p>
-          </div>
-
-          <!-- Status -->
-          <div class="col-9 col-md-3">
-            <p class="small mb-1">
-              <strong>Ordered On :</strong> <%=order.createdAt.toLocaleString('en-IN', { dateStyle: 'medium' })%>
-            </p>
-            <p class="small mb-1">
-              <strong>Expected :</strong> <%= new Date(order.createdAt.getTime()+ 1000*60*60*24*3).toLocaleString('en-IN', { dateStyle: 'medium'}) %>
-            </p>
-            <p class="small mb-0">
-              <strong>Status : </strong>
-              <span
-                class="<%=product.status === 'cancelled'?'text-secondary':'text-success'%> fw-bold"
-              >
-                <%=product.status.charAt(0).toUpperCase()+product.status.slice(1)%>
-              </span>
-            </p>
-            <p class="small mb-1">
-              <strong>Payment Method :</strong> <%=order.payment.method%>
-            </p>
-          </div>
-
-          <!-- Actions -->
-          <div
-            class="col-3 col-md-3 d-flex gap-2 justify-content-end align-items-center"
-          >
-            <% if(!["pending","shipped","Out ofdelivery","delivered","cancelled","returned"].includes(product.status)){ %>
-            <button
-              class="btn btn-danger fs-7 fs-md-6"
-              id="cancel-<%=order._id%>-<%=index%>"
-              onclick="showConfirmModal('<%=order._id%>','cancelProduct','<%=index%>')"
-            >
-              Cancel
-            </button>
-            <% } %> 
-            <% if(product.status ==='delivered'&&product.return?.returnTimeLimit>Date.now()) { %>
-            <button
-              class="btn btn-secondary fs-7 fs-md-6"
-              onclick="showConfirmModal('<%= order._id %>','returnProduct','<%= index %>')"
-            >
-              <%= product.return?.isRequested ? "Requested" : "Return" %>
-            </button>
-            <% } %>
-
-            <a
-              href="/orders/details/<%=order._id%>?index=<%=index%>"
-              class="btn btn-dark fs-7 fs-md-6"
-              >Details</a
-            >
-          </div>
-
-          <div class="col-12 <%=!product.return?.adminReason?'d-none':''%>">
-            <span class="text-danger fw-normal small fw-semibold"
-              >Return Rejected Reason :
-              <span><%=product.return.adminReason%></span></span
-            >
-          </div>
-        </div>
-        <% }) %>
-      </div>
-
-      <!-- Price Details -->
-      <div
-        class="col-12 col-md-3 d-flex justify-content-center mt-2 mt-md-0 p-0 ps-md-2"
-      >
-        <div class="row rounded-3 gap-2 w-100">
-          <div
-            class="p-3 rounded-3 col-12"
-            style="background-color: rgb(230, 230, 230)"
-          >
-            <h6 class="fw-bold mb-3 fs-6 fs-md-5">Price Details</h6>
-            <div class="d-flex justify-content-between mb-2 fs-7 fs-md-6">
-              <span>Items (<%=order.products.length%>)</span>
-              <span>₹<%=order.totalOrderPrice%></span>
-            </div>
-            <div
-              class="d-flex justify-content-between mb-2 fs-7 fs-md-6 <%=order.products.some(o=>o.status=='cancelled'||o.status === 'returned')?'':'d-none'%>"
-            >
-              <span>Refunded Amount</span>
-              <span class="text-dark">₹<%=order.refundAmount%></span>
-            </div>
-            <div
-              class="d-flex justify-content-between mb-2 fs-7 fs-md-6 <%=order.couponApplied?'':'d-none'%>"
-            >
-              <span>Discount</span>
-              <span class="text-success"
-                ><%=order.couponDiscount?order.couponDiscount+'%':order.couponDiscount == 0?'-':'No Discounts'%></span
-              >
-            </div>
-            <div
-              class="d-flex justify-content-between mb-2 fs-7 fs-md-6 <%=order.couponApplied?'':'d-none'%>"
-            >
-              <span>Discount Amount</span>
-             <%const remainingProducts = order.products.filter((p, i) =>!["cancelled", "returned"].includes(p.status));
-                const remainingDiscount = remainingProducts.reduce(
-                  (sum, p) => sum + p.subtotal * (order.couponDiscount || 0) / 100,
-                  0
-                );
-              %>
-              <span class="text-danger">-₹<%= remainingDiscount?remainingDiscount.toFixed(2):order.couponAmount %></span>
-
-            </div>
-            <div class="d-flex justify-content-between mb-2 fs-7 fs-md-6">
-              <span>Delivery Charge</span>
-              <span class="text-success">₹<%=order.deliveryCharge%></span>
-            </div>
-            <div
-              class="d-flex justify-content-between border-top pt-2 fw-bold fs-6 fs-md-5"
-            >
-              <span>Total Amount</span>
-              <span>₹<%=order.finalAmount%></span>
-            </div>
-          </div>
-
-          <div
-            class="alert alert-dark p-2 rounded-3 col-12 fs-7 fs-md-6 <%=!order.return?.adminReason?'d-none':''%>"
-          >
-            <p class="text-dark m-0 p-0 fw-bold text-start">
-              Return request rejected
-            </p>
-            <span class="text-dark fw-semibold text-start"
-              >Reason : <span><%=order.return.adminReason%></span></span
-            >
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Order-level actions -->
-    <div
-    class="d-flex justify-content-between align-items-center mt-md-3 mt-2 gap-2"
-    style="max-height: fit-content !important"
-    >
-    <%if(order.status=='pending'){%>
-      <div>
-        <button class="btn btn-sm btn-dark" onclick="RetryPayment('<%=order._id%>')">Retry Payment</button>
-        <button class="btn btn-sm btn-outline-dark" onclick="showConfirmModal('<%=order._id%>','cancelOrderNoRefund')">Order Cancel</button>
-      </div>
-        <%}%>
-        <% if(!["pending","delivered","cancelled","returned"].includes(order.status)) { %>
-      <button
-        class="btn btn-outline-dark btn-sm fw-semibold"
-        onclick="showConfirmModal('<%=order._id%>','cancelOrder')">
-        Cancel Order
-      </button>
-      <% } %> 
-      <%if(order.status ==='delivered'&&order.return?.returnTimeLimit>Date.now()){%>
-        
-      <button
-        class="btn btn-sm btn-secondary"
-
-        onclick="showConfirmModal('<%= order._id %>','returnOrder')"
-      >
-        <%= order.return?.isRequested ? "Return Requested" :
-        order.return?.adminReason ? "Return Rejected" : "Return Order" %>
-      </button>
-      <%}%>
+<main class="bg-white min-h-screen py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col lg:flex-row gap-12">
       
+      <%- include("../partials/user/sidebarProfile.ejs") %>
 
-      <div class="text-start">
-        <a
-          href="/orders/<%=order._id%>/invoice"
-          class="btn btn-outline-primary btn-sm fw-bold"
-          >Invoice</a
-        >
-      </div>
-    </div>
+      <!-- Orders Content -->
+      <div class="flex-1">
+        <div class="mb-10">
+          <h1 class="text-3xl font-serif font-bold text-luxury-black mb-2 uppercase tracking-tight">Order History</h1>
+          <p class="text-gray-500 text-sm italic">Track and manage your luxury acquisitions.</p>
+        </div>
 
-    <div class="mt-2 fs-8">
-      <span class="text-danger small fw-semibold">
-        * If you return/cancel any product and used a coupon, the coupon amount
-        will be reduced from your refund.
-      </span>
-    </div>
-  </div>
-  <% }) %> <% } else { %>
-  <div class="text-center py-5">
-    <h5 class="text-muted">You have no orders yet.</h5>
-    <a href="/shop" class="btn btn-dark mt-2">Shop Now</a>
-  </div>
-  <% } %>
+        <% if (orders && orders.length > 0) { %>
+          <div class="space-y-8">
+            <% orders.forEach(order => { %>
+              <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden group hover:shadow-md transition duration-500">
+                <!-- Order Card Header -->
+                <div class="bg-luxury-cream px-6 sm:px-8 py-6 border-b border-gray-50 flex flex-wrap items-center justify-between gap-6">
+                  <div class="flex flex-wrap items-center gap-x-8 sm:gap-x-12 gap-y-4">
+                    <div>
+                      <p class="text-[10px] text-gold-600 font-bold uppercase tracking-[0.2em] mb-1">Order Placed</p>
+                      <p class="text-xs sm:text-sm font-bold text-luxury-black"><%= new Date(order.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %></p>
+                    </div>
+                    <div>
+                      <p class="text-[10px] text-gold-600 font-bold uppercase tracking-[0.2em] mb-1">Total Amount</p>
+                      <p class="text-xs sm:text-sm font-bold text-luxury-black">Rs.<%= order.finalAmount.toLocaleString() %></p>
+                    </div>
+                    <div class="hidden sm:block">
+                      <p class="text-[10px] text-gold-600 font-bold uppercase tracking-[0.2em] mb-1">Order #</p>
+                      <p class="text-xs sm:text-sm font-bold text-luxury-black uppercase tracking-tight"><%= order.orderId %></p>
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-6">
+                     <a href="/orders/<%=order._id%>/invoice" class="text-[10px] font-bold text-luxury-black hover:text-gold-600 transition uppercase tracking-widest border-b border-luxury-black hover:border-gold-600 flex items-center">
+                       <i class="fa-solid fa-file-invoice mr-2"></i> Invoice
+                     </a>
+                  </div>
+                </div>
 
-  <!-- Return Modal -->
-  <div
-    class="modal fade"
-    id="returnModal"
-    tabindex="-1"
-    aria-labelledby="returnModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <form id="returnForm">
-          <div class="modal-header">
-            <h5 class="modal-title fs-6 fs-md-5" id="returnModalLabel">
-              Return Order
-            </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+                <!-- Order Body -->
+                <div class="p-6 sm:p-8">
+                  <div class="flex flex-wrap items-center justify-between mb-8 gap-4">
+                    <div class="flex items-center space-x-3">
+                       <% 
+                          let statusDotColor = 'bg-gray-400';
+                          if(order.status === 'delivered') statusDotColor = 'bg-green-500';
+                          if(order.status === 'cancelled') statusDotColor = 'bg-red-500';
+                          if(order.status === 'pending') statusDotColor = 'bg-gold-500 animate-pulse';
+                       %>
+                       <span class="w-3 h-3 rounded-full <%= statusDotColor %>"></span>
+                       <h4 class="text-lg font-serif font-bold text-luxury-black tracking-tight uppercase"><%= order.status %></h4>
+                    </div>
+                    <div class="flex flex-wrap gap-3">
+                       <% if(order.status === 'pending') { %>
+                         <button onclick="RetryPayment('<%=order._id%>')" class="bg-gold-600 text-white px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-gold-700 transition shadow-lg">Retry Payment</button>
+                         <button onclick="showConfirmModal('<%=order._id%>','cancelOrderNoRefund')" class="border border-gray-200 text-gray-500 px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 transition">Cancel Order</button>
+                       <% } else if(!["delivered","cancelled","returned"].includes(order.status)) { %>
+                         <button onclick="showConfirmModal('<%=order._id%>','cancelOrder')" class="border border-red-100 text-red-500 px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-red-50 transition">Cancel Entire Order</button>
+                       <% } %>
+                       
+                       <% if(order.status === 'delivered' && order.return?.returnTimeLimit > Date.now()) { %>
+                         <button onclick="showConfirmModal('<%= order._id %>','returnOrder')" class="bg-luxury-black text-white px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-gold-600 transition shadow-lg">
+                           <%= order.return?.isRequested ? "Return Requested" : "Return Order" %>
+                         </button>
+                       <% } %>
+                    </div>
+                  </div>
+
+                  <!-- Product Items -->
+                  <div class="space-y-6">
+                    <% order.products.forEach((product, index) => { %>
+                      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-4 rounded-2xl transition hover:bg-gray-50/50 border border-transparent hover:border-gray-100 <%= product.status === 'cancelled' || product.status === 'returned' ? 'opacity-50 grayscale' : '' %>">
+                        <a href="/products/<%= product.productId._id %>" class="w-20 h-24 sm:w-24 sm:h-32 flex-shrink-0 bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                          <img src="<%= product?.image %>" alt="<%= product?.productName %>" class="w-full h-full object-cover">
+                        </a>
+                        <div class="flex-1 min-w-0">
+                          <h5 class="text-sm font-bold text-luxury-black truncate uppercase tracking-tight mb-1"><%= product?.productName %></h5>
+                          <p class="text-[10px] text-gray-400 font-medium uppercase tracking-widest mb-3"><%= product?.volume %>ML × <%= product.quantity %></p>
+                          <div class="flex flex-wrap items-center gap-3">
+                            <span class="text-sm font-bold text-gold-700">Rs.<%= product.finalAmount.toLocaleString() %></span>
+                            <span class="text-[10px] px-3 py-1 rounded-full border <%= product.status === 'cancelled' || product.status === 'returned' ? 'border-red-100 text-red-400' : 'border-gold-100 text-gold-600' %> font-bold uppercase tracking-widest">
+                              <%= product.status %>
+                            </span>
+                          </div>
+                        </div>
+                        <div class="flex flex-row sm:flex-col items-center sm:items-end gap-6 sm:gap-3 w-full sm:w-auto pt-4 sm:pt-0 border-t sm:border-0 border-gray-50">
+                          <a href="/orders/details/<%= order._id %>?index=<%= index %>" class="text-[10px] font-bold text-luxury-black uppercase tracking-widest hover:text-gold-600 transition flex items-center group">
+                            <span>View Details</span>
+                            <i class="fa-solid fa-chevron-right ml-2 text-[8px] group-hover:translate-x-1 transition-transform"></i>
+                          </a>
+                          
+                          <% if(!["pending","shipped","Out ofdelivery","delivered","cancelled","returned"].includes(product.status)){ %>
+                            <button onclick="showConfirmModal('<%=order._id%>','cancelProduct','<%=index%>')" class="text-[10px] font-bold text-red-400 hover:text-red-600 uppercase tracking-widest transition">Cancel Item</button>
+                          <% } %>
+
+                          <% if(product.status ==='delivered' && product.return?.returnTimeLimit > Date.now()) { %>
+                            <button onclick="showConfirmModal('<%= order._id %>','returnProduct','<%= index %>')" class="text-[10px] font-bold text-gold-600 hover:text-gold-800 uppercase tracking-widest transition">
+                              <%= product.return?.isRequested ? "Return Requested" : "Return Item" %>
+                            </button>
+                          <% } %>
+                        </div>
+                      </div>
+                    <% }) %>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
           </div>
 
-          <div class="modal-body">
-            <div class="mb-3">
-              <label for="returnReason" class="form-label fs-7 fs-md-6"
-                >Reason for return</label
-              >
-              <textarea
-                id="returnReason"
-                class="form-control w-100 fs-7 fs-md-6"
-                rows="3"
-                placeholder="Enter your reason"
-              ></textarea>
+          <!-- Pagination -->
+          <div class="mt-16 flex justify-center">
+            <nav class="inline-flex space-x-2">
+              <% if (page > 1) { %>
+                <a href="?page=<%= page - 1 %>&limit=<%= limit %>" class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-100 text-luxury-black hover:border-gold-500 hover:text-gold-600 transition">
+                  <i class="fa-solid fa-chevron-left text-xs"></i>
+                </a>
+              <% } %>
+              
+              <% for(let i=1; i<=totalPages; i++) { %>
+                <a href="?page=<%= i %>&limit=<%= limit %>" class="w-10 h-10 flex items-center justify-center rounded-full <%= page == i ? 'bg-luxury-black text-white shadow-lg' : 'bg-white border border-gray-100 text-luxury-black hover:bg-gray-50' %> text-[10px] font-bold transition">
+                  <%= i %>
+                </a>
+              <% } %>
+
+              <% if (page < totalPages) { %>
+                <a href="?page=<%= page + 1 %>&limit=<%= limit %>" class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-100 text-luxury-black hover:border-gold-500 hover:text-gold-600 transition">
+                  <i class="fa-solid fa-chevron-right text-xs"></i>
+                </a>
+              <% } %>
+            </nav>
+          </div>
+        <% } else { %>
+          <div class="bg-gray-50 rounded-[3rem] p-16 text-center border-2 border-dashed border-gray-200">
+            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
+              <i class="fa-solid fa-box-open text-4xl text-gray-200"></i>
             </div>
+            <h2 class="text-2xl font-serif font-bold text-luxury-black mb-4 uppercase tracking-tighter">No orders found</h2>
+            <p class="text-gray-500 mb-10 max-w-sm mx-auto">You haven't placed any orders yet. Start your journey with Venicara's exclusive collection.</p>
+            <a href="/shop" class="inline-block bg-luxury-black text-white px-10 py-5 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-gold-600 transition shadow-xl">
+              Explore Collection
+            </a>
           </div>
-
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary fs-7 fs-md-6">
-              Submit
-            </button>
-            <button
-              type="button"
-              class="btn btn-secondary fs-7 fs-md-6"
-              data-bs-dismiss="modal"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
+        <% } %>
       </div>
     </div>
   </div>
 
-  <!-- //confirm modal -->
-  <div
-    class="modal fade"
-    id="confirmModal"
-    tabindex="-1"
-    aria-labelledby="confirmLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-dark">
-        <div class="modal-header bg-dark text-white">
-          <h5 class="modal-title" id="confirmLabel">Are you sure?</h5>
-          <button
-            type="button"
-            class="btn-close btn-close-white"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="modal-body">
-          <p id="confirmMessage">
-            Be carefull while return or cancel after use a cupon
-          </p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" data-bs-dismiss="modal" class="btn btn-outline-dark">
-            No
-          </button>
-          <button
-          type="button"
-          class="btn btn-dark"
-          id="yes"
-          data-orderId = ""
-          data-operation = ""
-          data-index = ""
-          >
-          Yes
-        </button>
+  <!-- Shared Custom Modal -->
+  <div id="twModal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-4">
+    <div id="twModalOverlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+    <div id="twModalContent" class="relative bg-white rounded-[2.5rem] p-10 max-w-md w-full shadow-2xl text-center transform scale-95 opacity-0 transition-all duration-300">
+      <div id="twModalIcon" class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8">
+        <i class="fa-solid fa-circle-question text-3xl text-gray-400"></i>
+      </div>
+      <h2 id="twModalTitle" class="text-2xl font-serif font-bold text-luxury-black mb-4 tracking-tight uppercase">Are you sure?</h2>
+      <p id="twModalMessage" class="text-gray-500 text-sm mb-10 leading-relaxed"></p>
+      
+      <!-- Reason Input for Returns -->
+      <div id="twReturnReasonContainer" class="hidden mb-10">
+        <label class="block text-[10px] font-bold text-gold-600 uppercase tracking-widest text-left mb-2 ml-2">Reason for Return</label>
+        <textarea id="twReturnReasonInput" class="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 text-sm focus:ring-gold-500 focus:border-gold-500 outline-none" rows="3" placeholder="Please describe why you're returning..."></textarea>
+      </div>
+
+      <div class="flex gap-4">
+        <button onclick="hideTwModal()" class="flex-1 py-4 border-2 border-gray-100 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gray-50 transition">Cancel</button>
+        <button id="twModalConfirmBtn" class="flex-1 py-4 bg-luxury-black text-white rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 transition shadow-lg">Confirm</button>
       </div>
     </div>
   </div>
-</div>
-
-  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-success">
-      <div class="modal-header bg-success text-white">
-        <h5 class="modal-title" id="successLabel">Payment Success</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p id="successMessage"></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-success" data-bs-dismiss="modal" onclick="window.location.reload()">OK</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-    <!-- Pagination -->
-    <div class="d-flex justify-content-center justify-content-md-end mt-3">
-      <nav aria-label="Page navigation">
-        <ul class="pagination flex-wrap p-2">
-          <!-- Previous -->
-          <% if (page > 1) { %>
-            <li class="page-item">
-              <a class="page-link bg-dark" href="?page=<%= page - 1 %>&limit=<%= limit %>">
-                <i class="fa-solid fa-caret-left text-white"></i>
-              </a>
-            </li>
-          <% } else { %>
-            <li class="page-item disabled">
-              <span class="page-link bg-dark"><i class="fa-solid fa-caret-left text-white"></i></span>
-            </li>
-          <% } %>
-
-          <!-- Left Page -->
-          <% if (page - 1>= 1) { %>
-            <li class="page-item"><a class="page-link" href="?page=<%= page - 1 %>&limit=<%= limit %>"><%= page - 1 %></a></li>
-          <% } %>
-
-          <!-- Current Page -->
-          <li class="page-item active">
-            <span class="page-link bg-white text-dark border-0"><%= page %></span>
-          </li>
-
-          <!-- Right Page -->
-          <% if (page + 1 <=totalPages) { %>
-            <li class="page-item"><a class="page-link" href="?page=<%= page + 1 %>&limit=<%= limit %>"><%= page + 1 %></a></li>
-          <% } %>
-
-          <!-- Next -->
-          <% if (page < totalPages) { %>
-            <li class="page-item">
-              <a class="page-link bg-dark" href="?page=<%= page + 1 %>&limit=<%= limit %>">
-                <i class="fa-solid fa-caret-right text-white"></i>
-              </a>
-            </li>
-          <% } else { %>
-            <li class="page-item disabled">
-              <span class="page-link bg-dark"><i class="fa-solid fa-caret-right text-white"></i></span>
-            </li>
-          <% } %>
-        </ul>
-      </nav>
-    </div>
-
-
 </main>
+
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-  let currentReturnId = null;
-  let currentReturnIndex = null;
-  
-  function showConfirmModal(orderId,operation,index=null){
-    const modalEl = document.getElementById("confirmModal");
-    const messageEl = document.getElementById("confirmMessage");
-    const yesBtn = document.getElementById('yes');
-    if(index&&operation=='cancelProduct'){
-      messageEl.textContent = 'Are you sure you want to Cancel this Product';
-    }
-    if(!index&&operation=='cancelOrder'){
-      messageEl.textContent = 'Are you sure you want to Cancel this Order';
-    }
-    if(operation=='cancelOrderNoRefund'){
-      messageEl.textContent = 'Since you havn\'t paid the Amount, you will not get Refund, Thank You...';
-      operation='cancelOrder'
-    }
-    if(index&&operation=='returnProduct'){
-      messageEl.textContent = 'Are you sure you want to Return this Product';
-    }
-    if(!index&&operation=='returnOrder'){
-      messageEl.textContent = 'Are you sure you want to Return this Order';
-    }
-    yesBtn.setAttribute('data-orderId', orderId); 
-    yesBtn.setAttribute('data-operation', operation); 
-    yesBtn.setAttribute('data-index', index); 
-    
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
-  }
-  
-  
-  function showSuccessModal(message){
-    const modalEl = document.getElementById("successModal");
-    const messageEl = document.getElementById("successMessage");
-    messageEl.textContent = message;
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
-  }
+  let currentOrderId = null;
+  let currentOperation = null;
+  let currentIndex = null;
 
-  document.getElementById('yes').addEventListener('click',(e)=>{
-    const operation = document.getElementById('yes').getAttribute('data-operation')
-    const orderId = document.getElementById('yes').getAttribute('data-orderId')
-    const index = document.getElementById('yes').getAttribute('data-index')
-     if(operation=='cancelProduct'){
-      cancelProduct(orderId,index)
+  function showConfirmModal(orderId, operation, index = null) {
+    currentOrderId = orderId;
+    currentOperation = operation;
+    currentIndex = index;
+
+    const modal = document.getElementById('twModal');
+    const content = document.getElementById('twModalContent');
+    const overlay = document.getElementById('twModalOverlay');
+    const title = document.getElementById('twModalTitle');
+    const message = document.getElementById('twModalMessage');
+    const reasonContainer = document.getElementById('twReturnReasonContainer');
+    const confirmBtn = document.getElementById('twModalConfirmBtn');
+    const icon = document.getElementById('twModalIcon');
+
+    // Reset view
+    reasonContainer.classList.add('hidden');
+    confirmBtn.className = "flex-1 py-4 bg-luxury-black text-white rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 transition shadow-lg";
+    icon.innerHTML = '<i class="fa-solid fa-circle-question text-3xl text-gray-400"></i>';
+    icon.className = "w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8";
+
+    if (operation === 'cancelProduct') {
+      title.textContent = "Cancel Item?";
+      message.textContent = "Are you sure you want to cancel this exquisite selection? This action can't be reversed.";
+      confirmBtn.classList.add('hover:bg-red-500');
+    } else if (operation === 'cancelOrder') {
+      title.textContent = "Cancel Entire Order?";
+      message.textContent = "Every selection in this order will be cancelled. Proceed with caution.";
+      confirmBtn.classList.add('hover:bg-red-500');
+    } else if (operation === 'cancelOrderNoRefund') {
+      title.textContent = "Cancel Unpaid Order?";
+      message.textContent = "Since the payment was not completed, no refund will be issued. The order will be closed.";
+      currentOperation = 'cancelOrder';
+    } else if (operation === 'returnProduct' || operation === 'returnOrder') {
+      title.textContent = "Request Return?";
+      message.textContent = "We strive for excellence. Please let us know why you wish to return your fragrance.";
+      reasonContainer.classList.remove('hidden');
+      icon.innerHTML = '<i class="fa-solid fa-rotate-left text-3xl text-gold-600"></i>';
+      icon.className = "w-20 h-20 bg-gold-50 rounded-full flex items-center justify-center mx-auto mb-8";
     }
-    if(operation=='cancelOrder'){
-      cancelOrder(orderId)
-    }
-    if(operation=='returnProduct'){
-      openReturnModal(orderId,index)
-      const modalEl = document.getElementById('confirmModal');
-      const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-      modal.hide();
-    }
-    if(operation=='returnOrder'){
-      openReturnModal(orderId)
-      const modalEl = document.getElementById('confirmModal');
-      const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-      modal.hide();
-    }
-  })
 
-
-  function openReturnModal(id, index = null) {
-
-    currentReturnId = id;
-    currentReturnIndex = index;
-
-    const reasonInput = document.getElementById("returnReason");
-    if (reasonInput) reasonInput.value = "";
-
-    const modalEl = document.getElementById("returnModal");
-    if (modalEl) new bootstrap.Modal(modalEl).show();
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      overlay.classList.remove('opacity-0');
+      content.classList.remove('scale-95', 'opacity-0');
+      content.classList.add('scale-100', 'opacity-100');
+    }, 10);
   }
 
-  document
-    .getElementById("returnForm")
-    .addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const reason = document.getElementById("returnReason").value.trim();
+  function hideTwModal() {
+    const modal = document.getElementById('twModal');
+    const content = document.getElementById('twModalContent');
+    const overlay = document.getElementById('twModalOverlay');
+
+    overlay.classList.add('opacity-0');
+    content.classList.add('scale-95', 'opacity-0');
+    content.classList.remove('scale-100', 'opacity-100');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 300);
+  }
+
+  document.getElementById('twModalConfirmBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('twModalConfirmBtn');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
+
+    if (currentOperation === 'cancelProduct') {
+      await cancelProduct(currentOrderId, currentIndex);
+    } else if (currentOperation === 'cancelOrder') {
+      await cancelOrder(currentOrderId);
+    } else if (currentOperation === 'returnProduct' || currentOperation === 'returnOrder') {
+      const reason = document.getElementById('twReturnReasonInput').value.trim();
       if (!reason) {
-        showAlert('error',"Please provide a return reason.");
+        new Notyf().error("Please provide a reason for return.");
+        btn.disabled = false;
+        btn.innerHTML = originalText;
         return;
       }
-
-      let url =
-        currentReturnIndex !== null
-          ? `/orders/product/return/${currentReturnId}?index=${currentReturnIndex}`
-          : `/orders/return/${currentReturnId}`;
-
-      try {
-        const res = await fetch(url, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ reason }),
-        });
-        const data = await res.json();
-        if (data.status) location.reload();
-        else showAlert('error',data.message || "Return request failed");
-      } catch (err) {
-        console.error(err);
-        showAlert('error',"Unable to return");
-      }
-    });
+      await submitReturn(currentOrderId, currentIndex, reason);
+    }
+  });
 
   async function cancelProduct(id, index) {
     try {
-      document.getElementById('yes').disable = true
-      document.getElementById('yes').textContent = 'Cancelling'
-      const modalEl = document.getElementById("confirmModal");
-      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-      modal.hide();
-      document.getElementById(`cancel-${id}-${index}`).classList.add('d-none')
-      const res = await fetch(`/orders/product/cancel/${id}?index=${index}`, {
-        method: "PATCH",
-      });
+      const res = await fetch(`/orders/product/cancel/${id}?index=${index}`, { method: "PATCH" });
       const data = await res.json();
-      if (data.status){
-        window.location.reload()
-        showAlert('success',"Product cancelled");
-      } 
+      if (data.status) {
+        new Notyf().success("Item cancelled successfully.");
+        location.reload();
+      } else {
+        new Notyf().error(data.message || "Failed to cancel item.");
+      }
     } catch (err) {
-      console.error(err);
-      showAlert('error',"Unable to cancel product");
-    }finally{
-      document.getElementById('yes').disable = false
-      document.getElementById('yes').textContent = 'Yes'
-
+      new Notyf().error("Connection error. Try again.");
     }
   }
 
@@ -545,27 +280,50 @@
     try {
       const res = await fetch(`/orders/cancel/${id}`, { method: "PATCH" });
       const data = await res.json();
-      if (data.status) location.reload();
+      if (data.status) {
+        new Notyf().success("Order cancelled successfully.");
+        location.reload();
+      } else {
+        new Notyf().error(data.message || "Failed to cancel order.");
+      }
     } catch (err) {
-      console.error(err);
-      showAlert('error',"Unable to cancel order");
+      new Notyf().error("Connection error. Try again.");
     }
   }
 
- async function RetryPayment(orderId){
+  async function submitReturn(id, index, reason) {
+    const url = index !== null ? `/orders/product/return/${id}?index=${index}` : `/orders/return/${id}`;
+    try {
+      const res = await fetch(url, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason }),
+      });
+      const data = await res.json();
+      if (data.status) {
+        new Notyf().success("Return request submitted.");
+        location.reload();
+      } else {
+        new Notyf().error(data.message || "Return request failed.");
+      }
+    } catch (err) {
+      new Notyf().error("Connection error. Try again.");
+    }
+  }
 
-    const response = await fetch("/orders/api/retryPayment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({orderId}),
-    });
-    
-    const data = await response.json();
-    
-    if (!data.status) return showAlert('error',`Payment Failed :- ${data.message}`);
-    const options = {
-        key: "<%= process.env.RAZORPAY_KEY_ID %>", // Razorpay key
-        amount: data.finalAmount * 100, // paise
+  async function RetryPayment(orderId) {
+    try {
+      const response = await fetch("/orders/api/retryPayment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      });
+      const data = await response.json();
+      if (!data.status) throw new Error(data.message);
+
+      const options = {
+        key: "<%= process.env.RAZORPAY_KEY_ID %>",
+        amount: data.finalAmount * 100,
         currency: "INR",
         name: "VENICARA",
         order_id: data.razorpayOrderId,
@@ -574,49 +332,38 @@
           email: "<%= user.email %>",
           contact: "<%= user.mobile %>",
         },
-        theme: { color: "#3399cc" },
+        theme: { color: "#d4af37" },
         handler: async function (response) {
-          try {
-            console.log('ntered')
-            const res = await fetch("/orders/api/retryPaymentSuccess", {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                orderId: data.orderId,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-              }),
-            });
-
-            const result = await res.json();
-            if (result.status) {
-              showSuccessModal(result.message)
-            } else {
-            showAlert('error',"Payment Failed - "+result.message);
-            return
-            }
-          } catch (err) {
-            showAlert('error',"Payment Failed - Due to Internal Error");
-            return;
+          const res = await fetch("/orders/api/retryPaymentSuccess", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              orderId: data.orderId,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+            }),
+          });
+          const result = await res.json();
+          if (result.status) {
+            new Notyf().success(result.message);
+            setTimeout(() => location.reload(), 1500);
+          } else {
+            new Notyf().error(result.message);
           }
         },
-        modal: { escape: true, ondismiss: async() => {
-          try{
-            showAlert('error','Payment Failed due to Unexpected Action in Razorpay, Try again...') 
-          }catch(error){
-            console.log('razorpay ondismiss'+error)
+        modal: {
+          ondismiss: () => {
+            new Notyf().error('Payment was not completed. Please try again.');
           }
         }
-        }
       };
-
       const rzp = new Razorpay(options);
       rzp.open();
-      return; // Stop further redirect
+    } catch (err) {
+      new Notyf().error(err.message);
     }
-  
-
+  }
 </script>
 
-<%- include('../partials/user/footer.ejs') %>
+<%- include("../partials/user/footer.ejs") %>

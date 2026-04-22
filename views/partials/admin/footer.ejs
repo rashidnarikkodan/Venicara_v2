@@ -1,11 +1,51 @@
-<hr class="mt-0">
-    <footer class="p-2">
-      <p class="text-center">© 2025 | VENICARA | All Rights Reserved. | We Give You Smell.</p>    
-    </footer>
-  <script defer src="/js/adminHeader.js"></script>
-  <script defer src="/js/product.js"></script>
-  <script defer src="/js/toggleStatus.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-  <script defer src="https://kit.fontawesome.com/f45c5ea548.js" crossorigin="anonymous"></script>
-  </body>
+      </main>
+    </div>
+  </div>
+
+  <footer class="py-6 border-t border-gray-100 dark:border-white/5 bg-white/50 dark:bg-luxury-black/50 backdrop-blur-md">
+    <p class="text-center text-xs text-gray-400 uppercase tracking-widest font-bold">
+      © 2024 | VENICARA | All Rights Reserved | Luxury Fragrances
+    </p>    
+  </footer>
+
+  <script>
+    // Sidebar Logic
+    const sidebar = document.getElementById('admin-sidebar');
+    const toggleBtn = document.getElementById('sidebar-toggle');
+    
+    toggleBtn?.addEventListener('click', () => {
+      sidebar.classList.toggle('-translate-x-full');
+    });
+
+    // Close sidebar on mobile when clicking outside
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth < 1024) {
+        if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+          sidebar.classList.add('-translate-x-full');
+        }
+      }
+    });
+
+    // Theme Toggle Logic
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle?.addEventListener('click', () => {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+
+    // Auto-hide flash messages
+    const flash = document.getElementById('flash-container');
+    if (flash) {
+      setTimeout(() => {
+        flash.classList.add('opacity-0', 'transition-opacity', 'duration-1000');
+        setTimeout(() => flash.style.display = 'none', 1000);
+      }, 4000);
+    }
+  </script>
+</body>
 </html>

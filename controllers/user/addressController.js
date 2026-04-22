@@ -1,23 +1,28 @@
 const Address = require("../../models/Address");
+const User = require("../../models/User");
 
 // Reusable error handler
 const handleError = require('../../helpers/handleError')
 
 const showAddress = async (req, res) => {
   try {
-    let addresses = await Address.find({
-      userId: req.session.user.id,
-      isDeleted: false,
-    });
-    res.render("userPages/address", { addresses });
+    const [addresses, user] = await Promise.all([
+      Address.find({
+        userId: req.session.user.id,
+        isDeleted: false,
+      }),
+      User.findById(req.session.user.id)
+    ]);
+    res.render("userPages/address", { addresses, user });
   } catch (error) {
     handleError(res, "showAddress", error);
   }
 };
 
-const showNewAddress = (req, res) => {
+const showNewAddress = async (req, res) => {
   try {
-    res.render("userPages/newAddress");
+    const user = await User.findById(req.session.user.id);
+    res.render("userPages/newAddress", { user });
   } catch (error) {
     handleError(res, "showNewAddress", error);
   }
@@ -63,8 +68,11 @@ const handleNewAddress = async (req, res) => {
 
 const showEditAddress = async (req, res) => {
   try {
-    const address = await Address.findById(req.params.id);
-    res.render("userPages/editAddress", { address });
+    const [address, user] = await Promise.all([
+      Address.findById(req.params.id),
+      User.findById(req.session.user.id)
+    ]);
+    res.render("userPages/editAddress", { address, user });
   } catch (error) {
     handleError(res, "showEditAddress", error);
   }

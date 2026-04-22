@@ -1,145 +1,93 @@
 <%-include('../partials/user/header.ejs')%>
-<%-include('../partials/user/sidebarProfile.ejs')%>
 
-<style>
-  html{
-    overflow-y: hidden;
-  }
-  .deletion-card {
-    background: #ffffff;
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    text-align: left;
-    padding: 3rem 2rem;
-    width: 70%;
-    max-height: 75vh;
-    overflow-y: auto;
-  }
+<main class="bg-white min-h-screen py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col lg:flex-row gap-12">
+      
+      <%- include("../partials/user/sidebarProfile.ejs") %>
 
-  .deletion-card h3 {
-    font-weight: bold;
-    margin-bottom: 20px;
-    text-align: center;
-    color: #222;
-  }
+      <!-- Main Content -->
+      <div class="flex-1">
+        <div class="mb-10">
+          <h1 class="text-3xl font-serif font-bold text-luxury-black mb-2 uppercase tracking-tight">Account Deactivation</h1>
+          <p class="text-gray-500 text-sm italic">Consider the consequences before parting ways.</p>
+        </div>
 
-  .deletion-card h5 {
-    font-weight: 600;
-    margin-top: 20px;
-    margin-bottom: 10px;
-    color: #333;
-  }
+        <div class="bg-white border border-red-100 rounded-[3rem] p-8 sm:p-12 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-full h-1 bg-red-500"></div>
+          
+          <div class="max-w-3xl">
+            <div class="flex items-center space-x-4 mb-10">
+              <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-500">
+                <i class="fa-solid fa-circle-exclamation text-2xl"></i>
+              </div>
+              <h2 class="text-xl font-serif font-bold text-luxury-black uppercase tracking-tight">Important Notice</h2>
+            </div>
 
-  .deletion-card p,
-  .deletion-card li {
-    font-size: 0.95rem;
-    color: #555;
-    margin-bottom: 10px;
-    line-height: 1.6;
-  }
+            <div class="prose prose-sm max-w-none text-gray-600 space-y-8">
+              <section>
+                <p class="text-lg font-medium text-luxury-black italic mb-4">"Is this goodbye?"</p>
+                <p class="leading-relaxed">Once deactivated, your digital presence at Venicara will be permanently erased. This action is irreversible.</p>
+              </section>
 
-  .deletion-card ul {
-    padding-left: 18px;
-    margin-bottom: 15px;
-  }
+              <section>
+                <h3 class="text-[10px] font-bold text-red-600 uppercase tracking-[0.2em] mb-4">Irreversible Losses</h3>
+                <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 list-none p-0">
+                  <li class="flex items-start space-x-3 bg-gray-50 p-4 rounded-2xl">
+                    <i class="fa-solid fa-circle-xmark mt-1 text-red-400"></i>
+                    <span class="text-xs">All accumulated loyalty points and credits will be forfeited.</span>
+                  </li>
+                  <li class="flex items-start space-x-3 bg-gray-50 p-4 rounded-2xl">
+                    <i class="fa-solid fa-circle-xmark mt-1 text-red-400"></i>
+                    <span class="text-xs">Access to your curated order history and preferences will vanish.</span>
+                  </li>
+                  <li class="flex items-start space-x-3 bg-gray-50 p-4 rounded-2xl">
+                    <i class="fa-solid fa-circle-xmark mt-1 text-red-400"></i>
+                    <span class="text-xs">Pending returns, refunds, or exchanges may be compromised.</span>
+                  </li>
+                  <li class="flex items-start space-x-3 bg-gray-50 p-4 rounded-2xl">
+                    <i class="fa-solid fa-circle-xmark mt-1 text-red-400"></i>
+                    <span class="text-xs">Eligibility for future New User benefits will be nullified.</span>
+                  </li>
+                </ul>
+              </section>
 
-  .deletion-card a {
-    color: #c62828;
-    text-decoration: none;
-    font-weight: 500;
-  }
+              <section class="bg-red-50/30 rounded-3xl p-8 border border-red-100/50">
+                <h3 class="text-[10px] font-bold text-luxury-black uppercase tracking-[0.2em] mb-4">Legal & Security Exceptions</h3>
+                <p class="text-xs leading-relaxed mb-4">
+                  Venicara reserves the right to delay deactivation if active grievances or pending shipments exist. Furthermore, certain data must be retained for:
+                </p>
+                <div class="grid grid-cols-2 gap-4 text-[10px] font-bold uppercase tracking-widest text-red-700/70">
+                  <span class="flex items-center"><i class="fa-solid fa-shield mr-2"></i> Fraud Prevention</span>
+                  <span class="flex items-center"><i class="fa-solid fa-gavel mr-2"></i> Regulatory Compliance</span>
+                  <span class="flex items-center"><i class="fa-solid fa-scale-balanced mr-2"></i> Legal Rights</span>
+                  <span class="flex items-center"><i class="fa-solid fa-user-secret mr-2"></i> Security Audit</span>
+                </div>
+              </section>
+            </div>
 
-  .deletion-card a:hover {
-    text-decoration: underline;
-  }
-
-  .btn-delete {
-    border-radius: 8px;
-    font-weight: 600;
-    background: #c62828;
-    border: none;
-    padding: 12px 0;
-    width: 100%;
-    color: #fff;
-    margin-top: 20px;
-    transition: all 0.3s ease;
-  }
-
-  .btn-delete:hover {
-    background: #a21616;
-  }
-
-  .btn-cancel {
-    border-radius: 8px;
-    font-weight: 600;
-    background: #f0f0f0;
-    border: none;
-    padding: 12px 0;
-    width: 100%;
-    margin-top: 10px;
-    transition: all 0.3s ease;
-  }
-
-  .btn-cancel:hover {
-    background: #e0e0e0;
-  }
-  @media (max-width:576px){
-  .deletion-card {
-    width: 95%;
-    max-height: 70vh;
-  }
-  }
-</style>
-
-<main class="d-flex justify-content-center w-100">
-  <div class="deletion-card shadow">
-    <h3>Account Deletion Notice</h3>
-
-    <p><strong>Is this goodbye?</strong> Are you sure you don’t want to reconsider?  
-    Once deleted, your account cannot be recovered.</p>
-
-    <h5>WHAT YOU WILL LOSE</h5>
-    <ul>
-      <li>All account benefits, credits, and offers (permanently forfeited).</li>
-      <li>Access to order history, pending exchanges, returns, or refunds.</li>
-      <li>Eligibility for New User coupons if you sign up again with the same email or mobile.</li>
-    </ul>
-
-    <h5>TRANSACTIONS</h5>
-    <p>
-      VENICARA will attempt to complete open transactions within 30 days on a best-effort basis, 
-      but tracking and updates cannot be guaranteed after deletion.
-    </p>
-
-    <h5>EXCEPTIONS</h5>
-    <ul>
-      <li>VENICARA may delay or refuse deletion if there are pending grievances regarding orders, shipments, cancellations, or other services.</li>
-      <li>Certain data may be retained for legitimate purposes, including:
-        <ul>
-          <li>Security and fraud prevention</li>
-          <li>Prevention of future abuse</li>
-          <li>Regulatory compliance</li>
-          <li>Exercising legal rights or responding to legal orders</li>
-        </ul>
-      </li>
-    </ul>
-
-    <h5>IMPORTANT</h5>
-    <p>
-      By proceeding, you confirm that you have read and understood our 
-      <a href="#">Privacy Policy</a>, and accept all consequences of account deletion.
-    </p>
-
-    <form action="/delete?_method=PATCH" method="POST">
-        <button class="btn p-3 w-100 btn-dark rounded-pill fs-5">
-            Delete My Account
-        </button>
-    </form>
+            <div class="mt-12 pt-8 border-t border-gray-100">
+              <p class="text-xs text-gray-400 mb-8 italic">
+                By proceeding, you acknowledge that you have read our <a href="/privacy" class="text-luxury-black underline underline-offset-4 hover:text-red-500 transition">Privacy Policy</a> and accept all consequences.
+              </p>
+              
+              <div class="flex flex-col sm:flex-row gap-4">
+                <form action="/profile/delete?_method=PATCH" method="POST" class="flex-1">
+                  <button type="submit" class="w-full bg-red-600 text-white py-5 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-red-700 transition shadow-xl group">
+                    <span>Permanently Deactivate Account</span>
+                    <i class="fa-solid fa-user-slash ml-3 group-hover:scale-110 transition-transform"></i>
+                  </button>
+                </form>
+                <a href="/profile" class="flex-1 text-center py-5 border-2 border-gray-100 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gray-50 transition">
+                  Keep My Account
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </main>
-</div>
-<script>
-   
-</script>
-</body>
-</html>
+
+<%-include('../partials/user/footer.ejs')%>

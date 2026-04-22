@@ -1,395 +1,387 @@
-<%-include('../partials/user/header.ejs')%>
+<%- include("../partials/user/header.ejs") %>
 
-<style>
-  body {
-    background-color: #fff;
-    font-family: Arial, sans-serif;
-  }
-  .shopping-bag-title {
-    font-weight: bold;
-    text-align: center;
-    margin: 30px 0;
-    font-size: 1.8rem;
-    letter-spacing: 2px;
-  }
-  .card {
-    border: none;
-  }
-  .item-img {
-    max-width: 100px;
-  }
-  .order-summary {
-    background: #f5f5f5;
-    padding: 20px;
-    border-radius: 6px;
-  }
-  .order-summary h5 {
-    font-weight: bold;
-    margin-bottom: 20px;
-  }
-  .order-summary .summary-line {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    font-size:small;
-  }
-  .apply-btn {
-    background: black;
-    color: white;
-    border: none;
-  }
-  .in-stock {
-    color: green;
-    font-size: 0.9rem;
-  }
-  .remove-btn {
-    font-size: 0.85rem;
-    color: red;
-    background: none;
-    border: none;
-    padding: 0;
-    text-decoration: underline;
-    cursor: pointer;
-  }
-</style>
+<main class="bg-white min-h-screen py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Checkout Progress -->
+    <div class="mb-12">
+      <div class="flex items-center justify-center space-x-4 mb-8">
+        <div class="flex items-center text-gold-600 font-bold text-xs tracking-widest uppercase">
+          <i class="fa-solid fa-circle-check mr-2"></i>
+          <span class="hidden sm:inline">Address</span>
+        </div>
+        <div class="w-8 sm:w-12 h-px bg-gold-500"></div>
+        <div class="flex items-center text-luxury-black font-bold text-xs tracking-widest uppercase">
+          <span class="w-8 h-8 rounded-full bg-luxury-black text-white flex items-center justify-center mr-3">2</span>
+          <span class="hidden sm:inline">Payment</span>
+        </div>
+        <div class="w-8 sm:w-12 h-px bg-gray-100"></div>
+        <div class="flex items-center text-gray-400 font-bold text-xs tracking-widest uppercase">
+          <span class="w-8 h-8 rounded-full border-2 border-gray-100 flex items-center justify-center mr-3">3</span>
+          <span class="hidden sm:inline">Review</span>
+        </div>
+      </div>
+      <h1 class="text-3xl font-serif font-bold text-luxury-black text-center mb-2">Secure Checkout</h1>
+      <p class="text-gray-500 text-center text-sm">Choose your preferred payment method to complete the journey.</p>
+    </div>
 
-<main style="min-height: 90vh;">
-  <div class="px-md-5 px-3">
-    <div class="shopping-bag-title">PAYMENT METHODS</div>
-    <div class="row">
-      <!-- Left Side: Shopping Items -->
-      <div class="col-lg-9">
-        <div class="p-3 bg-light rounded-3">
+    <div class="flex flex-col lg:flex-row gap-16">
+      <!-- Payment Methods -->
+      <div class="flex-1">
+        <div class="space-y-6">
           <% paymentMethods.forEach((method, i) => { %>
-          <div class="card mb-2 border-0 shadow-sm" onclick="selectMethod(this)">
-            <div class="card-body d-flex align-items-center">
-              <!-- Radio -->
-              <div class="form-check me-3">
-                <input
-                  class="form-check-input" 
-                  type="radio"
-                  name="paymentMethod"
-                  id="pay_<%= method.code %>"
-                  value="<%=method.code %>" 
-                  <%=method.code=='COD'&&Number(total)>7000?'disabled':''%>
-                  <%= i == 1 && method.code !== 'COD' ? "checked" : "" %>>
-              </div>
-
-              <div class="flex-grow-1">
-                <h6 class="mb-0 d-flex fs-5 p-3 justify-content-between fw-semibold <%=total>7000&&method.code=='COD'?'text-secondary':''%>">
-                  <span>
-                    <%= method.name %>
-                  </span>
-                  <%if(method.code === 'WALLET'){%>
-                  <span>
-                    Balance : <%= balance %>
-                  </span>
-                  <%}%>
-                </h6>
-              </div>
-            </div>
-          </div>
-          <% }) %>
-        </div>
-      </div>
-
-      <!-- Right Side: Order Summary -->
-      <div class="col-md-3 mt-3 m-md-0">
-        <div class="order-summary shadow-sm">
-          <h5>Order Summary</h5>
-
-          <%items.forEach((item,index)=>{%>
-          <div class="summary-line">
-            <span
-              ><%= item.quantity %> × <%= item.product.name %> (<%=item.variant.volume %>ml)</span
-            >
-            <span
-              >Rs.<%= ((item.variant.finalAmount) * item.quantity).toLocaleString() %></span
-            >
-          </div>
-          <% }) %>
-
-          <div class="summary-line text-dark fs-6 fw-semibold">
-            <span>Total Amount</span><span>₹<%=total-deliveryCharge%></span>
-          </div>
-          <div class="summary-line text-success">
-            <span>Delivery Charges</span><span>₹<%=deliveryCharge||'Free'%></span>
-          </div>
-          <div class="summary-line text-success">
-            <span>Coupon discount percentage</span><span id="couponDiscPerc">0%</span>
-          </div>
-          <div class="summary-line text-dark">
-            <span>Coupon discount</span><span id="couponDisc" class="text-danger">0</span>
-          </div>
-          <div class="summary-line fw-bold fs-5">
-            <span>Total</span><span id="totalAmount">Rs.<%=total%></span>
-          </div>
-          <div class="input-group mt-3 mb-2">
-            <input
-              type="text"
-              class="form-control"
-              name="coupon"
-              id="coupon"
-              placeholder="Discount code"
-            />
-            <button id="couponApplyBtn" class="btn btn-dark">Apply</button>
-          </div>
-          <small id="couponMessage" class="text-danger small m-0 "></small>
-          <p id="cancelCoupon" class="text-decoration-none text-primary text-start m-0" onclick="cancelCoupon()"></p>
-          <div class="d-flex justify-content-center">  
-            <button id="continue"
-              class="btn btn-dark text-decoration-none fw-bold w-100">
-              Place Order
-            </button>
-          </div>
-        </div>
-                <!-- coupons -->
-        <div class="mt-4">
-          <h5 class="fw-bold mb-2"><i class="fa-solid fa-tags"></i> <%=!coupons.length?'No':''%> Available Coupons</h5>
-            <div id="couponList" class="list-group w-md-75">
-              <!-- Example coupon -->
-              <%coupons.forEach(c=>{%>
-              <div class="list-group-item d-flex justify-content-between align-items-center rounded-4 mb-2 shadow-sm">
-                <div>
-                  <span class="fw-bold"><%=c.code%></span>
-                  <small class="d-block text-muted">Get <%=c.discount%>% off on orders above ₹<%=c.minPrice%></small>
+            <% 
+               const isDisabled = method.code === 'COD' && Number(total) > 7000;
+               const isChecked = i === 1 && method.code !== 'COD';
+            %>
+            <label class="relative block group cursor-pointer <%= isDisabled ? 'opacity-50 cursor-not-allowed' : '' %>">
+              <input type="radio" name="paymentMethod" value="<%= method.code %>" class="peer sr-only" <%= isDisabled ? 'disabled' : '' %> <%= isChecked ? 'checked' : '' %>>
+              <div class="border-2 border-gray-100 rounded-2xl p-6 sm:p-8 transition-all duration-300 peer-checked:border-gold-500 peer-checked:bg-gold-50/30 hover:border-gray-200 shadow-sm hover:shadow-md flex items-center justify-between">
+                <div class="flex items-center space-x-6">
+                  <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gray-50 rounded-xl flex items-center justify-center group-hover:bg-white transition duration-300">
+                    <% if(method.code === 'COD') { %>
+                      <i class="fa-solid fa-hand-holding-dollar text-xl sm:text-2xl text-gray-400 group-hover:text-gold-600"></i>
+                    <% } else if(method.code === 'RAZORPAY') { %>
+                      <i class="fa-solid fa-credit-card text-xl sm:text-2xl text-gray-400 group-hover:text-gold-600"></i>
+                    <% } else if(method.code === 'WALLET') { %>
+                      <i class="fa-solid fa-wallet text-xl sm:text-2xl text-gray-400 group-hover:text-gold-600"></i>
+                    <% } %>
+                  </div>
+                  <div>
+                    <h3 class="text-base sm:text-lg font-bold text-luxury-black"><%= method.name %></h3>
+                    <% if(method.code === 'WALLET') { %>
+                      <p class="text-[10px] sm:text-xs font-bold text-gold-600 uppercase tracking-widest mt-1">Available Balance: Rs.<%= balance.toLocaleString() %></p>
+                    <% } else if(isDisabled) { %>
+                      <p class="text-[10px] sm:text-xs text-red-500 font-medium mt-1 italic">Not available for orders above Rs.7,000</p>
+                    <% } else { %>
+                      <p class="text-[10px] sm:text-xs text-gray-400 mt-1">Fast and secure payment processing</p>
+                    <% } %>
+                  </div>
                 </div>
-                <button class="btn btn-outline-dark btn-sm rounded-4 copy-coupon" data-code="<%=c.code%>">Copy</button>
+                <div class="opacity-0 peer-checked:opacity-100 transition-opacity">
+                  <i class="fa-solid fa-circle-check text-gold-500 text-xl sm:text-2xl"></i>
+                </div>
               </div>
-              <%})%>
+            </label>
+          <% }) %>
+        </div>
+
+        <!-- Coupons Section -->
+        <div class="mt-12 pt-12 border-t border-gray-100">
+          <h2 class="text-xl font-serif font-bold text-luxury-black mb-8 flex items-center">
+            <i class="fa-solid fa-tags text-gold-500 mr-3"></i> Available Coupons
+          </h2>
+          <% if(coupons && coupons.length > 0) { %>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="couponList">
+              <% coupons.forEach(c => { %>
+                <div class="bg-gray-50 border border-gray-100 rounded-2xl p-5 flex justify-between items-center group hover:bg-white hover:border-gold-200 transition duration-300">
+                  <div class="flex-1">
+                    <div class="flex items-center space-x-2 mb-1">
+                      <span class="text-sm font-bold text-luxury-black tracking-widest uppercase"><%= c.code %></span>
+                      <span class="bg-gold-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold"><%= c.discount %>% OFF</span>
+                    </div>
+                    <p class="text-[10px] text-gray-500 uppercase tracking-widest">Min. Order: Rs.<%= c.minPrice %></p>
+                  </div>
+                  <button class="copy-coupon text-[10px] font-bold uppercase tracking-widest text-gold-600 hover:text-gold-700 transition px-3 py-2 border border-gold-100 rounded-lg bg-white" data-code="<%= c.code %>">
+                    Copy
+                  </button>
+                </div>
+              <% }) %>
+            </div>
+          <% } else { %>
+            <p class="text-gray-400 italic text-sm">No coupons available at the moment.</p>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Order Summary Sidebar -->
+      <div class="w-full lg:w-96">
+        <div class="bg-luxury-cream rounded-3xl p-8 border border-gold-100 sticky top-24">
+          <h2 class="text-xl font-serif font-bold text-luxury-black mb-8 pb-4 border-b border-gold-200/50">Final Summary</h2>
+          
+          <div class="space-y-4 mb-8">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500">Order Amount</span>
+              <span class="font-bold text-luxury-black">Rs.<%= (total - (deliveryCharge || 0)).toLocaleString() %></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500">Delivery</span>
+              <span class="text-green-600 font-bold uppercase tracking-widest text-[10px]"><%= deliveryCharge ? `Rs.${deliveryCharge}` : 'Free' %></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500">Coupon Discount</span>
+              <span id="couponDisc" class="text-red-500 font-bold">-Rs.0</span>
             </div>
           </div>
+
+          <!-- Coupon Input -->
+          <div class="mb-8">
+            <div class="relative">
+              <input type="text" id="coupon" placeholder="Discount Code" class="w-full bg-white border border-gray-200 rounded-full px-6 py-4 text-sm focus:ring-gold-500 focus:border-gold-500 outline-none uppercase tracking-widest font-bold pr-24">
+              <button id="couponApplyBtn" class="absolute right-2 top-2 bottom-2 bg-luxury-black text-white px-5 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-gold-600 transition">Apply</button>
+            </div>
+            <p id="couponMessage" class="mt-2 text-[10px] text-red-500 uppercase tracking-widest hidden"></p>
+            <button id="cancelCouponBtn" onclick="cancelCoupon()" class="mt-2 text-[10px] text-gold-600 font-bold uppercase tracking-widest hidden hover:underline">Remove Coupon</button>
+          </div>
+
+          <div class="flex justify-between items-center mb-10 pt-6 border-t border-luxury-black/10">
+            <span class="text-lg font-serif font-bold text-luxury-black">Grand Total</span>
+            <span id="totalAmount" class="text-2xl font-bold text-gold-700">Rs.<%= total.toLocaleString() %></span>
+          </div>
+
+          <button id="continue" class="block w-full bg-luxury-black text-white text-center py-5 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-gold-600 transition shadow-xl">
+            Place Your Order
+          </button>
+          
+          <p class="mt-6 text-[10px] text-gray-400 text-center uppercase tracking-widest leading-relaxed">
+            Secure 256-bit SSL Encrypted Payment <br>
+            <span class="flex items-center justify-center mt-2 space-x-2">
+              <i class="fa-solid fa-lock text-[10px]"></i>
+              <span>Guaranteed Safe Checkout</span>
+            </span>
+          </p>
+        </div>
       </div>
     </div>
   </div>
+
   <!-- Payment Failed Modal -->
-<div class="modal fade" id="paymentFailedModal" tabindex="-1" aria-labelledby="paymentFailedLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-danger">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="paymentFailedLabel">Payment Failed</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+  <div id="paymentFailedModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"></div>
+    <div class="relative bg-white rounded-3xl p-8 sm:p-10 max-w-md w-full shadow-2xl text-center transform transition-transform duration-300 scale-95 opacity-0" id="modalContent">
+      <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500">
+        <i class="fa-solid fa-circle-exclamation text-4xl"></i>
       </div>
-      <div class="modal-body">
-        <p id="paymentFailedMessage">Your payment could not be processed. Please try again.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" id="retry" class="btn btn-outline-danger" >Retry</button>
-        <!-- <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button> -->
+      <h2 class="text-2xl font-serif font-bold text-luxury-black mb-4">Payment Unsuccessful</h2>
+      <p id="paymentFailedMessage" class="text-gray-500 mb-10">We couldn't process your payment. Please try another method or check your orders.</p>
+      <div class="flex flex-col sm:flex-row gap-4">
+        <button onclick="hideModal()" class="flex-1 py-4 border-2 border-gray-100 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-gray-50 transition order-2 sm:order-1">Try Again</button>
+        <button id="retry" class="flex-1 py-4 bg-luxury-black text-white rounded-full font-bold text-xs uppercase tracking-widest hover:bg-gold-600 transition shadow-lg order-1 sm:order-2">View My Orders</button>
       </div>
     </div>
   </div>
-</div>
-
 </main>
+
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script defer>
+<script>
+  // Modal Logic
+  function showPaymentFailedModal(message) {
+    const modal = document.getElementById('paymentFailedModal');
+    const content = document.getElementById('modalContent');
+    const messageEl = document.getElementById('paymentFailedMessage');
+    
+    if(message) messageEl.textContent = message;
+    
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      content.classList.remove('scale-95', 'opacity-0');
+      content.classList.add('scale-100', 'opacity-100');
+    }, 10);
+  }
+
+  function hideModal() {
+    const modal = document.getElementById('paymentFailedModal');
+    const content = document.getElementById('modalContent');
+    
+    content.classList.add('scale-95', 'opacity-0');
+    content.classList.remove('scale-100', 'opacity-100');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 300);
+  }
+
+  // Payment Logic
   document.getElementById("continue").addEventListener("click", async (e) => {
-  e.preventDefault();
+    e.preventDefault();
+    const btn = e.currentTarget;
+    const originalText = btn.innerHTML;
 
-  try {
-    //Get selected payment method and coupon code
-    const paymentMethod = document.querySelector(
-      'input[name="paymentMethod"]:checked'
-    )?.value;
+    try {
+      const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+      if (!paymentMethod) throw new Error("Please select a payment method.");
 
-    if (!paymentMethod) throw new Error("Please select a payment method.");
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i> Initializing...';
 
-    //Place order via backend
-    const response = await fetch("/checkout/api/placeOrder", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ paymentMethod}),
-    });
+      const response = await fetch("/checkout/api/placeOrder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paymentMethod }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (!data.status) return showPaymentFailedModal(`Payment Failed :- ${data.message}`);
-
-    // If Razorpay, open Razorpay checkout
-    if (paymentMethod === "RAZORPAY" && data.razorpayOrderId) {
-      const options = {
-        key: "<%= process.env.RAZORPAY_KEY_ID %>", // Razorpay key
-        amount: data.totalAmount * 100, // paise
-        currency: "INR",
-        name: "VENICARA",
-        order_id: data.razorpayOrderId,
-        prefill: {
-          name: "<%= user.name %>",
-          email: "<%= user.email %>",
-          contact: "<%= user.mobile %>",
-        },
-        theme: { color: "#3399cc" },
-        handler: async function (response) {
-          try {
-            const res = await fetch("/checkout/api/razorpay/success", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                orderId: data.orderId,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-              }),
-            });
-
-            const result = await res.json();
-            if (result.status) {
-              window.location.href = `/checkout/placeOrder/${data.orderId}`;
-            } else {
-            showPaymentFailedModal("Payment Failed - "+result.message);
-            return
-            }
-          } catch (err) {
-            showPaymentFailedModal("Payment Failed - Due to Internal Error");
-            return;
-          }
-        },
-        modal: { escape: true, ondismiss: async() => {
-          try{
-            const response = await fetch('/checkout/api/razorpay/failed', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ orderId: data.orderId })
-            });
-            const result = await response.json();
-            showPaymentFailedModal(result.message) 
-
-          }catch(error){
-            console.log('razorpay ondismiss'+error)
-          }
-        }
-        }
-      };
-
-      const rzp = new Razorpay(options);
-      rzp.open();
-      return; // Stop further redirect
-    }
-
-
-    // For non-Razorpay methods, redirect to order page
-    window.location.href = `/checkout/placeOrder/${data.orderId}`;
-  } catch (err) {
-    console.log(err)
-    showPaymentFailedModal("Payment Failed - "+err.message);
-    return
-  }
-});
-
-
-
-    document.getElementById('retry').addEventListener('click',()=>{
-      window.location.replace('/orders')
-    })
-
-  // Function to show payment failed modal
-function showPaymentFailedModal(message = "Your payment could not be processed. Please try again.") {
-  const modalEl = document.getElementById("paymentFailedModal");
-  const messageEl = document.getElementById("paymentFailedMessage");
-  messageEl.textContent = message;
-
-  const modal = new bootstrap.Modal(modalEl);
-  modal.show();
-}
-
-
-  //coupen copy
-   document.getElementById('couponList').addEventListener('click', async(e) => {
-     if (e.target.classList.contains('copy-coupon')) {
-       const code = e.target.getAttribute('data-code');
-       navigator.clipboard.writeText(code).then(() => {
-         e.target.textContent = "Copied!";
-         setTimeout(() => e.target.textContent = "Copy", 1500);
-       });
-     }
-   });
-
-  //Coupon applay
-  document.getElementById('couponApplyBtn').addEventListener('click',async(e)=>{
-    e.preventDefault()
-    const code=document.getElementById('coupon').value
-    const cartId=document.getElementById('coupon').value
-    try{
-      const res=await fetch('/checkout/api/coupon/apply',{
-        method:'PATCH',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({code,cartId})
-      })
-      const data=await res.json()
-      if(data.status){
-        document.getElementById('couponApplyBtn').innerHTML = `${data.message}`
-        document.getElementById('coupon').readOnly=true
-        document.getElementById('couponDisc').innerHTML = `-₹${data.discount}`
-        document.getElementById('totalAmount').innerHTML = `Rs.${data.finalAmount}`
-        document.getElementById('couponDiscPerc').innerHTML = `${data.discPerc}%`
-        document.getElementById('cancelCoupon').innerHTML = `Cancel coupon`
-        if(data.actualDiscount!==data.discPerc){
-          document.getElementById("couponMessage").classList.remove('d-none')
-          document.getElementById('couponMessage').innerHTML = `Since maximum discount amount is ${data.discount}, You will only get ${data.discount} rupees offer`
-        }
-      }else{
-        document.getElementById('couponMessage').innerHTML = `${data.message}`
+      if (!data.status) {
+        showPaymentFailedModal(data.message);
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        return;
       }
-    }catch(error){
-      console.log(error)
-      showAlert('error',error.message)
+
+      if (paymentMethod === "RAZORPAY" && data.razorpayOrderId) {
+        const options = {
+          key: "<%= process.env.RAZORPAY_KEY_ID %>",
+          amount: data.totalAmount * 100,
+          currency: "INR",
+          name: "VENICARA",
+          order_id: data.razorpayOrderId,
+          prefill: {
+            name: "<%= user.name %>",
+            email: "<%= user.email %>",
+            contact: "<%= user.mobile %>",
+          },
+          theme: { color: "#d4af37" }, // Gold primary
+          handler: async function (response) {
+            try {
+              const res = await fetch("/checkout/api/razorpay/success", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  orderId: data.orderId,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_signature: response.razorpay_signature,
+                }),
+              });
+
+              const result = await res.json();
+              if (result.status) {
+                window.location.href = `/checkout/placeOrder/${data.orderId}`;
+              } else {
+                showPaymentFailedModal(result.message);
+              }
+            } catch (err) {
+              showPaymentFailedModal("Internal verification error.");
+            }
+          },
+          modal: {
+            escape: true,
+            ondismiss: async () => {
+              try {
+                await fetch('/checkout/api/razorpay/failed', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ orderId: data.orderId })
+                });
+                showPaymentFailedModal("Payment cancelled or closed.");
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+              } catch (error) {
+                console.error('Razorpay ondismiss error:', error);
+              }
+            }
+          }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+        return;
+      }
+
+      window.location.href = `/checkout/placeOrder/${data.orderId}`;
+    } catch (err) {
+      showPaymentFailedModal(err.message);
+      btn.disabled = false;
+      btn.innerHTML = originalText;
     }
-  })
+  });
 
-  // document.getElementById('canelCoupon').addEventListener('click',async(e)=>{
-  //   const code=document.getElementById('coupon').value
-  //   try{
-  //     const res=await fetch('/checkout/api/coupon/apply',{
-  //       method:'PATCH',
-  //       headers:{'Content-Type':'application/json'},
-  //       body:JSON.stringify({code})
-  //     })
-  //     const data=await res.json()
-  //     if(data.status){
-  //       document.getElementById('couponMessage').classList.add('d-none')
-  //       document.getElementById('couponApplyBtn').innerHTML = `${data.message}`
-  //       document.getElementById('couponDisc').innerHTML = `Rs.${data.discount}`
-  //       document.getElementById('totalAmount').innerHTML = `Rs.${data.finalAmount}`
-  //       document.getElementById('couponDiscPerc').innerHTML = `${data.discPerc}%`
-  //       document.getElementById('cancelCoupon').innerHTML = `Cancel coupon`
-  //       showAlert('success','Coupon Applied')
-  //     }else{
-  //       document.getElementById('couponMessage').classList.remove('d-none')
-  //       document.getElementById('couponMessage').innerHTML = `${data.message}`
-  //     }
-  //   }catch(error){
-  //     console.log(error)
-  //     showAlert('error',error.message)
-  //   }
-  // })
+  document.getElementById('retry').addEventListener('click', () => {
+    window.location.href = '/orders';
+  });
 
-  //cancel coupon
-  async function cancelCoupon(){
-    const res=await fetch('/checkout/api/coupon/cancel',{
-      method:'PATCH',
-    })
-    const data=await res.json()
-    if(data.status){
-          document.getElementById('couponMessage').classList.add('d-none')
-        document.getElementById('couponApplyBtn').innerHTML = "Apply"
-        document.getElementById('coupon').readOnly = false
-        document.getElementById('coupon').placeholder = 'Discount Code'
-        document.getElementById('coupon').value = ''
-        document.getElementById('couponDisc').innerHTML = `0`
-        document.getElementById('totalAmount').innerHTML = `${data.finalAmount}`
-        document.getElementById('couponDiscPerc').innerHTML = `0%`
-        document.getElementById('cancelCoupon').innerHTML = ``
-        showAlert('success','Coupon Cancelled')  
+  // Coupon Logic
+  const couponInput = document.getElementById('coupon');
+  const applyBtn = document.getElementById('couponApplyBtn');
+  const cancelBtn = document.getElementById('cancelCouponBtn');
+  const messageEl = document.getElementById('couponMessage');
+
+  applyBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const code = couponInput.value.trim();
+    if(!code) return;
+
+    applyBtn.disabled = true;
+    applyBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
+
+    try {
+      const res = await fetch('/checkout/api/coupon/apply', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+      });
+      const data = await res.json();
+      
+      if (data.status) {
+        couponInput.readOnly = true;
+        applyBtn.classList.add('hidden');
+        cancelBtn.classList.remove('hidden');
+        messageEl.classList.remove('hidden', 'text-red-500');
+        messageEl.classList.add('text-green-600');
+        messageEl.textContent = 'Coupon Applied Successfully!';
+        
+        document.getElementById('couponDisc').innerHTML = `-Rs.${data.discount.toLocaleString()}`;
+        document.getElementById('totalAmount').innerHTML = `Rs.${data.finalAmount.toLocaleString()}`;
+        
+        if(data.actualDiscount !== data.discPerc) {
+          new Notyf().success(`Max discount of Rs.${data.discount} applied`);
+        } else {
+          new Notyf().success('Coupon applied!');
+        }
+      } else {
+        messageEl.classList.remove('hidden', 'text-green-600');
+        messageEl.classList.add('text-red-500');
+        messageEl.textContent = data.message;
+        applyBtn.disabled = false;
+        applyBtn.innerHTML = 'Apply';
+      }
+    } catch (error) {
+      new Notyf().error('Failed to apply coupon');
+      applyBtn.disabled = false;
+      applyBtn.innerHTML = 'Apply';
+    }
+  });
+
+  async function cancelCoupon() {
+    try {
+      const res = await fetch('/checkout/api/coupon/cancel', { method: 'PATCH' });
+      const data = await res.json();
+      
+      if (data.status) {
+        couponInput.readOnly = false;
+        couponInput.value = '';
+        applyBtn.classList.remove('hidden');
+        applyBtn.disabled = false;
+        applyBtn.innerHTML = 'Apply';
+        cancelBtn.classList.add('hidden');
+        messageEl.classList.add('hidden');
+        
+        document.getElementById('couponDisc').innerHTML = '-Rs.0';
+        document.getElementById('totalAmount').innerHTML = `Rs.${data.finalAmount.toLocaleString()}`;
+        new Notyf().success('Coupon removed');
+      }
+    } catch (error) {
+      new Notyf().error('Failed to remove coupon');
     }
   }
-  
-  function selectMethod(card){
-    const input = card.querySelector('input[type="radio"]');
-    if(input && !input.disabled){
-      input.checked = true
+
+  // Coupon Copy
+  document.getElementById('couponList')?.addEventListener('click', (e) => {
+    const copyBtn = e.target.closest('.copy-coupon');
+    if (copyBtn) {
+      const code = copyBtn.dataset.code;
+      navigator.clipboard.writeText(code).then(() => {
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        copyBtn.classList.add('text-green-600', 'border-green-100');
+        setTimeout(() => {
+          copyBtn.textContent = originalText;
+          copyBtn.classList.remove('text-green-600', 'border-green-100');
+        }, 2000);
+      });
     }
-  }
+  });
 </script>
 
-<%-include('../partials/user/footer.ejs')%>
+<%- include("../partials/user/footer.ejs") %>
+

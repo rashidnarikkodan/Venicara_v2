@@ -1,114 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
- <head>
+<html lang="en" class="h-full">
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%=title%></title>
-  <link
-   href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
-   rel="stylesheet"
-  />
-  <link rel="stylesheet" href="/css/userAuth.css" />
- </head>
- <body class="vh-100 d-flex align-items-center">
-  <div class="container text-center d-flex justify-content-center">
-   <div
-    class="card shadow-lg border-0 rounded-5 overflow-hidden mt-3"
-    style="max-width: 800px; width: 100%"
-   >
-    <div class="row g-0 d-flex justify-content-center pt-md-2 pb-md-5">
-     <div class="col-md-12 py-4">
-        <img src="/images/logo.avif" class="im-fluid" alt="" style="width:13rem">
-     </div>
-     <!-- Right Form Section -->
-     <div class="col-md-5 p-5">
-      <h3 class="fw-bolder mb-4 fs-2">New password</h3>
-      <p class="mb-5 fw-semibold">Please confirm your password</p>
-      <%if(messages.error.length>0){%>
-      <div class="alert alert-danger p-2"><%=messages.error[0]%></div>
-      <%}%>
-      <!-- Form -->
-      <form action="/auth/forgot/change-password?_method=PATCH" method="POST" id="form">
-       <div class="mb-2">
-        <input
-         type="password"
-         id="pass"
-         name="password"
-         class="form-control rounded-3 p-3"
-         placeholder=" New password"
-        />
-        <div id="passError" class="text-danger"></div>
-        <input
-         type="password"
-         id="confirmPass"
-         name="confirmPassword"
-         class="form-control rounded-3 p-3 mt-2"
-         placeholder=" Confirm password"
-        />
-        <div class="text-danger" id="confirmError"></div>
-       </div>
-       <button type="submit" class="btn btn-dark w-100 rounded-3 p-2 fs-4 mt-2">
-        Change Password
-       </button>
-      </form>
+  <title>Reset Password | VENICARA</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/output.css" />
+  <script src="https://kit.fontawesome.com/f45c5ea548.js" crossorigin="anonymous"></script>
+</head>
+<body class="h-full bg-luxury-cream dark:bg-luxury-black font-sans transition-colors duration-300 flex items-center justify-center p-6">
 
-      <p class="mt-3 text-center text-muted">
-       <a href="/auth/login" class="fw-semibold text-decoration-none text-secondary">Go back to Login page?</a>
-      </p>
-     </div>
-     <!-- Left Image Section -->
-     <div
-      class="col-md-6 d-none d-md-flex align-items-center justify-content-center"
-     >
-      <img
-       src="/images/blackshirtwtchperfume.avif"
-       alt="Signup"
-       class="object-fit-cover img-fluid rounded-4 img-login"
-      />
-     </div>
+  <div class="max-w-4xl w-full bg-white dark:bg-luxury-charcoal rounded-[3rem] shadow-2xl overflow-hidden animate-zoom-in">
+    <div class="flex flex-col md:flex-row">
+      <!-- Form Side -->
+      <div class="flex-1 p-10 md:p-16">
+        <div class="mb-12">
+          <img src="/images/logo.avif" alt="Venicara" class="w-40 mb-10 dark:invert">
+          <h2 class="text-3xl font-serif font-bold text-luxury-black dark:text-white mb-2 uppercase tracking-tight">New Password</h2>
+          <p class="text-gray-500 dark:text-gray-400 text-sm italic">Define your secure future presence.</p>
+        </div>
+
+        <% if(messages.error && messages.error.length > 0){ %>
+          <div class="mb-8 p-4 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-widest rounded-2xl flex items-center">
+            <i class="fa-solid fa-circle-exclamation mr-3 text-sm"></i>
+            <%= messages.error[0] %>
+          </div>
+        <% } %>
+
+        <form action="/auth/forgot/change-password?_method=PATCH" method="POST" id="form" class="space-y-6">
+          <div class="space-y-2">
+            <label for="pass" class="text-[10px] font-bold text-luxury-black dark:text-gray-400 uppercase tracking-widest ml-4">New Secret Key</label>
+            <div class="relative group">
+              <span class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-gold-500 transition-colors">
+                <i class="fa-solid fa-lock text-sm"></i>
+              </span>
+              <input type="password" id="pass" name="password" 
+                     class="w-full bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/5 rounded-2xl py-4 pl-14 pr-6 text-sm font-medium focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 outline-none transition dark:text-white" 
+                     placeholder="••••••••">
+            </div>
+            <div id="passError" class="text-[10px] font-bold text-red-500 uppercase tracking-widest ml-4 mt-1"></div>
+          </div>
+
+          <div class="space-y-2">
+            <label for="confirmPass" class="text-[10px] font-bold text-luxury-black dark:text-gray-400 uppercase tracking-widest ml-4">Confirm Secret Key</label>
+            <div class="relative group">
+              <span class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-gold-500 transition-colors">
+                <i class="fa-solid fa-shield-halved text-sm"></i>
+              </span>
+              <input type="password" id="confirmPass" name="confirmPassword" 
+                     class="w-full bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/5 rounded-2xl py-4 pl-14 pr-6 text-sm font-medium focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 outline-none transition dark:text-white" 
+                     placeholder="••••••••">
+            </div>
+            <div id="confirmError" class="text-[10px] font-bold text-red-500 uppercase tracking-widest ml-4 mt-1"></div>
+          </div>
+
+          <button type="submit" class="w-full bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black py-5 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 transition shadow-xl mt-4">
+            Reset Identity
+          </button>
+        </form>
+
+        <div class="mt-12 text-center">
+          <a href="/auth/login" class="text-[10px] font-bold text-gray-400 hover:text-gold-600 dark:hover:text-gold-400 uppercase tracking-widest transition">
+            Back to Login Console
+          </a>
+        </div>
+      </div>
+
+      <!-- Visual Side -->
+      <div class="hidden md:block flex-1 relative">
+        <img src="/images/blackshirtwtchperfume.avif" alt="Luxury" class="h-full w-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-r from-white dark:from-luxury-charcoal to-transparent md:block hidden"></div>
+      </div>
     </div>
-   </div>
   </div>
+
   <script>
-   // public/js/userSignUp.js
-const form = document.getElementById("form");
-form.addEventListener("submit", (e) => {
-    e.preventDefault()
-    let valid = true;
+    const form = document.getElementById("form");
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      let valid = true;
 
-    const pass = document.getElementById("pass").value.trim();
-    const confirm=document.getElementById('confirmPass').value.trim()
+      const pass = document.getElementById("pass").value.trim();
+      const confirm = document.getElementById('confirmPass').value.trim();
 
-    // reset errors
-    document.getElementById("passError").textContent = "";
-    document.getElementById("confirmError").textContent = "";
+      document.getElementById("passError").textContent = "";
+      document.getElementById("confirmError").textContent = "";
 
-    if (pass.length < 6) {
-      document.getElementById("passError").textContent = "Password must be at least 6 chars";
-      valid = false;
-    }
-    if (pass.length <= 0) {
-      document.getElementById("passError").textContent = "New password is required";
-      valid = false;
-    }
-    if (confirm.length < 6) {
-      document.getElementById("confirmError").textContent = "Password must be at least 6 chars";
-      valid = false;
-    }
-    if(pass!==confirm){
-      document.getElementById("confirmError").textContent = "Confirm password is not matching";
-      valid = false;
-    }
-    if (confirm.length <= 0) {
-      document.getElementById("confirmError").textContent = "Confirm password is required";
-      valid = false;
-    }
+      if (pass.length < 6) {
+        document.getElementById("passError").textContent = "Key must be at least 6 characters";
+        valid = false;
+      }
+      if (pass.length <= 0) {
+        document.getElementById("passError").textContent = "New key is required";
+        valid = false;
+      }
+      if (confirm !== pass) {
+        document.getElementById("confirmError").textContent = "Identity keys do not match";
+        valid = false;
+      }
+      if (confirm.length <= 0) {
+        document.getElementById("confirmError").textContent = "Confirmation is required";
+        valid = false;
+      }
 
-    if (valid){
-      form.submit()
-    }
-  });
-
+      if (valid) form.submit();
+    });
   </script>
- </body>
+</body>
 </html>

@@ -1,234 +1,249 @@
-<%- include('../partials/admin/header.ejs')%>
-<style>
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .container {
-      padding: 0 15px;
-    }
-    .w-75 {
-      width: 100% !important;
-    }
-    .p-5 {
-      padding: 1.5rem !important;
-    }
-    .variantSection .row {
-      flex-direction: column;
-    }
-    .variantSection .col-md-3, .variantSection .col-md-2, .variantSection .col-md-1 {
-      width: 100%;
-    }
-    #previewContainer {
-      flex-direction: column;
-      align-items: center;
-    }
-    #previewContainer > div {
-      width: 8rem !important;
-      height: 8rem !important;
-    }
-    #previewContainer img {
-      width: 8rem !important;
-    }
-    #addImgDiv {
-      padding: 2rem !important;
-    }
-    .btn {
-      width: 100%;
-      margin-bottom: 0.5rem;
-    }
-    .d-flex.justify-content-end {
-      flex-direction: column;
-      align-items: stretch;
-    }
-  }
-  @media (max-width: 576px) {
-    h1 {
-      font-size: 1.5rem;
-    }
-    .form-label {
-      font-size: 0.9rem;
-    }
-    .form-control, .form-select {
-      font-size: 0.9rem;
-    }
-    #addImgDiv {
-      padding: 1.5rem !important;
-    }
-    small {
-      font-size: 0.75rem;
-    }
-    #previewContainer > div {
-      width: 6rem !important;
-      height: 6rem !important;
-    }
-    #previewContainer img {
-      width: 6rem !important;
-    }
-  }
-</style>
-<main class="flex-fill">
-  <div class="container my-4 d-flex justify-content-center">
-    <div class="w-75 p-5 rounded-4" style="background:rgb(166, 166, 166)">
-      <h1 class="mb-4">Edit Product</h1>
-      <div class="alert alert-danger d-none" id="editProductError"></div>
-      <form id="editProductForm" method="POST" action="/admin/products/edit/<%=product._id%>?_method=PUT" enctype="multipart/form-data">
-        <div class="mb-3">
-          <label class="form-label">Product Name</label>
-          <input type="text" id="name" name="name" class="form-control" value="<%=product.name%>">
+<%- include('../partials/admin/header.ejs') %>
+
+<div class="max-w-5xl mx-auto animate-fade-in pb-20">
+  
+  <!-- Page Header -->
+  <div class="flex items-center justify-between mb-10">
+    <div>
+      <h1 class="text-3xl font-serif font-bold dark:text-white">Edit Masterpiece</h1>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 font-medium uppercase tracking-widest">Update details for <%= product.name %></p>
+    </div>
+    <a href="/admin/products" class="p-3 bg-white dark:bg-luxury-charcoal rounded-xl border border-gray-100 dark:border-white/5 shadow-sm text-gray-500 hover:text-gold-600 transition-colors">
+      <i class="fa-solid fa-xmark text-lg"></i>
+    </a>
+  </div>
+
+  <form id="editProductForm" method="POST" action="/admin/products/edit/<%=product._id%>?_method=PUT" enctype="multipart/form-data" class="space-y-8">
+    
+    <!-- General Information -->
+    <div class="bg-white dark:bg-luxury-charcoal p-10 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5">
+      <div class="flex items-center space-x-3 mb-8">
+        <div class="w-10 h-10 bg-gold-500/10 rounded-xl flex items-center justify-center">
+          <i class="fa-solid fa-pen-nib text-gold-600 dark:text-gold-400"></i>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Product Description</label>
-          <textarea name="description" id="description" class="form-control" rows="4"><%=product.description%></textarea>
+        <h3 class="text-lg font-serif font-bold dark:text-white">Product Details</h3>
+      </div>
+
+      <div class="space-y-6">
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Product Name</label>
+          <input type="text" id="name" name="name" value="<%=product.name%>" class="w-full px-5 py-4 bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/5 rounded-2xl outline-none focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all text-sm dark:text-white">
         </div>
-        <div class="mb-3">
-          <label class="form-label">Product Images</label>
-          <div class="rounded-3 border p-4 bg-light">
-            <input type="file" name="images" multiple accept="image/*" id="imgInput" hidden>
-            <div class="border rounded p-5 text-center position-relative"
-              style="cursor:pointer;background: rgb(205, 205, 205);" id="addImgDiv">
-              <i class="fa-solid fa-images fa-2x z-5"></i>
-              <div>Add Images</div>
-              <small>Select only 3 images</small>
+
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Description</label>
+          <textarea id="description" name="description" rows="5" class="w-full px-5 py-4 bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/5 rounded-2xl outline-none focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all text-sm dark:text-white resize-none"><%=product.description%></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Category</label>
+            <div class="relative">
+              <select name="categoryId" id="category" class="w-full px-5 py-4 bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/5 rounded-2xl outline-none focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all text-sm dark:text-white appearance-none">
+                <option disabled>Select Category</option>
+                <% categories.forEach(category => { %>
+                  <option value="<%= category._id %>" <%=category._id.toString()==product.category._id?'selected':''%>><%=category.name %></option>
+                <% }) %>
+              </select>
+              <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-xs"></i>
             </div>
-            <div id="previewContainer" class="d-flex justify-content-center gap-2 mt-3 flex-wrap bg-dark p-3 rounded-3">
-              <%product.images.forEach((image,index)=>{%>
-                <div id="preview-<%=index%>" class="position-relative rounded-3 overflow-hidden" style="width:10rem;height:10rem">
-                  <button type="button" onclick="removeImg('<%= image.public_id %>', '<%= index %>', '<%= product._id %>')"
-                    class="position-absolute rounded-5 pt-0 pb-0 top-0 end-0"><i class="fa-solid fa-trash-can" style="font-size: xx-small;"></i></button>
-                  <img src="<%=image.url%>" alt="product images" style="width:10rem">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Search Tags</label>
+            <input type="text" id="tags" name="tags" value="<%=product.tags?product.tags.join(', '):''%>" placeholder="eg: woody, fresh" class="w-full px-5 py-4 bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/5 rounded-2xl outline-none focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all text-sm dark:text-white">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Media Library -->
+    <div class="bg-white dark:bg-luxury-charcoal p-10 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5">
+      <div class="flex items-center space-x-3 mb-8">
+        <div class="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
+          <i class="fa-solid fa-images text-blue-600 dark:text-blue-400"></i>
+        </div>
+        <h3 class="text-lg font-serif font-bold dark:text-white">Gallery Management</h3>
+      </div>
+
+      <!-- Current Images -->
+      <div id="currentImages" class="flex flex-wrap gap-4 mb-10 p-6 bg-gray-50 dark:bg-luxury-black rounded-3xl border border-dashed border-gray-200 dark:border-white/10">
+        <% product.images.forEach((image, index) => { %>
+          <div id="preview-<%=index%>" class="relative group w-32 h-32 rounded-2xl overflow-hidden shadow-sm border border-white dark:border-white/5">
+            <img src="<%=image.url%>" alt="Product image" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+            <button type="button" onclick="removeImg('<%= image.public_id %>', '<%= index %>', '<%= product._id %>')" class="absolute top-2 right-2 w-7 h-7 bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-all shadow-lg flex items-center justify-center">
+              <i class="fa-solid fa-trash-can text-[10px]"></i>
+            </button>
+          </div>
+        <% }) %>
+        <% if (product.images.length === 0) { %>
+          <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold mx-auto py-4 italic">No images currently uploaded</p>
+        <% } %>
+      </div>
+
+      <!-- Upload New -->
+      <div class="relative">
+        <input type="file" name="images" multiple accept="image/*" id="imgInput" class="hidden">
+        <div id="addImgDiv" class="border-2 border-dashed border-gray-200 dark:border-white/10 rounded-3xl p-10 text-center hover:border-gold-500 transition-all cursor-pointer group bg-gray-50/30">
+          <div class="w-14 h-14 bg-white dark:bg-luxury-charcoal rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-plus text-xl text-gray-400 group-hover:text-gold-500"></i>
+          </div>
+          <p class="text-xs font-bold dark:text-white uppercase tracking-widest">Append New Images</p>
+        </div>
+        <div id="previewContainer" class="flex flex-wrap justify-center gap-4 mt-8"></div>
+      </div>
+    </div>
+
+    <!-- Pricing & Variants -->
+    <div class="bg-white dark:bg-luxury-charcoal p-10 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-white/5">
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-green-500/10 rounded-xl flex items-center justify-center">
+            <i class="fa-solid fa-layer-group text-green-600 dark:text-green-400"></i>
+          </div>
+          <h3 class="text-lg font-serif font-bold dark:text-white">Variants & Pricing</h3>
+        </div>
+        <button type="button" onclick="addVariant(document.querySelector('#variantList'))" class="text-[10px] font-bold uppercase tracking-widest text-gold-600 hover:text-gold-700 flex items-center">
+          <i class="fa-solid fa-plus-circle mr-2 text-sm"></i> New Variant
+        </button>
+      </div>
+
+      <div id="variantContainer">
+        <ol id="variantList" class="space-y-4">
+          <% variants.forEach((variant, index) => { %>
+            <li class="p-6 bg-gray-50 dark:bg-luxury-black/40 rounded-2xl border border-gray-100 dark:border-white/5 relative group animate-fade-in-down mb-4">
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Base Price (₹)</label>
+                  <input name="basePrice" type="number" value="<%=variant.basePrice%>" class="w-full px-4 py-3 bg-white dark:bg-luxury-charcoal border border-gray-200 dark:border-white/10 rounded-xl outline-none focus:border-gold-500 transition-all text-sm dark:text-white">
                 </div>
-              <%})%>
-            </div>
-          </div>
-        </div>
-        <div class="row mb-4 g-3">
-          <div class="col-md-4 col-12">
-            <label class="form-label">Category</label>
-            <select name="categoryId" id="category" class="form-select">
-              <option selected disabled>Select Category</option>
-              <% categories.forEach(category=> { %>
-                <option value="<%= category._id %>" <%=category._id.toString()==product.category._id?'selected':''%>><%=category.name %></option>
-              <% }) %>
-            </select>
-          </div>
-          <div class="col-md-4 col-12">
-            <label class="form-label">Tags</label>
-            <input name="tags" id="tags" type="text" class="form-control" value="<%=product.tags?product.tags.join(', '):''%>">
-          </div>
-        </div>
-        <p class="mb-0 fw-bold fs-5">Add or Edit Variant</p>
-        <div id="variantContainer">
-          <ol>
-            <%variants.forEach((variant,index)=>{%>
-              <li>
-                <div class="variantSection">
-                  <div class="row mb-3 m-0 g-3 position-relative">
-                    <div class="col-md-3 col-12">
-                      <label class="form-label">Base Price (₹)</label>
-                      <input name="basePrice" type="text" class="form-control" value="<%=variant.basePrice%>">
-                    </div>
-                    <div class="col-md-3 col-12">
-                      <label class="form-label">Discount Price (₹)</label>
-                      <input name="discount" type="text" class="form-control" value="<%=variant.discount%>">
-                    </div>
-                    <div class="col-md-3 col-12">
-                      <label class="form-label">Stock</label>
-                      <input name="stock" type="number" class="form-control" value="<%=variant.stock?variant.stock:'0'%>">
-                    </div>
-                    <div class="<%=index>0?'col-md-2 col-12':'col-md-3 col-12'%>">
-                      <label class="form-label">Volume (ml)</label>
-                      <input name="volume" type="text" class="form-control" value="<%=variant.volume%>">
-                    </div>
-                    <%if(index>0){%>
-                      <div class="col-md-1 col-12 d-flex align-items-end">
-                        <button type="button" class="btn btn-danger delete-variant-btn">Delete</button>
-                      </div>
-                    <%}%>
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Discount (%)</label>
+                  <input name="discount" type="number" value="<%=variant.discount%>" class="w-full px-4 py-3 bg-white dark:bg-luxury-charcoal border border-gray-200 dark:border-white/10 rounded-xl outline-none focus:border-gold-500 transition-all text-sm dark:text-white">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Stock</label>
+                  <input name="stock" type="number" value="<%=variant.stock || 0%>" class="w-full px-4 py-3 bg-white dark:bg-luxury-charcoal border border-gray-200 dark:border-white/10 rounded-xl outline-none focus:border-gold-500 transition-all text-sm dark:text-white">
+                </div>
+                <div class="relative">
+                  <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Volume (ml)</label>
+                  <div class="flex items-center space-x-2">
+                    <input name="volume" type="text" value="<%=variant.volume%>" class="flex-1 px-4 py-3 bg-white dark:bg-luxury-charcoal border border-gray-200 dark:border-white/10 rounded-xl outline-none focus:border-gold-500 transition-all text-sm dark:text-white">
+                    <% if(index > 0) { %>
+                      <button type="button" class="delete-variant-btn p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all">
+                        <i class="fa-solid fa-trash-can pointer-events-none"></i>
+                      </button>
+                    <% } %>
                   </div>
                 </div>
-              </li>
-            <% }) %>
-          </ol>
-        </div>
-        <button type="button" class="btn btn-dark my-3" onclick="addVariant(document.querySelector('#editProductForm #variantContainer ol'))">Add Variant</button>
-        <div class="d-flex justify-content-end gap-2">
-          <a href="/admin/products"><button type="button" class="btn btn-outline-secondary">Cancel</button></a>
-          <button type="submit" class="btn btn-primary">Save</button>
-        </div>
-      </form>
+              </div>
+            </li>
+          <% }) %>
+        </ol>
+      </div>
     </div>
-  </div>
-</main>
+
+    <!-- Feedback Container -->
+    <div id="editProductError" class="hidden bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-800 dark:text-red-400 px-6 py-4 rounded-2xl flex items-center animate-shake">
+      <i class="fa-solid fa-circle-exclamation mr-3"></i>
+      <span id="errorText"></span>
     </div>
+
+    <!-- Final Actions -->
+    <div class="flex items-center justify-end space-x-4 pt-6">
+      <a href="/admin/products" class="px-8 py-4 rounded-2xl bg-white dark:bg-luxury-charcoal text-[10px] font-bold uppercase tracking-widest text-gray-500 border border-gray-100 dark:border-white/5 hover:bg-gray-50 transition-all">
+        Cancel
+      </a>
+      <button type="submit" class="px-12 py-4 rounded-2xl bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black text-[10px] font-bold uppercase tracking-widest hover:bg-gold-600 transition-all shadow-xl shadow-gold-500/20">
+        Update Product
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<script defer src="/js/product.js"></script>
 <script>
-  document.getElementById('variantContainer').addEventListener('click', (e) => {
-    if (e.target.classList.contains('delete-variant-btn')) {
-      const variantSection = e.target.closest('LI');
-      if (variantSection) variantSection.remove();
+  // Handle dynamic variant deletion
+  document.getElementById('variantList').addEventListener('click', (e) => {
+    const deleteBtn = e.target.closest('.delete-variant-btn');
+    if (deleteBtn) {
+      const li = deleteBtn.closest('li');
+      const list = document.getElementById('variantList');
+      if (list.children.length > 1) {
+        li.classList.add('animate-fade-out');
+        setTimeout(() => li.remove(), 300);
+      }
     }
   });
 
   async function removeImg(public_id, index, id) {
-    await fetch(`/admin/products/edit/removeImg/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ public_id })
-    }).then((res) => res.json()).then(data => {
+    try {
+      const res = await fetch(`/admin/products/edit/removeImg/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ public_id })
+      });
+      const data = await res.json();
+      
       if (data.success) {
         const previewDiv = document.getElementById(`preview-${index}`);
-        if (previewDiv) {
-          previewDiv.remove();
-          showAlert('success', 'Product image Removed');
-        }
+        previewDiv.classList.add('animate-fade-out');
+        setTimeout(() => previewDiv.remove(), 300);
+        new Notyf().success('Image removed from library');
       } else {
-        showAlert('error', 'This image cannot remove');
+        new Notyf().error(data.message || 'Cannot remove image');
       }
-    });
+    } catch (err) {
+      new Notyf().error('Network error occurred');
+    }
   }
 
   const editProductForm = document.getElementById('editProductForm');
   editProductForm.addEventListener('submit', e => {
     e.preventDefault();
+    const errors = [];
+    
     const name = document.getElementById('name').value.trim();
     const description = document.getElementById('description').value.trim();
-    const category = document.getElementById('category').value.trim();
-    const tags = document.getElementById('tags').value.trim();
-    let errors = [];
-    if (!name) errors.push('Product name is required.');
-    if (!description) errors.push('Product description is required.');
-    if (!category) errors.push('Please select a category.');
-    if (!tags) errors.push('Tags are required.');
-    for (let i = 0; i < document.getElementsByName('volume').length; i++) {
-      const bp = document.getElementsByName('basePrice')[i].value;
-      const disc = document.getElementsByName('discount')[i].value;
-      const st = document.getElementsByName('stock')[i].value.trim();
-      const vol = document.getElementsByName('volume')[i].value.trim();
-      if (!bp || bp <= 0) errors.push(`Base price must be greater than 0 in variant ${i + 1}.`);
-      if (disc && (Number(disc) < 0 || Number(disc) > 100)) errors.push(`Discount cannot be negative or greater than 100 in variant ${i + 1}.`);
-      if (!st || st < 0) errors.push(`Stock must be 0 or more in variant ${i + 1}.`);
-      if (!vol) errors.push(`Volume is required in variant ${i + 1}.`);
-    }
+    const category = document.getElementById('category').value;
+
+    if (!name) errors.push('Product name is required');
+    if (!description) errors.push('Description is required');
+    if (!category) errors.push('Category selection is mandatory');
+
+    const basePrices = Array.from(document.getElementsByName('basePrice')).map(i => i.value.trim());
+    const discounts = Array.from(document.getElementsByName('discount')).map(i => i.value.trim());
+    const stocks = Array.from(document.getElementsByName('stock')).map(i => i.value.trim());
+    const volumes = Array.from(document.getElementsByName('volume')).map(i => i.value.trim());
+
+    volumes.forEach((vol, i) => {
+      const bp = Number(basePrices[i]);
+      const st = parseInt(stocks[i]);
+      if (!bp || bp <= 0) errors.push(`Variant ${i + 1}: Invalid base price`);
+      if (isNaN(st) || st < 0) errors.push(`Variant ${i + 1}: Invalid stock value`);
+      if (!vol) errors.push(`Variant ${i + 1}: Volume required`);
+    });
+
+    const errorBox = document.getElementById('editProductError');
+    const errorText = document.getElementById('errorText');
+
     if (errors.length > 0) {
-      document.getElementById('editProductError').classList.remove('d-none');
-      document.getElementById('editProductError').innerHTML = errors.join('<br>');
+      errorBox.classList.remove('hidden');
+      errorText.innerHTML = errors[0];
+      window.scrollTo({ top: errorBox.offsetTop - 100, behavior: 'smooth' });
     } else {
-      document.getElementById('editProductError').classList.add('d-none');
-      document.getElementById('editProductError').innerHTML = '';
-      updateInputFiles();
+      errorBox.classList.add('hidden');
+      
+      // Sync new files before submit
+      if (typeof getFinalFiles === 'function') {
+        const dt = new DataTransfer();
+        getFinalFiles().forEach(file => dt.items.add(file));
+        document.getElementById('imgInput').files = dt.files;
+      }
+      
       editProductForm.submit();
     }
   });
-
-  function updateInputFiles() {
-    const dataTransfer = new DataTransfer();
-    getFinalFiles().forEach(file => dataTransfer.items.add(file));
-    imgInput.files = dataTransfer.files;
-  }
 </script>
-<%- include('../partials/admin/footer.ejs')%>
+
+<%- include('../partials/admin/header.ejs') %>

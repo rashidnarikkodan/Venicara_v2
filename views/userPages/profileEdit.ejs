@@ -1,176 +1,175 @@
-<%-include('../partials/user/header.ejs')%>
-  <%-include('../partials/user/sidebarProfile.ejs')%>
-  <style>
-    .clickImg{
-      z-index: 1000;
-      padding:.5rem .5rem;
-      font-size: 8px;
-      border-radius: 20px;
-      right:-6rem;
-      top:0
-    }
-  </style>
-    <main class="flex-grow-1 bg-white w-100 justify-content-center d-flex">
+<%- include("../partials/user/header.ejs") %>
 
-      <div style="width:50rem" class="rounded-4 shadow h-auto px-5 pt-5">
-        <div>
-          <p class="fs-3 fw-bold text-black text-center">Edit Profile</p>
+<main class="bg-white min-h-screen py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col lg:flex-row gap-12">
+      
+      <%- include("../partials/user/sidebarProfile.ejs") %>
+
+      <!-- Profile Edit Content -->
+      <div class="flex-1">
+        <div class="mb-10">
+          <h1 class="text-3xl font-serif font-bold text-luxury-black mb-2 uppercase tracking-tight">Edit Profile</h1>
+          <p class="text-gray-500 text-sm italic">Update your personal information and preferences.</p>
         </div>
-        <form action="/profile/edit?_method=PATCH" method="POST" enctype="multipart/form-data">
-          <div class="row">
-            <div class="col-md-12 w-100 d-flex justify-content-center">
-              <div class="position-relative d-inline-block">
-                <!-- Circle -->
-                <div id="addImg" class=" rounded-circle overflow-hidden"
-                  style="width:7rem;height:7rem;cursor:pointer;background:rgb(160, 152, 152)">
-                  <input name="userProfile" id="userProfile" type="file" hidden>
+
+        <div class="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8 sm:p-12">
+          <form action="/profile/edit?_method=PATCH" method="POST" enctype="multipart/form-data" class="space-y-12">
+            <!-- Avatar Upload -->
+            <div class="flex flex-col items-center">
+              <div class="relative group">
+                <div id="addImg" class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-50 bg-gray-100 cursor-pointer shadow-lg transition-transform hover:scale-105">
+                  <input name="userProfile" id="userProfile" type="file" hidden accept="image/*">
                   <input name="oldImg" id="oldImg" value="<%=user.public_id%>" type="hidden">
-
+                  
                   <% if (user.photoUrl) { %>
-                    <!-- Show uploaded profile picture -->
-                    <img src="<%= user.photoUrl %>" alt="Profile" loading="lazy" class="w-100 h-100 rounded-circle"
-                      style="object-fit:cover;">
-                    <% } else { %>
-                      <div class="w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                        <span class="text-white fw-bold" style="font-size: 2.75rem;"><%= user.name.charAt(0) %></span>
-                      </div>
-                      <% } %>
-                      <div id="clickImg" class="position-absolute bg-dark text-white clickImg d-none">Click to add image</div>
+                    <img src="<%= user.photoUrl %>" alt="Profile" loading="lazy" class="w-full h-full object-cover">
+                  <% } else { %>
+                    <div class="w-full h-full flex items-center justify-center bg-luxury-black text-white text-4xl font-serif">
+                      <%= user.name.charAt(0) %>
+                    </div>
+                  <% } %>
                 </div>
 
+                <div class="absolute -bottom-2 -right-2 flex space-x-2">
+                   <button type="button" id="deleteBtn" class="w-10 h-10 bg-white rounded-full shadow-lg border border-gray-100 flex items-center justify-center text-red-500 hover:bg-red-50 transition <%= user.photoUrl ? '' : 'hidden' %>">
+                     <i class="fa-solid fa-trash-can text-sm"></i>
+                   </button>
+                   <div class="w-10 h-10 bg-gold-600 rounded-full shadow-lg flex items-center justify-center text-white pointer-events-none">
+                     <i class="fa-solid fa-camera text-sm"></i>
+                   </div>
+                </div>
                 
-
-                <!-- Delete button sits OUTSIDE the circle -->
-                <button type="button" id="deleteBtn"
-                  class="btn btn-sm btn-light border position-absolute <%= user.photoUrl ? '' : 'd-none' %>"
-                  style="bottom:0px; right:0px; border-radius:50%; padding:0.2rem 0.4rem;">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
+                <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold text-center mt-6">Click to update photo</p>
               </div>
             </div>
 
-            <div class="col-md-6 mx-auto mt-5">
-              <div class="mb-3">
-                <label for="name" class="fw-bold">Name:</label>
-                <input type="text" id="name" name="name" class="form-control rounded-3" value="<%=user.name%>">
-              </div>
-              <div class="mb-3">
-                <label for="email" class="fw-bold">Email:</label>
-                <input type="email" id="email" name="email" class="form-control rounded-3" value="<%=user.email%>">
-              </div>
-              <div class="mb-3">
-                <label for="phone" class="fw-bold">Phone:</label>
-                <input type="tel" pattern="[0-9]{10}" id="phone" name="phone" class="form-control rounded-3"
-                  value="<%=user.mobile?user.mobile:''%>" placeholder="Enter your Mobile number">
+            <!-- Form Fields -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div class="space-y-2">
+                <label for="name" class="text-[10px] font-bold text-luxury-black uppercase tracking-widest ml-4">Full Name</label>
+                <input type="text" id="name" name="name" value="<%=user.name%>" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:ring-2 focus:ring-gold-500 focus:bg-white transition outline-none text-sm font-medium">
               </div>
 
-              <!-- Gender -->
-              <div class="mb-3">
-                <label class="fw-bold d-block">Gender:</label>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="gender" id="female" value="female"
-                    <%=user.gender&&user.gender==='female' ?'checked':''%> >
-                  <label class="form-check-label" for="female">Female</label>
-                </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="gender" id="male" value="male"
-                    <%=user.gender&&user.gender==='male' ?'checked':''%> >
-                  <label class="form-check-label" for="male">Male</label>
+              <div class="space-y-2">
+                <label for="email" class="text-[10px] font-bold text-luxury-black uppercase tracking-widest ml-4">Email Address</label>
+                <input type="email" id="email" name="email" value="<%=user.email%>" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:ring-2 focus:ring-gold-500 focus:bg-white transition outline-none text-sm font-medium">
+              </div>
+
+              <div class="space-y-2">
+                <label for="phone" class="text-[10px] font-bold text-luxury-black uppercase tracking-widest ml-4">Mobile Number</label>
+                <input type="tel" pattern="[0-9]{10}" id="phone" name="phone" value="<%=user.mobile?user.mobile:''%>" placeholder="10-digit mobile number" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:ring-2 focus:ring-gold-500 focus:bg-white transition outline-none text-sm font-medium">
+              </div>
+
+              <div class="space-y-2">
+                <label class="text-[10px] font-bold text-luxury-black uppercase tracking-widest ml-4">Gender</label>
+                <div class="flex space-x-4 p-1 bg-gray-50 rounded-2xl border border-gray-100">
+                  <label class="flex-1 cursor-pointer">
+                    <input type="radio" name="gender" value="female" class="peer hidden" <%=user.gender==='female' ?'checked':''%>>
+                    <div class="py-3 text-center rounded-xl text-xs font-bold uppercase tracking-widest transition-all peer-checked:bg-white peer-checked:text-luxury-black peer-checked:shadow-sm text-gray-400">Female</div>
+                  </label>
+                  <label class="flex-1 cursor-pointer">
+                    <input type="radio" name="gender" value="male" class="peer hidden" <%=user.gender==='male' ?'checked':''%>>
+                    <div class="py-3 text-center rounded-xl text-xs font-bold uppercase tracking-widest transition-all peer-checked:bg-white peer-checked:text-luxury-black peer-checked:shadow-sm text-gray-400">Male</div>
+                  </label>
                 </div>
               </div>
             </div>
-            <div class="col-md-12 d-flex justify-content-between px-5 pb-5">
-              <a href="/profile/changePassword" class="text-primary text-decoration-none <%=!user.password?'d-none':''%>"
-                >Change password</a>
-              <div class="<%=user.password?'d-none':''%>"
-                ></div>
-              <button type="submit" class="btn btn-dark px-4">Save changes</button>
+
+            <!-- Footer Actions -->
+            <div class="pt-8 border-t border-gray-50 flex flex-col sm:flex-row justify-between items-center gap-6">
+              <% if(user.password) { %>
+                <a href="/profile/changePassword" class="text-[10px] font-bold text-gold-600 uppercase tracking-widest hover:text-luxury-black transition underline underline-offset-8">
+                  Security & Password
+                </a>
+              <% } else { %>
+                <div></div>
+              <% } %>
+              
+              <button type="submit" class="w-full sm:w-auto bg-luxury-black text-white px-12 py-5 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 transition shadow-xl">
+                Save Profile Changes
+              </button>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
-    </main>
     </div>
-    <script>
-      const addImg = document.getElementById("addImg");
-      const userProfile = document.getElementById("userProfile");
-      const deleteBtn = document.getElementById("deleteBtn");
+  </div>
+</main>
 
-      async function restorePlaceholder() {
-        [...addImg.children].forEach((child) => {
-          if (child.tagName !== "INPUT") child.remove();
-        });
+<script>
+  const addImg = document.getElementById("addImg");
+  const userProfile = document.getElementById("userProfile");
+  const deleteBtn = document.getElementById("deleteBtn");
 
-        const public_id = document.getElementById('oldImg').value
-
-        const iconSmall = document.createElement("div");
-        iconSmall.className = "rounded-circle bg-dark mt-3";
-        iconSmall.style.cssText = "width:40%;height:40%;margin-left:1.8rem";
-
-        const iconLarge = document.createElement("div");
-        iconLarge.className = "rounded-circle bg-dark mt-1";
-        iconLarge.style.cssText = "width:80%;height:80%;margin-left:.6rem";
-
-        addImg.appendChild(iconSmall);
-        addImg.appendChild(iconLarge);
-
-        const res = await fetch('/profile/api/deleteProfile',{
-          method:'PATCH',
-          headers:{"Content-Type":'application/json'},
-          body:JSON.stringify({public_id})
-        })
-        const data=await res.json()
-        if(data.status){
-          showAlert('success',data.message)
-          userProfile.value = "";
-          deleteBtn.classList.add("d-none");
-        }else{
-          showAlert('error',data.message)
-        }
+  async function restorePlaceholder() {
+    const public_id = document.getElementById('oldImg').value;
+    
+    try {
+      const res = await fetch('/profile/api/deleteProfile', {
+        method: 'PATCH',
+        headers: { "Content-Type": 'application/json' },
+        body: JSON.stringify({ public_id })
+      });
+      const data = await res.json();
+      
+      if (data.status) {
+        // Reset to initial
+        addImg.innerHTML = `
+          <input name="userProfile" id="userProfile" type="file" hidden accept="image/*">
+          <input name="oldImg" id="oldImg" value="<%=user.public_id%>" type="hidden">
+          <div class="w-full h-full flex items-center justify-center bg-luxury-black text-white text-4xl font-serif">
+            <%= user.name.charAt(0) %>
+          </div>
+        `;
+        // Re-attach input event
+        document.getElementById("userProfile").addEventListener("change", handleFileChange);
+        deleteBtn.classList.add("hidden");
+        if(typeof showAlert !== 'undefined') showAlert('success', data.message);
       }
+    } catch (err) {}
+  }
 
-      addImg.addEventListener("click", () => userProfile.click());
+  function handleFileChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
 
-      userProfile.addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      if(typeof showAlert !== 'undefined') showAlert("error", "Please upload a valid image file");
+      e.target.value = "";
+      return;
+    }
 
-        if(!file.type.startsWith('image/')){
-              showAlert("error","Please upload a valid image file (jpg, png, etc.)");
-          e.target.value = ""; // clear the invalid file input
-          return;
-        }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = document.createElement("img");
+      img.src = event.target.result;
+      img.className = "w-full h-full object-cover";
+      
+      // Keep inputs
+      const userProfileInput = document.getElementById("userProfile");
+      const oldImgInput = document.getElementById("oldImg");
+      
+      addImg.innerHTML = "";
+      addImg.appendChild(userProfileInput);
+      addImg.appendChild(oldImgInput);
+      addImg.appendChild(img);
 
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          [...addImg.children].forEach((child) => {
-            if (child.tagName !== "INPUT") child.remove();
-          });
+      deleteBtn.classList.remove("hidden");
+    };
+    reader.readAsDataURL(file);
+  }
 
-          const img = document.createElement("img");
-          img.src = event.target.result;
-          img.className = "w-100 h-100 rounded-circle";
-          img.style.objectFit = "cover";
-          addImg.appendChild(img);
+  addImg.addEventListener("click", () => document.getElementById("userProfile").click());
+  document.getElementById("userProfile").addEventListener("change", handleFileChange);
 
-          deleteBtn.classList.remove("d-none");
-        };
+  deleteBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    restorePlaceholder();
+  });
+</script>
 
-        reader.readAsDataURL(file);
-      });
-
-      deleteBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        restorePlaceholder();
-      });
-
-      document.getElementById('addImg').addEventListener('mouseenter',(e)=>{
-        document.getElementById('clickImg').classList.remove('d-none')
-      })
-      document.getElementById('addImg').addEventListener('mouseleave',(e)=>{
-        document.getElementById('clickImg').classList.add('d-none')
-      })
-    </script>
+<%- include("../partials/user/footer.ejs") %>
     </body>
 
     </html>

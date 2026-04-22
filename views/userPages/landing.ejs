@@ -1,204 +1,112 @@
-<%-include('../partials/user/header-landing.ejs')%>
+<%- include('../partials/user/header-landing.ejs') %>
 
-<style>
-  .hero-section {
-    margin-top: 40px;
-  }
-
-  .hero-img {
-    width: 100%;
-    min-height: 250px;        /* flexible instead of fixed */
-    max-height: 450px;
-    object-fit: cover;
-    border-radius: 10px;
-  }
-
-  .hero-text h1 {
-    font-size: 2.2rem;
-    font-weight: bold;
-    font-family: 'Playfair Display', serif;
-    color: #4d3903;
-  }
-
-  .hero-text p {
-    letter-spacing: 1px;
-    font-weight: 500;
-    color: #2e2201;
-    max-width: 320px;
-  }
-
-
-  .btn {
-    background-color: rgb(255, 255, 255);
-    color: rgb(0, 0, 0);
-    border-radius: 5px;
-    padding: .6rem 1rem;
-    font-weight: 600;
-    transition: 0.3s;
-  }
-
-  .btn-shop:hover,
-  .btn:hover {
-    background-color: rgb(0, 0, 0);
-    color:white
-  }
-
-  .collection-card img,
-  .product-card img {
-    width: 100%;
-    aspect-ratio: 4/5;       /* keeps ratio */
-    object-fit: cover;
-    border-radius: 10px;
-    transition: transform 0.3s ease-in-out;
-  }
-
-  .collection-card img:hover,
-  .product-card img:hover {
-    transform: scale(1.05);
-  }
-
-  .collection-title,
-  .product-name {
-    margin-top: 15px;
-    font-weight: 600;
-    text-transform: uppercase;
-  }
-
-  .product-price {
-    font-weight: 500;
-    color: #333;
-  }
-
-  .section-title {
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-  }
-
-  .underline {
-    width: 60px;
-    height: 2px;
-    background: black;
-    margin: 10px auto;
-  }
-  /* Default desktop/tablet: normal grid */
-.featured-scroll {
-  overflow-x: visible;
-}
-
-  /* Mobile Tweaks */
-  @media (max-width: 768px) {
-    .hero-text h1 {
-      font-size: 1.6rem;
-    }
-    .hero-text p {
-      font-size: 0.9rem;
-    }
-    .btn-shop,
-    .btn {
-      padding: 8px 16px;
-      font-size: 0.9rem;
-    }
-  .featured-scroll {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch; /* smooth scrolling */
-  }
-  .featured-scroll .row {
-    flex-wrap: nowrap !important; /* keep in one row */
-  }
-  .featured-scroll::-webkit-scrollbar {
-    display: none; /* hide scrollbar for clean look */
-  }
-  .featured-scroll > div > a{
-    max-width: 250px;
-  }
-}
-
-</style>
-
-<main class="flex-grow-1 bg-light">
-  <div class="container">
-    <div class="row text-center">
-      <div class="col-md-12 mb-5 pt-3 pb-5">
-        <div class="container hero-section">
-          <div class="row align-items-center">
-            <!-- Left Image -->
-            <div class="col-12 col-md-4 mb-4 mb-md-0">
-              <img src="/images/hero-1.avif" alt="Left Banner" class="hero-img" />
-            </div>
-
-            <!-- Center Text -->
-            <div class="col-12 col-md-4 text-center hero-text d-flex flex-column justify-content-center align-items-center mb-4 mb-md-0">
-              <h1 class="fw-bold mb-3">The Essence of Elegance</h1>
-              <p class="mb-4">
-                Discover fragrances that whisper luxury and linger with unforgettable
-                charm. A scent crafted not just to wear, but to define your presence.
-              </p>
-              <a href="/shop" style="background-color: rgb(237, 185, 51)" class="btn btn-lg rounded-pill px-4 shadow">
-                Shop Now
-              </a>
-            </div>
-
-            <!-- Right Image -->
-            <div class="col-12 col-md-4 mt-4 mt-md-0">
-              <img src="/images/hero-2.avif" alt="Right Banner" class="hero-img" />
-            </div>
-          </div>
-        </div>
+<main class="flex-grow">
+  <!-- Hero Section -->
+  <section class="relative h-[80vh] min-h-[600px] flex items-center overflow-hidden bg-luxury-black">
+    <div class="absolute inset-0">
+      <div class="grid grid-cols-2 h-full opacity-60">
+        <img src="/images/hero-1.avif" alt="Luxury Scent" class="w-full h-full object-cover" />
+        <img src="/images/hero-2.avif" alt="Premium Bottle" class="w-full h-full object-cover" />
       </div>
+      <div class="absolute inset-0 bg-gradient-to-r from-luxury-black via-luxury-black/40 to-transparent"></div>
+    </div>
 
-      <!-- Categories -->
-      <div class="col-md-12 mt-5">
-        <h6 class="text-uppercase">Explore</h6>
-        <h2 class="fw-bold">Our Fragrance Collections</h2>
-
-        <div class="row mt-4 g-4 justify-content-center">
-          <% categories.forEach(category=> { %>
-            <div class="col-6 col-md-4">
-              <a href="/shop?category=<%=category._id%>" class="text-decoration-none text-black">
-                <div class="collection-card overflow-hidden rounded-5">
-                  <img src="<%=category.img%>" alt="<%=category.name%>" class="img-fluid rounded-5" />
-                  <div class="collection-title">
-                    <h3 class="mt-4">
-                      <%=category.name%>
-                    </h3>
-                  </div>
-                </div>
-              </a>
-            </div>
-          <% }) %>
-        </div>
-      </div>
-
-      <!-- Featured Products -->
-<div class="col-md-12 mt-5">
-  <div class="container text-center mt-5">
-    <h6 class="text-uppercase">Explore</h6>
-    <h2 class="section-title">Featured Products</h2>
-    <div class="underline"></div>
-
-    <!-- Scroll wrapper -->
-    <div class="featured-scroll mt-4 ">
-      <div class="row g-4 flex-md-wrap flex-nowrap">
-        <% products.forEach(product => { %>
-          <a href="products/<%=product._id%>" 
-             class="col-12 col-sm-6 col-md-4 text-decoration-none text-black flex-shrink-0">
-            <div class="product-card">
-              <img src="<%=product.images[0].url%>" alt="<%=product.name%>" class="img-fluid rounded-5" />
-              <div class="product-name mt-4 fs-4"><%=product.name%></div>
-              <div class="product-price">
-                Rs.<%=Math.min(...product.variants.map(v=>v.finalAmount))%>
-              </div>
-            </div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <div class="max-w-2xl">
+        <h6 class="text-gold-400 font-bold tracking-[0.3em] uppercase mb-4 animate-fade-in">Experience Elegance</h6>
+        <h1 class="text-white text-5xl md:text-7xl font-serif font-bold leading-tight mb-8 animate-slide-up">
+          The Art of <br /> <span class="italic text-gold-400">Personal</span> Presence
+        </h1>
+        <p class="text-gray-300 text-lg md:text-xl leading-relaxed mb-10 max-w-lg">
+          Discover a curated collection of world-class fragrances crafted to define your essence and leave an unforgettable trail.
+        </p>
+        <div class="flex flex-wrap gap-4">
+          <a href="/shop" class="bg-gold-500 hover:bg-gold-600 text-black px-10 py-4 rounded-full font-bold text-sm tracking-widest uppercase transition duration-300 shadow-2xl">
+            Shop Collection
           </a>
+          <a href="/about" class="border border-white/30 hover:border-white text-white px-10 py-4 rounded-full font-bold text-sm tracking-widest uppercase transition duration-300">
+            Our Story
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h6 class="text-gold-600 font-bold tracking-widest uppercase text-xs mb-3">Explore Collections</h6>
+        <h2 class="text-4xl md:text-5xl font-serif font-bold text-luxury-black">Fragrance Families</h2>
+        <div class="w-20 h-1 bg-gold-400 mx-auto mt-6"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <% categories.forEach(category => { %>
+          <%- include('../partials/user/categoryCard.ejs', { category: category }) %>
         <% }) %>
       </div>
     </div>
-  </div>
-</div>
+  </section>
 
+  <!-- Featured Products Section -->
+  <section class="py-24 bg-luxury-cream overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-16">
+        <div>
+          <h6 class="text-gold-600 font-bold tracking-widest uppercase text-xs mb-3">Curated Selection</h6>
+          <h2 class="text-4xl md:text-5xl font-serif font-bold text-luxury-black">Our Masterpieces</h2>
+        </div>
+        <a href="/shop" class="text-luxury-black font-bold text-sm tracking-widest uppercase border-b-2 border-gold-400 pb-1 hover:text-gold-600 transition mt-6 md:mt-0">
+          View All Masterpieces
+        </a>
+      </div>
+
+      <!-- Horizontal Scroll Grid on Mobile, Grid on Desktop -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+        <% products.slice(0, 4).forEach(product => { %>
+          <%- include('../partials/user/productCard.ejs', { product: product }) %>
+        <% }) %>
+      </div>
     </div>
-  </div>
+  </section>
+
+  <!-- Brand Message / Trust Section -->
+  <section class="py-24 bg-luxury-black text-white relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-1/3 h-full bg-gold-600/5 -skew-x-12 transform translate-x-1/2"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fa-solid fa-droplet text-gold-400 text-2xl"></i>
+          </div>
+          <h4 class="font-serif text-xl font-bold mb-4">Pure Essence</h4>
+          <p class="text-gray-400 text-sm leading-relaxed">
+            Every bottle contains 100% authentic oils sourced from the finest fragrance houses in Grasse.
+          </p>
+        </div>
+        <div class="text-center">
+          <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fa-solid fa-feather-pointed text-gold-400 text-2xl"></i>
+          </div>
+          <h4 class="font-serif text-xl font-bold mb-4">Long Lasting</h4>
+          <p class="text-gray-400 text-sm leading-relaxed">
+            Our extraits de parfum are formulated for exceptional projection and 24-hour longevity.
+          </p>
+        </div>
+        <div class="text-center">
+          <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fa-solid fa-shield-halved text-gold-400 text-2xl"></i>
+          </div>
+          <h4 class="font-serif text-xl font-bold mb-4">Guaranteed</h4>
+          <p class="text-gray-400 text-sm leading-relaxed">
+            Experience risk-free luxury with our 30-day return policy and authenticity guarantee.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
-<%- include('../partials/user/footer.ejs')%>
+<%- include('../partials/user/footer.ejs') %>
+

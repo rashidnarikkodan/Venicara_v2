@@ -1,68 +1,82 @@
-<%- include('../partials/user/header.ejs') %>
-<%- include('../partials/user/sidebarProfile.ejs') %>
+<%- include("../partials/user/header.ejs") %>
 
-<main class="flex-grow-1 bg-light w-100 d-flex justify-content-center">
-  <div class="container py-5" style="max-width: 900px;">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h3 class="fw-bold mb-0">My Addresses</h3>
-      <a href="/address/new" class="btn btn-dark">+ Add New Address</a>
-    </div>
+<main class="bg-white min-h-screen py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col lg:flex-row gap-12">
+      
+      <%- include("../partials/user/sidebarProfile.ejs") %>
 
-    <% if (addresses && addresses.length > 0) { %>
-      <div class="row g-4">
-        <% addresses.forEach(address => { %>
-          <div class="col-md-6">
-            <div class="card shadow-lg border-0 rounded-4 h-100">
-              <div class="card-body d-flex flex-column justify-content-between">
-                
-                <!-- Address Info -->
-                <div>
-                  <h5 class="fw-bold mb-2"><%= address.fullName %></h5>
-                  <p class="mb-1"><strong>Street:</strong> <%= address.street || '-' %></p>
-                  <p class="mb-1"><strong>Address:</strong> <%= address.address %></p>
-                  <p class="mb-1"><strong>City:</strong> <%= address.city %>, <%= address.state %></p>
-                  <p class="mb-1"><strong>PIN:</strong> <%= address.pin %></p>
-                  
-                  <% if (address.landmark) { %>
-                    <p class="mb-1"><strong>Landmark:</strong> <%= address.landmark %></p>
-                  <% } %>
+      <!-- Address Content -->
+      <div class="flex-1">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-6">
+          <div>
+            <h1 class="text-3xl font-serif font-bold text-luxury-black mb-2 uppercase tracking-tight">Saved Addresses</h1>
+            <p class="text-gray-500 text-sm italic">Manage your delivery locations for faster checkout.</p>
+          </div>
+          <a href="/address/new" class="bg-luxury-black text-white px-8 py-4 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-gold-600 transition shadow-lg flex items-center">
+            <i class="fa-solid fa-plus mr-3"></i> Add New Address
+          </a>
+        </div>
 
-                  <% if (address.alternateMobile) { %>
-                    <p class="mb-1"><strong>Alt Mobile:</strong> <%= address.alternateMobile %></p>
-                  <% } %>
-
-                  <p class="text-muted small m-0 ">
-                      Added on <%= new Date(address.createdAt).toLocaleDateString() %>
-                    </p>
-                    <span class="badge bg-dark p-2 mt-1 text-capitalize"><%= address.type %></span>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="d-flex justify-content-between align-items-center mt-2">
-                  <div class="btn-group">
-                    <a href="/address/edit/<%= address._id %>" class="btn btn-sm btn-outline-dark">Edit</a>
-                    <form action="/address/delete/<%= address._id %>?_method=DELETE" method="POST" style="display:inline;">
-                      <button type="submit" class="btn btn-sm btn-outline-dark">Delete</button>
+        <% if (addresses && addresses.length > 0) { %>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <% addresses.forEach(addr => { %>
+              <div class="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm hover:shadow-md transition duration-300 relative group flex flex-col h-full <%= addr.isDefault ? 'ring-2 ring-gold-400 ring-offset-2' : '' %>">
+                <div class="flex justify-between items-start mb-6">
+                  <div class="flex items-center space-x-3">
+                    <span class="bg-luxury-cream text-gold-700 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-gold-100"><%= addr.type %></span>
+                    <% if(addr.isDefault) { %>
+                      <span class="text-[10px] font-bold text-green-600 uppercase tracking-widest flex items-center">
+                        <i class="fa-solid fa-circle-check mr-1"></i> Default
+                      </span>
+                    <% } %>
+                  </div>
+                  <div class="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <a href="/address/edit/<%= addr._id %>" class="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 hover:text-gold-600 hover:bg-gold-50 transition">
+                      <i class="fa-solid fa-pen-to-square text-sm"></i>
+                    </a>
+                    <form action="/address/delete/<%= addr._id %>?_method=DELETE" method="POST" class="inline">
+                      <button type="submit" class="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition" onclick="return confirm('Delete this address?')">
+                        <i class="fa-solid fa-trash-can text-sm"></i>
+                      </button>
                     </form>
                   </div>
-                  <a href="/address/default/<%=address._id%>" 
-                     class="btn btn-sm <%= address.isDefault? 'btn-dark' : 'btn-outline-secondary' %>">
-                    Set Default
-                  </a>
+                </div>
+                
+                <h3 class="text-lg font-bold text-luxury-black mb-1 uppercase tracking-tight"><%= addr.fullName %></h3>
+                <p class="text-gray-500 text-sm leading-relaxed mb-6">
+                  <%= addr.address %>,<br>
+                  <%= addr.city %>, <%= addr.state %> - <%= addr.pin %><br>
+                  <% if(addr.landmark) { %>
+                    <span class="text-xs text-gray-400 italic block mt-1">Landmark: <%= addr.landmark %></span>
+                  <% } %>
+                  <span class="text-xs font-bold text-gold-600 uppercase tracking-[0.1em] mt-4 block">Mobile: <%= addr.mobile %></span>
+                </p>
+
+                <div class="pt-6 border-t border-gray-50 flex items-center justify-between mt-auto">
+                   <p class="text-[9px] text-gray-300 uppercase tracking-widest">Added <%= new Date(addr.createdAt).toLocaleDateString() %></p>
+                   <% if(!addr.isDefault) { %>
+                     <a href="/address/default/<%=addr._id%>" class="text-[10px] font-bold text-luxury-black uppercase tracking-widest hover:text-gold-600 transition underline underline-offset-8">Set Default</a>
+                   <% } %>
                 </div>
               </div>
-            </div>
+            <% }) %>
           </div>
-        <% }) %>
+        <% } else { %>
+          <div class="bg-gray-50 rounded-3xl p-16 text-center border-2 border-dashed border-gray-200">
+            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
+              <i class="fa-solid fa-map-location-dot text-4xl text-gray-200"></i>
+            </div>
+            <h2 class="text-2xl font-serif font-bold text-luxury-black mb-4 uppercase tracking-tighter">No addresses yet</h2>
+            <p class="text-gray-500 mb-10 max-w-sm mx-auto">It seems you haven't saved any delivery addresses. Add one now to experience a swifter checkout.</p>
+            <a href="/address/new" class="inline-block bg-luxury-black text-white px-10 py-5 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-gold-600 transition shadow-xl">
+              Add Your First Address
+            </a>
+          </div>
+        <% } %>
       </div>
-    <% } else { %>
-      <div class="text-center bg-white p-5 rounded-4 shadow-sm">
-        <p class="text-muted mb-3">No addresses saved yet.</p>
-      </div>
-    <% } %>
+    </div>
   </div>
 </main>
 
-<script src="/js/userHeader.js"></script>
-</body>
-</html>
+<%- include("../partials/user/footer.ejs") %>

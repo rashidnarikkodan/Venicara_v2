@@ -59,7 +59,8 @@ const handleLogin = async (req, res) => {
     // Initialize session
     req.session.user = {
       id: user._id,
-      email:user.email,
+      name: user.name,
+      email: user.email,
       isVerified: user.isVerified,
       isDeleted: user.isDeleted,
       isBlocked: user.isBlocked,
@@ -95,7 +96,8 @@ const handleGoogleAuth = async (req, res) => {
     }
     req.session.user = {
       id: req.user._id,
-      email:req.user.email,
+      name: user.name,
+      email: req.user.email,
       isVerified: user.isVerified,
       isDeleted: user.isDeleted,
       isBlocked: user.isBlocked,

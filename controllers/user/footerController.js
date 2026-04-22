@@ -28,10 +28,18 @@ const cookiePolicy=(req,res)=>{
         handleError(res,'cookiePolicy',error)
     }
 }
+const shippingPolicy=(req,res)=>{
+    try{
+        res.render('userPages/shippingPolicy.ejs')
+    }catch(error){
+        handleError(res,'shippingPolicy',error)
+    }
+}
 
 module.exports = {
     privacyPolicy,
     returnPolicy,
     termsConditions,
     cookiePolicy,
+    shippingPolicy,
 }

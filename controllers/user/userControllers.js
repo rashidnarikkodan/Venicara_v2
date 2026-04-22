@@ -133,9 +133,10 @@ const resendNewEmailOTP = async (req, res) => {
   }
 };
 
-const showProfileChangePass = (req, res) => {
+const showProfileChangePass = async (req, res) => {
   try {
-    res.render("userPages/profileChangePass");
+    const user = await User.findById(req.session.user.id);
+    res.render("userPages/profileChangePass", { user });
   } catch (err) {
     handleError(res, "showProfileChangePass", err);
   }
@@ -175,9 +176,10 @@ const handleProfileChangePass = async (req, res) => {
   }
 };
 
-const showDeleteAc = (req, res) => {
+const showDeleteAc = async (req, res) => {
   try {
-    res.render("userPages/deleteAc");
+    const user = await User.findById(req.session.user.id);
+    res.render("userPages/deleteAc", { user });
   } catch (err) {
     handleError(res, "showDeleteAc", err);
   }

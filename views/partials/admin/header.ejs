@@ -1,204 +1,192 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
-  <title><%=title%></title>
+  <title>VENICARA ADMIN | <%= title %></title>
 
-    <!-- Favicon -->
+  <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png" />
-  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
 
-  <!-- Bootstrap CSS -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
-    crossorigin="anonymous"/>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- Tailwind Output -->
+  <link rel="stylesheet" href="/css/output.css" />
     
-        <!-- Notyf CSS -->
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css" />
+  <!-- Notyf CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css" />
 
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="https://kit.fontawesome.com/f45c5ea548.js" crossorigin="anonymous"></script>
 
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="/css/adminDashboard.css" />
   <!-- Notyf JS -->
   <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
 
-</head>
-<body>
-  <!-- Header -->
-  <header class="shadow-sm p-3 d-flex align-items-center justify-content-between" style="min-height: 5rem;">
-    <!-- Left: Mobile Menu & Sidebar Toggle -->
-    <div class="d-flex align-items-center gap-2">
-      <button id="sidebarToggleMobile" class="btn d-md-none" style="background:#e8e7e5; color:#000;">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-      <button id="arrow" class="btn btn-outline-secondary d-none d-md-block">
-        <i class="fa-solid fa-angle-left"></i>
-      </button>
-    </div>
-
-    <!-- Center: Logo / Brand -->
-    <div class="d-flex justify-content-center">
-      <img class="header-logo" src="/images/logo.avif" alt="Logo" >
-    </div>
-
-    <!-- Right: Profile -->
-    <div class="d-flex align-items-center">
-      <!-- <a href="/admin/profile" class="text-dark">
-        <i class="fa-regular fa-circle-user fs-3"></i>
-      </a> -->
-    </div>
-  </header>
-
-  <!-- Notifications -->
-  <div id="successBox" class="successBox w-100 d-flex justify-content-center mt-2">
-    <% if(messages && messages.success && messages.success.length > 0){ %>
-      <div class="alert alert-success text-center w-md-25 w-75"><%= messages.success[0] %></div>
-    <% } %>
-  </div>
-  <div id="errorBox" class="errorBox w-100 d-flex justify-content-center mt-2">
-    <% if(messages && messages.error && messages.error.length > 0){ %>
-      <div class="alert alert-danger text-center w-md-25 w-75"><%= messages.error[0] %></div>
-    <% } %>
-  </div>
-
-  <!-- Main wrapper -->
-  <div class="d-flex">
-    <!-- Sidebar -->
-    <nav id="sidebar" class="p-2 d-none d-lg-block" >
-      <ul class="nav flex-column mt-2 pb-2 pt-2 pe-2 rounded-3 w-100" style="background:rgb(235, 235, 235)">
-        <!-- Dashboard -->
-        <li class="nav-item mb-1">
-          <a class="btn btn-white rounded-4 d-flex align-items-center gap-2 p-3 w-100 <%= page === 'dashboard' ? 'active' : '' %>"
-             href="/admin/dashboard">
-            <i class="fa-solid fa-chart-line"></i>
-            <span>Dashboard</span>
-          </a>
-        </li>
-
-        <!-- Orders -->
-        <li class="nav-item mb-1">
-          <a class="btn btn-white rounded-4 d-flex align-items-center gap-2 p-3 w-100 <%= page === 'orders' ? 'active' : '' %>"
-             href="/admin/orders">
-            <i class="fa-solid fa-bag-shopping"></i>
-            <span>Orders</span>
-          </a>
-        </li>
-
-        <!-- Products -->
-        <li class="nav-item mb-1">
-          <a class="btn btn-white rounded-4 d-flex align-items-center gap-2 p-3 w-100 <%= page === 'products' ? 'active' : '' %>"
-             href="/admin/products?page=1">
-            <i class="fa-solid fa-boxes-stacked"></i>
-            <span>Products</span>
-          </a>
-        </li>
-
-        <!-- Sales Report -->
-        <li class="nav-item mb-1">
-          <a class="btn btn-white rounded-4 d-flex align-items-center gap-2 p-3 w-100 <%= page === 'salesReport' ? 'active' : '' %>"
-             href="/admin/salesReport">
-            <i class="fa-solid fa-newspaper"></i>
-            <span>Sales Report</span>
-          </a>
-        </li>
-
-        <!-- Customers -->
-        <li class="nav-item mb-1">
-          <a class="btn btn-white rounded-4 d-flex align-items-center gap-2 p-3 w-100 <%= page === 'customers' ? 'active' : '' %>"
-             href="/admin/customers">
-            <i class="fa-solid fa-people-group"></i>
-            <span>Customers</span>
-          </a>
-        </li>
-
-        <!-- Coupons -->
-        <li class="nav-item mb-1">
-          <a class="btn btn-white rounded-4 d-flex align-items-center gap-2 p-3 w-100 <%= page === 'coupons' ? 'active' : '' %>"
-             href="/admin/coupons">
-            <i class="fa-solid fa-ticket"></i>
-            <span>Coupons</span>
-          </a>
-        </li>
-
-        <!-- Categories -->
-        <li class="nav-item mb-1">
-          <a class="btn btn-white rounded-4 d-flex align-items-center gap-2 p-3 w-100 <%= page === 'categories' ? 'active' : '' %>"
-             href="/admin/categories">
-            <i class="fa-solid fa-layer-group"></i>
-            <span>Categories</span>
-          </a>
-        </li>
-
-        <!-- Referrals -->
-        <li class="nav-item mb-1">
-          <a class="btn btn-white rounded-4 d-flex align-items-center gap-2 p-3 w-100 <%= page === 'referrals' ? 'active' : '' %>"
-             href="/admin/referrals">
-            <i class="fa-solid fa-users-line"></i>
-            <span>Referrals</span>
-          </a>
-        </li>
-
-        <!-- Logout -->
-        <li class="nav-item mt-3">
-          <a class="btn btn-danger text-white rounded-4 d-flex align-items-center gap-2 p-3 w-100 logout"
-             href="/admin/logout">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-            <span>Sign Out</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
-
-    <!-- Mobile overlay -->
-    <div id="sidebarOverlay" class="d-md-none"></div>
-
-
-
-  <!-- Scripts -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
   <script>
-    const sidebar = document.getElementById('sidebar');
-    const toggleMobile = document.getElementById('sidebarToggleMobile');
-    const overlay = document.getElementById('sidebarOverlay');
-    const arrow = document.getElementById('arrow');
-
-    // Mobile toggle
-    toggleMobile.addEventListener('click', () => {
-      sidebar.classList.toggle('d-none');
-      overlay.style.display = sidebar.classList.contains('d-none') ? 'none' : 'block';
-    });
-
-    overlay.addEventListener('click', () => {
-      sidebar.classList.add('d-none');
-      overlay.style.display = 'none';
-    });
-
-    // Sidebar collapse toggle
-    arrow.addEventListener('click', () => {
-      sidebar.classList.toggle('shrink');
-      arrow.querySelector('div').classList.toggle('fa-angle-left');
-      arrow.querySelector('div').classList.toggle('fa-angle-right');
-    });
-
-    // Fade out notifications after 3 seconds
-    const successBox = document.getElementById('successBox');
-    const errorBox = document.getElementById('errorBox');
-    [successBox, errorBox].forEach(box => {
-      if (box && box.querySelector('.alert')) {
-        setTimeout(() => {
-          box.classList.add('fadeOut');
-          setTimeout(() => {
-            box.style.display = 'none';
-          }, 1000);
-        }, 3000);
-      }
-    });
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   </script>
+
+  <style>
+    .sidebar-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .glass-effect { backdrop-filter: blur(8px); background-color: rgba(255, 255, 255, 0.8); }
+    .dark .glass-effect { background-color: rgba(10, 10, 10, 0.8); }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 10px; }
+  </style>
+</head>
+
+<body class="h-full bg-luxury-cream dark:bg-luxury-black text-luxury-black dark:text-luxury-white font-sans transition-colors duration-300">
+
+  <div class="flex h-full overflow-hidden">
+    
+    <!-- Sidebar -->
+    <aside id="admin-sidebar" class="sidebar-transition fixed inset-y-0 left-0 z-50 w-64 bg-luxury-black text-white transform -translate-x-full lg:translate-x-0 lg:static lg:inset-0 flex flex-col shadow-2xl">
+      <!-- Sidebar Header -->
+      <div class="h-20 flex items-center justify-center border-b border-white/5 px-6">
+        <a href="/admin/dashboard" class="flex items-center space-x-3">
+          <span class="text-2xl font-serif font-bold tracking-tighter text-gold-400">VENICARA</span>
+        </a>
+      </div>
+
+      <!-- Sidebar Navigation -->
+      <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1">
+        <% 
+          const navItems = [
+            { id: 'dashboard', label: 'Dashboard', icon: 'fa-chart-line', href: '/admin/dashboard' },
+            { id: 'orders', label: 'Orders', icon: 'fa-bag-shopping', href: '/admin/orders' },
+            { id: 'products', label: 'Products', icon: 'fa-boxes-stacked', href: '/admin/products?page=1' },
+            { id: 'categories', label: 'Categories', icon: 'fa-layer-group', href: '/admin/categories' },
+            { id: 'salesReport', label: 'Sales Report', icon: 'fa-newspaper', href: '/admin/salesReport' },
+            { id: 'customers', label: 'Customers', icon: 'fa-people-group', href: '/admin/customers' },
+            { id: 'coupons', label: 'Coupons', icon: 'fa-ticket', href: '/admin/coupons' },
+            { id: 'referrals', label: 'Referrals', icon: 'fa-users-line', href: '/admin/referrals' }
+          ];
+        %>
+
+        <% navItems.forEach(item => { %>
+          <a href="<%= item.href %>" 
+             class="flex items-center space-x-3 px-4 py-3 rounded-xl transition duration-200 group <%= page === item.id ? 'bg-gold-500 text-luxury-black font-bold shadow-lg shadow-gold-500/20' : 'text-gray-400 hover:bg-white/5 hover:text-white' %>">
+            <i class="fa-solid <%= item.icon %> text-lg <%= page === item.id ? 'text-luxury-black' : 'group-hover:text-gold-400' %>"></i>
+            <span class="text-sm font-semibold tracking-wide uppercase"><%= item.label %></span>
+          </a>
+        <% }) %>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="p-4 border-t border-white/5">
+        <a href="/admin/logout" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition duration-200">
+          <i class="fa-solid fa-arrow-right-from-bracket text-lg"></i>
+          <span class="text-sm font-bold uppercase tracking-widest">Sign Out</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Content Area -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- Topbar -->
+      <header id="admin-topbar" class="h-20 glass-effect border-b border-gray-100 dark:border-white/10 sticky top-0 z-40 flex items-center justify-between px-6 transition-all duration-500">
+        <!-- Left: Sidebar Toggle & Breadcrumb -->
+        <div class="flex items-center space-x-4">
+          <button id="sidebar-toggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 lg:hidden">
+            <i class="fa-solid fa-bars-staggered text-xl"></i>
+          </button>
+          <div class="hidden md:flex flex-col">
+            <span class="text-[10px] text-gold-600 dark:text-gold-400 font-bold uppercase tracking-[0.2em]">Management Console</span>
+            <h2 class="text-lg font-serif font-bold dark:text-white capitalize"><%= page %></h2>
+          </div>
+        </div>
+
+        <!-- Right: Actions -->
+        <div class="flex items-center space-x-4">
+          <!-- Theme Toggle -->
+          <button id="theme-toggle" class="p-2.5 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 transition-all duration-300">
+            <i class="fa-solid fa-moon dark:hidden text-xl text-gray-700"></i>
+            <i class="fa-solid fa-sun hidden dark:block text-xl text-gold-400"></i>
+          </button>
+
+          <!-- Notifications -->
+          <button class="p-2.5 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 relative">
+            <i class="fa-regular fa-bell text-xl"></i>
+            <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-luxury-black"></span>
+          </button>
+
+          <!-- Profile -->
+          <div class="flex items-center space-x-3 pl-4 border-l border-gray-100 dark:border-white/10">
+            <div class="w-10 h-10 bg-gold-500 rounded-xl flex items-center justify-center font-bold text-luxury-black">
+              AD
+            </div>
+            <div class="hidden sm:block">
+              <p class="text-xs font-bold uppercase tracking-widest">Admin User</p>
+              <p class="text-[10px] text-gray-500">Super Admin</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content Container -->
+      <main id="admin-main" class="flex-1 overflow-y-auto p-6 md:p-10 scroll-smooth">
+        
+        <!-- Flash Messages -->
+        <div id="flash-container" class="max-w-4xl mx-auto mb-8">
+          <% if(messages && messages.success && messages.success.length > 0){ %>
+            <div class="bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 text-green-800 dark:text-green-400 px-6 py-4 rounded-2xl shadow-sm animate-fade-in-down flex items-center">
+              <i class="fa-solid fa-circle-check mr-3"></i>
+              <%= messages.success[0] %>
+            </div>
+          <% } %>
+          <% if(messages && messages.error && messages.error.length > 0){ %>
+            <div class="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-800 dark:text-red-400 px-6 py-4 rounded-2xl shadow-sm animate-fade-in-down flex items-center">
+              <i class="fa-solid fa-circle-exclamation mr-3"></i>
+              <%= messages.error[0] %>
+            </div>
+          <% } %>
+        </div>
+
+        <!-- Start of Page Content -->
+
+    <script>
+      // Admin sidebar toggle
+      const sidebar = document.getElementById('admin-sidebar');
+      const toggle = document.getElementById('sidebar-toggle');
+      toggle?.addEventListener('click', () => {
+        sidebar.classList.toggle('-translate-x-full');
+      });
+
+      // Admin theme toggle
+      const themeBtn = document.getElementById('theme-toggle');
+      themeBtn?.addEventListener('click', () => {
+        if (document.documentElement.classList.contains('dark')) {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+        } else {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+        }
+      });
+
+      // Admin header scroll effect
+      const adminMain = document.getElementById('admin-main');
+      const adminTopbar = document.getElementById('admin-topbar');
+      adminMain?.addEventListener('scroll', () => {
+        if (adminMain.scrollTop > 20) {
+          adminTopbar.classList.replace('h-20', 'h-16');
+          adminTopbar.classList.add('shadow-lg', 'bg-white/95', 'dark:bg-luxury-black/95');
+        } else {
+          adminTopbar.classList.replace('h-16', 'h-20');
+          adminTopbar.classList.remove('shadow-lg', 'bg-white/95', 'dark:bg-luxury-black/95');
+        }
+      });
+    </script>

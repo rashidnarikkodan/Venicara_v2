@@ -6,5 +6,6 @@ router.get('/privacy-policy',footerController.privacyPolicy)
 router.get('/return-policy',footerController.returnPolicy)
 router.get('/terms-conditions',footerController.termsConditions)
 router.get('/cookie-policy',footerController.cookiePolicy)
+router.get('/shipping-policy',footerController.shippingPolicy)
 
 module.exports = router
