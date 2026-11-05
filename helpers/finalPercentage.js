@@ -1,5 +1,4 @@
 const Category = require('../models/Category')
-const getDiscountPercent = require('./discPercent')
 
 module.exports = async function finalDiscountPercent(bp, discount, id) {
     const category = await Category.findById(id)

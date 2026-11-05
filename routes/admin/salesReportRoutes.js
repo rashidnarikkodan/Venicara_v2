@@ -1,14 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const { salesReportController } = require("../../controllers/admin/index");
+const auth = require("../../middlewares/authAdmin");
 
-router.route("/").get(salesReportController.showSalesReport);
+router.route("/").get(auth.requireLogin, salesReportController.showSalesReport);
 router.post(
-  "/export/pdf/:id",
+  "/export/pdf",
+  auth.requireLogin,
   salesReportController.exportSalesPDF
 );
 router.post(
-  "/export/excel/:id",
+  "/export/excel",
+  auth.requireLogin,
   salesReportController.exportSalesExcel
 );
 

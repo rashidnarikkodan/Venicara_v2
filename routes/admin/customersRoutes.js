@@ -1,18 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const {
-  authController,
-  dashboardController,
-  ordersController,
-  productsController,
-  salesReportController,
-  customersController,
-  couponsController,
-  categoriesController,
-  referralsController,
-} = require("../controllers/admin/index");
+const { customersController } = require("../../controllers/admin/index");
+const auth = require("../../middlewares/authAdmin");
 
-const auth = require("../middlewares/authAdmin");
-const upload = require("../middlewares/multer");
+router
+  .route("/")
+  .get(auth.requireLogin, customersController.showCustomers);
+router.patch("/status/:id", customersController.blockCustomer);
+router.patch("/:id/toggle", customersController.blockCustomer);
 
 module.exports = router;

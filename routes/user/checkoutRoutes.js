@@ -5,8 +5,6 @@ const {
   checkoutController,
 } = require("../../controllers/user/index");
 
-const auth = require("../../middlewares/authUser");
-
 router
   .route("/address")
   .get(checkoutController.showAddress);

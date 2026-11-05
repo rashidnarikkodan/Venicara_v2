@@ -1,10 +1,8 @@
 const Product = require("../../models/Product");
 const Category = require("../../models/Category");
 const processImages = require("../../helpers/imgProcess");
-const getDiscountPercent = require("../../helpers/discPercent");
 const handleError = require("../../helpers/handleError");
 const finalAmount = require('../../helpers/finalPrice')
-const finalPercentage = require('../../helpers/finalPercentage')
 const cloudinary = require('../../config/cloudinary')
 
 const showProducts = async (req, res) => {
