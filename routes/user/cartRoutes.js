@@ -1,13 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const passport = require("passport");
 
 const {
   cartController,
 } = require("../../controllers/user/index");
 
 const auth = require("../../middlewares/authUser");
-const upload = require("../../middlewares/multer");
 
 
 router

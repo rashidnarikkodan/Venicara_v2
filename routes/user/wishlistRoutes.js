@@ -4,8 +4,6 @@ const {
   wishlistController,
 } = require("../../controllers/user/index");
 
-const auth = require("../../middlewares/authUser");
-
 router.get("/", wishlistController.show);
 router.post("/api/add/:id", wishlistController.addToWishlist);
 router.post("/api/addToCart/:id", wishlistController.addToCart);
