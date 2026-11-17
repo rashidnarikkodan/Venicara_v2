@@ -156,12 +156,16 @@
   // Razorpay Logic
   async function createRazorpayOrder(amountValue) {
     try {
-      const res = await fetch("/wallet/add", {
+      const res = await fetch("/wallet/deposits", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest"
+        },
         body: JSON.stringify({ amount: amountValue }),
       });
       const data = await res.json();
+      if (!handleApiResponse(res, data)) return null;
       return data.order;
     } catch (err) {
       showStatusModal('error', 'Order Error', 'Could not initiate the recharge. Please try again.');
@@ -171,13 +175,17 @@
 
   async function verifyPayment(response) {
     try {
-      const res = await fetch("/wallet/verify-payment", {
+      const res = await fetch("/wallet/deposits/verify", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest"
+        },
         body: JSON.stringify(response),
       });
       const data = await res.json();
-      if (data.status) {
+      if (!handleApiResponse(res, data)) return;
+      if (data.status || data.success) {
         document.getElementById("balanceDisplay").textContent = data.balance.toFixed(2);
         showStatusModal('success', 'Recharge Success', 'Your Venicara Wallet has been credited successfully.');
       } else {
@@ -211,9 +219,12 @@
       modal: {
         ondismiss: async () => {
           try {
-            await fetch('/wallet/api/addMoneyFailed', {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
+            await fetch('/wallet/deposits/fail', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+              },
               body: JSON.stringify({ razorpayId: order.id })
             });
             showStatusModal('error', 'Payment Cancelled', 'The transaction was cancelled.');

@@ -102,25 +102,28 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
 
       try {
-        const res = await fetch('/referEarn/api/reward', {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id })
+        const res = await fetch(`/referEarn/rewards/${id}/claim`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest"
+          },
         });
         const data = await res.json();
+        if (!handleApiResponse(res, data)) return;
         
-        if (data.status) {
+        if (data.status || data.success) {
           btn.innerText = 'Claimed';
-          if(typeof Notyf !== 'undefined') new Notyf().success('Reward claimed to wallet!');
+          showToast('success', 'Reward claimed to wallet!');
         } else {
           btn.innerText = originalText;
           btn.disabled = false;
-          if(typeof Notyf !== 'undefined') new Notyf().error(data.message);
+          showToast('error', data.message || 'Failed to claim reward');
         }
       } catch (err) {
         btn.innerText = originalText;
         btn.disabled = false;
-        if(typeof Notyf !== 'undefined') new Notyf().error('Network error');
+        showToast('error', 'Network error');
       }
     }
   });

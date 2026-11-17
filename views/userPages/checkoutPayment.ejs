@@ -203,9 +203,12 @@
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i> Initializing...';
 
-      const response = await fetch("/checkout/api/placeOrder", {
+      const response = await fetch("/checkout/orders", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest"
+        },
         body: JSON.stringify({ paymentMethod }),
       });
 
@@ -233,9 +236,12 @@
           theme: { color: "#d4af37" }, // Gold primary
           handler: async function (response) {
             try {
-              const res = await fetch("/checkout/api/razorpay/success", {
+              const res = await fetch("/checkout/payments/verify", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-Requested-With": "XMLHttpRequest"
+                },
                 body: JSON.stringify({
                   orderId: data.orderId,
                   razorpay_payment_id: response.razorpay_payment_id,
@@ -245,8 +251,8 @@
               });
 
               const result = await res.json();
-              if (result.status) {
-                window.location.href = `/checkout/placeOrder/${data.orderId}`;
+              if (result.status || result.success) {
+                window.location.href = `/checkout/orders/${data.orderId}/success`;
               } else {
                 showPaymentFailedModal(result.message);
               }
@@ -258,9 +264,12 @@
             escape: true,
             ondismiss: async () => {
               try {
-                await fetch('/checkout/api/razorpay/failed', {
+                await fetch('/checkout/payments/fail', {
                   method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                  },
                   body: JSON.stringify({ orderId: data.orderId })
                 });
                 showPaymentFailedModal("Payment cancelled or closed.");
@@ -305,14 +314,18 @@
     applyBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
 
     try {
-      const res = await fetch('/checkout/api/coupon/apply', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch('/checkout/coupon', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
         body: JSON.stringify({ code })
       });
       const data = await res.json();
+      if (!handleApiResponse(res, data)) return;
       
-      if (data.status) {
+      if (data.status || data.success) {
         couponInput.readOnly = true;
         applyBtn.classList.add('hidden');
         cancelBtn.classList.remove('hidden');
@@ -324,9 +337,9 @@
         document.getElementById('totalAmount').innerHTML = `Rs.${data.finalAmount.toLocaleString()}`;
         
         if(data.actualDiscount !== data.discPerc) {
-          new Notyf().success(`Max discount of Rs.${data.discount} applied`);
+          showToast('success', `Max discount of Rs.${data.discount} applied`);
         } else {
-          new Notyf().success('Coupon applied!');
+          showToast('success', 'Coupon applied!');
         }
       } else {
         messageEl.classList.remove('hidden', 'text-green-600');
@@ -336,7 +349,7 @@
         applyBtn.innerHTML = 'Apply';
       }
     } catch (error) {
-      new Notyf().error('Failed to apply coupon');
+      showToast('error', 'Failed to apply coupon');
       applyBtn.disabled = false;
       applyBtn.innerHTML = 'Apply';
     }
@@ -344,10 +357,14 @@
 
   async function cancelCoupon() {
     try {
-      const res = await fetch('/checkout/api/coupon/cancel', { method: 'PATCH' });
+      const res = await fetch('/checkout/coupon', {
+        method: 'DELETE',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      });
       const data = await res.json();
+      if (!handleApiResponse(res, data)) return;
       
-      if (data.status) {
+      if (data.status || data.success) {
         couponInput.readOnly = false;
         couponInput.value = '';
         applyBtn.classList.remove('hidden');
@@ -358,10 +375,10 @@
         
         document.getElementById('couponDisc').innerHTML = '-Rs.0';
         document.getElementById('totalAmount').innerHTML = `Rs.${data.finalAmount.toLocaleString()}`;
-        new Notyf().success('Coupon removed');
+        showToast('success', 'Coupon removed');
       }
     } catch (error) {
-      new Notyf().error('Failed to remove coupon');
+      showToast('error', 'Failed to remove coupon');
     }
   }
 

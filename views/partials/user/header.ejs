@@ -29,6 +29,7 @@
 
   <!-- Custom JS -->
   <script defer src="/js/userHeader.js"></script>
+  <script defer src="/js/toast.js"></script>
 
   <style>
     .glass-header {
@@ -146,24 +147,13 @@
       </div>
     </div>
 
-    <!-- Flash Messages Container -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 absolute w-full left-0">
-      <div id="successBox" class="flex justify-center mt-2">
-        <% if (messages.success.length > 0) { %>
-          <div class="bg-green-50 border border-green-200 text-green-800 px-6 py-2 rounded-lg shadow-sm animate-fade-in-down">
-            <%= messages.success[0] %>
-          </div>
-        <% } %>
-      </div>
-
-      <div id="errorBox" class="flex justify-center mt-2">
-        <% if (messages.error.length > 0) { %>
-          <div id="headerError" class="bg-red-50 border border-red-200 text-red-800 px-6 py-2 rounded-lg shadow-sm animate-fade-in-down">
-            <%= messages.error[0] %>
-          </div>
-        <% } %>
-      </div>
-    </div>
+    <!-- Flash Messages Container for toast.js -->
+    <% if (messages.success && messages.success.length > 0) { %>
+      <span id="flash-success" data-message="<%= messages.success[0] %>" hidden></span>
+    <% } %>
+    <% if (messages.error && messages.error.length > 0) { %>
+      <span id="flash-error" data-message="<%= messages.error[0] %>" hidden></span>
+    <% } %>
 
     <script>
       async function updateCartCount() {

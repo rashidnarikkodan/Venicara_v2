@@ -137,11 +137,7 @@
     const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked')?.value;
 
     if (!selectedAddress) {
-      if(typeof Notyf !== 'undefined') {
-        new Notyf().error("Please select an address.");
-      } else {
-        alert("Please select an address.");
-      }
+      showToast('error', "Please select an address.");
       return;
     }
 
@@ -151,30 +147,28 @@
     btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i> Processing...';
 
     try {
-      const response = await fetch('/checkout/address/selectAddress', {
+      const response = await fetch('/checkout/address/select', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
         body: JSON.stringify({ selectedAddress })
       });
 
       const data = await response.json();
+      if (!handleApiResponse(response, data)) return;
 
-      if (data.status) {
-        window.location.href = "/checkout/paymentMethod";
+      if (data.status || data.success) {
+        window.location.href = "/checkout/payment";
       } else {
-        if(typeof Notyf !== 'undefined') {
-          new Notyf().error(data.message || "Something went wrong.");
-        } else {
-          alert(data.message || "Something went wrong.");
-        }
+        showToast('error', data.message || "Something went wrong.");
         btn.disabled = false;
         btn.innerHTML = originalText;
       }
     } catch (err) {
       console.error(err);
-      if(typeof Notyf !== 'undefined') {
-        new Notyf().error("Server error. Please try again.");
-      }
+      showToast('error', "Server error. Please try again.");
       btn.disabled = false;
       btn.innerHTML = originalText;
     }

@@ -70,14 +70,6 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("wishlist-container");
-  const notyf = new Notyf({
-    duration: 3000,
-    position: { x: 'right', y: 'bottom' },
-    types: [
-      { type: 'success', background: '#d4af37', icon: false },
-      { type: 'error', background: '#121212', icon: false }
-    ]
-  });
 
   container.addEventListener("click", async (e) => {
     const card = e.target.closest(".wishlist-item");
@@ -92,22 +84,27 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
 
       try {
-        const res = await fetch(`/wishlist/api/addToCart/${id}`, { method: "POST" });
+        const res = await fetch(`/wishlist/items/${id}/cart`, {
+          method: "POST",
+          headers: { "X-Requested-With": "XMLHttpRequest" }
+        });
         const data = await res.json();
+        if (!handleApiResponse(res, data)) return;
         if (data.success) {
-          notyf.success(data.message);
+          showToast('success', data.message);
           card.classList.add('scale-90', 'opacity-0');
           setTimeout(() => {
             card.remove();
             checkEmpty();
           }, 500);
+          if (typeof updateCartCount === 'function') updateCartCount();
         } else {
-          notyf.error(data.message);
+          showToast('error', data.message);
           btn.disabled = false;
           btn.innerHTML = originalContent;
         }
       } catch (err) {
-        notyf.error("Connection error. Try again.");
+        showToast('error', "Connection error. Try again.");
         btn.disabled = false;
         btn.innerHTML = originalContent;
       }
@@ -119,21 +116,25 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin text-xs"></i>';
       
       try {
-        const res = await fetch(`/wishlist/api/remove/${id}`, { method: "DELETE" });
+        const res = await fetch(`/wishlist/items/${id}`, {
+          method: "DELETE",
+          headers: { "X-Requested-With": "XMLHttpRequest" }
+        });
         const data = await res.json();
-        if (data.status) {
-          notyf.success(data.message);
+        if (!handleApiResponse(res, data)) return;
+        if (data.success || data.status) {
+          showToast('success', data.message);
           card.classList.add('scale-90', 'opacity-0');
           setTimeout(() => {
             card.remove();
             checkEmpty();
           }, 500);
         } else {
-          notyf.error(data.message);
+          showToast('error', data.message);
           btn.innerHTML = '<i class="fa-solid fa-heart-crack text-sm"></i>';
         }
       } catch (error) {
-        notyf.error("Connection error.");
+        showToast('error', "Connection error.");
         btn.innerHTML = '<i class="fa-solid fa-heart-crack text-sm"></i>';
       }
     }

@@ -1,0 +1,15 @@
+module.exports = {
+  authController: require("./auth.controller"),
+  userController: require("./user.controller"),
+  productController: require("./product.controller"),
+  homeController: require("./home.controller"),
+  addressController: require("./address.controller"),
+  cartController: require("./cart.controller"),
+  referController: require("./refer.controller"),
+  walletController: require("./wallet.controller"),
+  checkoutController: require("./checkout.controller"),
+  orderController: require("./order.controller"),
+  wishlistController: require("./wishlist.controller"),
+  deleteController: require("./delete.controller"),
+  footerController: require("./footer.controller"),
+};

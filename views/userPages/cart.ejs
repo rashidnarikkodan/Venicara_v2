@@ -51,7 +51,7 @@
                         </button>
                       </div>
                       
-                      <button onclick="removeItem('/cart/remove/<%= item._id %>', this)" class="text-gray-400 hover:text-red-500 transition-colors">
+                      <button onclick="removeItem('/cart/items/<%= item._id %>', this)" class="text-gray-400 hover:text-red-500 transition-colors">
                         <i class="fa-regular fa-trash-can"></i>
                       </button>
                     </div>
@@ -143,7 +143,11 @@
     card.classList.add("opacity-50");
 
     try {
-      const res = await fetch(`/cart/${action}/${cartId}`, { method: "PATCH" });
+      const res = await fetch(`/cart/items/${cartId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
       const data = await res.json();
 
       if (data.success) {
@@ -163,12 +167,12 @@
         
         document.querySelector(".grand-total").textContent = `Rs.${(data.total + shipping).toLocaleString()}`;
         
-        new Notyf().success('Bag updated');
+        showToast('success', 'Bag updated');
       } else {
-        new Notyf().error(data.message);
+        showToast('error', data.message);
       }
     } catch(err) {
-      new Notyf().error('Failed to update quantity');
+      showToast('error', 'Failed to update quantity');
     } finally {
       btn.innerHTML = originalContent;
       btn.disabled = action === 'increase' ? quantitySpan.textContent >= Math.min(5, stock) : quantitySpan.textContent <= 1;
@@ -190,7 +194,7 @@
     try {
       const res = await fetch(url, { method: 'DELETE' });
       const data = await res.json();
-      if(data.status) {
+      if(data.success || data.status) {
         const card = btn.closest(".group");
         card.style.opacity = '0';
         card.style.transform = 'translateY(20px)';
@@ -201,12 +205,12 @@
           }
         }, 300);
         updateCartCount();
-        new Notyf().success('Item removed');
+        showToast('success', data.message || 'Item removed');
       } else {
-        new Notyf().error(data.message);
+        showToast('error', data.message);
       }
     } catch(error) {
-      new Notyf().error('Failed to remove item');
+      showToast('error', 'Failed to remove item');
     }
   }
 </script>

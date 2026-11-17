@@ -181,27 +181,30 @@
     const id = document.getElementById('reviewMessage').getAttribute('data-id');
 
     if (!name || !rating || !message) {
-      if(typeof Notyf !== 'undefined') new Notyf().error('Please fill all fields');
+      showToast('error', 'Please fill all fields');
       return;
     }
 
     try {
-      const response = await fetch(`/orders/review/${id}/add`, {
+      const response = await fetch(`/orders/${id}/reviews`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest"
+        },
         body: JSON.stringify({ name, rating, message })
       });
 
       const data = await response.json();
-      if (data.status) {
+      if (data.status || data.success) {
         hideReviewModal();
-        if(typeof Notyf !== 'undefined') new Notyf().success('Thank you for your review!');
+        showToast('success', 'Thank you for your review!');
         reviewForm.reset();
       } else {
-        if(typeof Notyf !== 'undefined') new Notyf().error(data.message);
+        showToast('error', data.message || 'Failed to submit review');
       }
     } catch (err) {
-      if(typeof Notyf !== 'undefined') new Notyf().error('Failed to submit review');
+      showToast('error', 'Failed to submit review');
     }
   });
 </script>

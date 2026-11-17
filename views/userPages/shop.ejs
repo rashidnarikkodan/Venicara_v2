@@ -246,43 +246,6 @@
   openBtn?.addEventListener('click', openFilters);
   closeBtn?.addEventListener('click', closeFilters);
   mobileOverlay?.addEventListener('click', closeFilters);
-
-  // Wishlist Logic (Shared)
-  document.addEventListener("click", async (e) => {
-    const btn = e.target.closest(".wishlist-btn");
-    if (!btn) return;
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    const icon = btn.querySelector("i");
-    const productId = btn.dataset.productId;
-    const variantId = btn.dataset.variantId;
-
-    try {
-      const res = await fetch(`/wishlist/api/add/${productId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ variantId }),
-      });
-
-      const data = await res.json();
-
-      if (data.status) {
-        icon.classList.toggle("fa-regular");
-        icon.classList.toggle("fa-solid");
-        icon.classList.toggle("text-gold-500");
-      } else {
-        if(typeof Notyf !== 'undefined') {
-          new Notyf().error(data.message || "Something went wrong");
-        } else {
-          alert(data.message);
-        }
-      }
-    } catch (err) {
-      console.error("Wishlist error:", err);
-    }
-  });
 </script>
 
 <%- include('../partials/user/footer.ejs') %>
