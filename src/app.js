@@ -58,8 +58,9 @@ app.use((err, req, res, next) => {
 });
 
 //app.listen to start server based mongoDB connected or not
+const PORT = process.env.PORT || 3000;
 connectDB().then(() => {
-  app.listen(process.env.PORT, () => {
-    console.log(`server running on http://localhost:${process.env.PORT}`);
+  app.listen(PORT, () => {
+    console.log(`server running on http://localhost:${PORT}`);
   })
 })
