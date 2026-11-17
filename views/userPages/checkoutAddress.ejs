@@ -1,28 +1,28 @@
 <%- include("../partials/user/header.ejs") %>
 
-<main class="bg-white min-h-screen py-12">
+<main class="bg-luxury-cream dark:bg-luxury-black min-h-screen py-12 transition-colors duration-300">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     
     <!-- Checkout Progress -->
     <div class="mb-12">
       <div class="flex items-center justify-center space-x-4 mb-8">
-        <div class="flex items-center text-luxury-black font-bold text-xs tracking-widest uppercase">
-          <span class="w-8 h-8 rounded-full bg-luxury-black text-white flex items-center justify-center mr-3">1</span>
+        <div class="flex items-center text-luxury-black dark:text-gold-400 font-bold text-xs tracking-widest uppercase">
+          <span class="w-8 h-8 rounded-full bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black flex items-center justify-center mr-3 font-bold">1</span>
           <span class="hidden sm:inline">Address</span>
         </div>
-        <div class="w-8 sm:w-12 h-px bg-luxury-black"></div>
+        <div class="w-8 sm:w-12 h-px bg-luxury-black dark:bg-gold-500"></div>
         <div class="flex items-center text-gray-400 font-bold text-xs tracking-widest uppercase">
-          <span class="w-8 h-8 rounded-full border-2 border-gray-100 flex items-center justify-center mr-3">2</span>
+          <span class="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-white/10 flex items-center justify-center mr-3">2</span>
           <span class="hidden sm:inline">Payment</span>
         </div>
-        <div class="w-8 sm:w-12 h-px bg-gray-100"></div>
+        <div class="w-8 sm:w-12 h-px bg-gray-200 dark:bg-white/10"></div>
         <div class="flex items-center text-gray-400 font-bold text-xs tracking-widest uppercase">
-          <span class="w-8 h-8 rounded-full border-2 border-gray-100 flex items-center justify-center mr-3">3</span>
+          <span class="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-white/10 flex items-center justify-center mr-3">3</span>
           <span class="hidden sm:inline">Review</span>
         </div>
       </div>
-      <h1 class="text-3xl font-serif font-bold text-luxury-black text-center mb-2">Shipping Details</h1>
-      <p class="text-gray-500 text-center text-sm">Select where your luxury fragrance should be delivered.</p>
+      <h1 class="text-3xl font-serif font-bold text-luxury-black dark:text-white text-center mb-2">Shipping Details</h1>
+      <p class="text-gray-500 dark:text-gray-400 text-center text-sm">Select where your luxury fragrance should be delivered.</p>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-16">
@@ -33,15 +33,15 @@
             <% addresses.forEach((addr, i) => { %>
               <label class="relative group cursor-pointer">
                 <input type="radio" name="selectedAddress" value="<%= addr._id %>" class="peer sr-only" <%= i === 0 ? 'checked' : '' %>>
-                <div class="h-full border-2 border-gray-100 rounded-2xl p-6 transition-all duration-300 peer-checked:border-gold-500 peer-checked:bg-gold-50/30 hover:border-gray-200 shadow-sm hover:shadow-md">
+                <div class="h-full bg-white dark:bg-luxury-charcoal border-2 border-gray-100 dark:border-white/10 rounded-2xl p-6 transition-all duration-300 peer-checked:border-gold-500 peer-checked:bg-gold-50/30 dark:peer-checked:bg-gold-500/10 hover:border-gray-200 dark:hover:border-white/20 shadow-sm hover:shadow-md">
                   <div class="flex justify-between items-start mb-4">
-                    <span class="bg-luxury-black text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest"><%= addr.type %></span>
-                    <a href="/checkout/address/edit/<%= addr._id %>" class="text-gray-400 hover:text-luxury-black transition p-1">
+                    <span class="bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest"><%= addr.type %></span>
+                    <a href="/checkout/address/edit/<%= addr._id %>" class="text-gray-400 hover:text-luxury-black dark:hover:text-gold-400 transition p-1">
                       <i class="fa-solid fa-pen-to-square text-sm"></i>
                     </a>
                   </div>
-                  <h3 class="text-luxury-black font-bold mb-1"><%= addr.fullName %></h3>
-                  <p class="text-gray-500 text-sm leading-relaxed mb-4">
+                  <h3 class="text-luxury-black dark:text-white font-bold mb-1"><%= addr.fullName %></h3>
+                  <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4">
                     <%= addr.address %>,<br>
                     <%= addr.city %>, <%= addr.pin %><br>
                     <span class="text-xs font-bold text-gray-400 uppercase tracking-tighter mt-2 block">Mobile: <%= addr.mobile %></span>
@@ -54,21 +54,21 @@
             <% }) %>
             
             <!-- Add New Address Card -->
-            <a href="/checkout/address/new" class="group border-2 border-dashed border-gray-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:border-gold-400 hover:bg-gold-50/20 transition-all duration-300 min-h-[200px]">
-              <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-gold-100 transition duration-300">
-                <i class="fa-solid fa-plus text-gray-400 group-hover:text-gold-600"></i>
+            <a href="/checkout/address/new" class="group border-2 border-dashed border-gray-200 dark:border-white/20 bg-white/40 dark:bg-luxury-charcoal/40 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:border-gold-400 hover:bg-gold-50/20 dark:hover:bg-gold-500/10 transition-all duration-300 min-h-[200px]">
+              <div class="w-12 h-12 bg-gray-50 dark:bg-luxury-black rounded-full flex items-center justify-center mb-4 group-hover:bg-gold-100 dark:group-hover:bg-gold-500/20 transition duration-300">
+                <i class="fa-solid fa-plus text-gray-400 group-hover:text-gold-600 dark:group-hover:text-gold-400"></i>
               </div>
-              <span class="text-sm font-bold text-gray-500 group-hover:text-gold-600 transition tracking-widest uppercase">Add New Address</span>
+              <span class="text-sm font-bold text-gray-500 dark:text-gray-400 group-hover:text-gold-600 dark:group-hover:text-gold-400 transition tracking-widest uppercase">Add New Address</span>
             </a>
           </div>
         <% } else { %>
-          <div class="bg-gray-50 rounded-3xl p-12 text-center border-2 border-dashed border-gray-200">
-            <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
-              <i class="fa-solid fa-location-dot text-3xl text-gray-200"></i>
+          <div class="bg-white dark:bg-luxury-charcoal rounded-3xl p-12 text-center border-2 border-dashed border-gray-200 dark:border-white/10">
+            <div class="w-20 h-20 bg-gray-50 dark:bg-luxury-black rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
+              <i class="fa-solid fa-location-dot text-3xl text-gray-300 dark:text-gray-600"></i>
             </div>
-            <h2 class="text-xl font-serif font-bold text-luxury-black mb-4">No addresses saved yet</h2>
-            <p class="text-gray-500 mb-8 max-w-xs mx-auto">Please add a shipping address to continue with your order.</p>
-            <a href="/checkout/address/new" class="inline-block bg-luxury-black text-white px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-gold-600 transition shadow-lg">
+            <h2 class="text-xl font-serif font-bold text-luxury-black dark:text-white mb-4">No addresses saved yet</h2>
+            <p class="text-gray-500 dark:text-gray-400 mb-8 max-w-xs mx-auto">Please add a shipping address to continue with your order.</p>
+            <a href="/checkout/address/new" class="inline-block bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-gold-600 dark:hover:bg-gold-600 transition shadow-lg">
               Add New Address
             </a>
           </div>
@@ -77,8 +77,8 @@
 
       <!-- Order Summary Sidebar -->
       <div class="w-full lg:w-96">
-        <div class="bg-luxury-cream rounded-3xl p-8 border border-gold-100 sticky top-24">
-          <h2 class="text-xl font-serif font-bold text-luxury-black mb-8 pb-4 border-b border-gold-200/50">Order Summary</h2>
+        <div class="bg-white dark:bg-luxury-charcoal rounded-3xl p-8 border border-gray-100 dark:border-white/10 sticky top-24 shadow-sm">
+          <h2 class="text-xl font-serif font-bold text-luxury-black dark:text-white mb-8 pb-4 border-b border-gray-100 dark:border-white/10">Order Summary</h2>
           
           <div class="space-y-6 mb-8 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
             <% let subtotal = 0; items.forEach(item => { 
@@ -86,35 +86,35 @@
                subtotal += itemTotal;
             %>
               <div class="flex gap-4">
-                <div class="w-16 h-20 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-gray-100">
+                <div class="w-16 h-20 bg-gray-50 dark:bg-luxury-black rounded-lg overflow-hidden flex-shrink-0 border border-gray-100 dark:border-white/10">
                   <img src="<%= item.product.images[0].url %>" class="w-full h-full object-cover" alt="<%= item.product.name %>">
                 </div>
                 <div class="flex-1">
-                  <h4 class="text-xs font-bold text-luxury-black mb-1 line-clamp-1"><%= item.product.name %></h4>
+                  <h4 class="text-xs font-bold text-luxury-black dark:text-white mb-1 line-clamp-1"><%= item.product.name %></h4>
                   <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1"><%= item.quantity %> × <%= item.variant.volume %>ML</p>
-                  <p class="text-xs font-bold text-gold-700">Rs.<%= itemTotal.toLocaleString() %></p>
+                  <p class="text-xs font-bold text-gold-700 dark:text-gold-400">Rs.<%= itemTotal.toLocaleString() %></p>
                 </div>
               </div>
             <% }) %>
           </div>
 
-          <div class="space-y-4 mb-8 pt-6 border-t border-gold-200/50">
+          <div class="space-y-4 mb-8 pt-6 border-t border-gray-100 dark:border-white/10">
             <div class="flex justify-between text-sm">
-              <span class="text-gray-500">Subtotal</span>
-              <span class="font-bold text-luxury-black">Rs.<%= subtotal.toLocaleString() %></span>
+              <span class="text-gray-500 dark:text-gray-400">Subtotal</span>
+              <span class="font-bold text-luxury-black dark:text-white">Rs.<%= subtotal.toLocaleString() %></span>
             </div>
             <div class="flex justify-between text-sm">
-              <span class="text-gray-500">Shipping</span>
-              <span class="text-green-600 font-bold uppercase tracking-widest text-[10px]">Rs.<%= deliveryCharge %></span>
+              <span class="text-gray-500 dark:text-gray-400">Shipping</span>
+              <span class="text-green-600 dark:text-green-400 font-bold uppercase tracking-widest text-[10px]">Rs.<%= deliveryCharge %></span>
             </div>
           </div>
 
-          <div class="flex justify-between items-center mb-10 pt-6 border-t border-luxury-black/10">
-            <span class="text-lg font-serif font-bold text-luxury-black">Total</span>
-            <span class="text-2xl font-bold text-gold-700">Rs.<%= (subtotal + deliveryCharge).toLocaleString() %></span>
+          <div class="flex justify-between items-center mb-10 pt-6 border-t border-gray-100 dark:border-white/10">
+            <span class="text-lg font-serif font-bold text-luxury-black dark:text-white">Total</span>
+            <span class="text-2xl font-bold text-gold-700 dark:text-gold-400">Rs.<%= (subtotal + deliveryCharge).toLocaleString() %></span>
           </div>
 
-          <button id="continue" class="block w-full bg-luxury-black text-white text-center py-5 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-gold-600 transition shadow-xl disabled:bg-gray-300 disabled:cursor-not-allowed" <%= !addresses || !addresses.length ? 'disabled' : '' %>>
+          <button id="continue" class="block w-full bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black text-center py-5 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-gold-600 dark:hover:bg-gold-600 transition shadow-xl disabled:bg-gray-300 dark:disabled:bg-gray-800 disabled:cursor-not-allowed" <%= !addresses || !addresses.length ? 'disabled' : '' %>>
             Continue to Payment
           </button>
           

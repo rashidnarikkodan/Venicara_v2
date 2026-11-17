@@ -5,49 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VENICARA | Verify OTP</title>
   <link rel="shortcut icon" href="/images/fevicon.png" type="image/x-icon">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/output.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+  <script defer src="/js/toast.js"></script>
   <script defer src="/js/signupOTP.js"></script>
   <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'luxury-black': '#121212',
-            'luxury-cream': '#f8f5f0',
-            'gold-600': '#d4af37',
-            'gold-500': '#e5c05b',
-          },
-          fontFamily: {
-            'serif': ['Playfair Display', 'serif'],
-            'sans': ['Inter', 'sans-serif'],
-          }
-        }
-      }
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
 </head>
-<body class="bg-luxury-black min-h-screen flex items-center justify-center p-4">
-  <div class="max-w-2xl w-full bg-white rounded-[3rem] shadow-2xl overflow-hidden p-8 sm:p-12 lg:p-16 relative">
+<body class="bg-luxury-cream dark:bg-luxury-black text-luxury-black dark:text-luxury-white min-h-screen flex items-center justify-center p-4 transition-colors duration-300 relative">
+
+  <!-- Floating Theme Toggle -->
+  <div class="fixed top-6 right-6 z-50">
+    <button id="theme-toggle" class="w-12 h-12 rounded-full bg-white dark:bg-luxury-charcoal border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:text-gold-600 dark:hover:text-gold-400 transition shadow-lg" title="Toggle Theme">
+      <i class="fa-solid fa-moon dark:hidden text-lg"></i>
+      <i class="fa-solid fa-sun hidden dark:block text-lg"></i>
+    </button>
+  </div>
+
+  <div class="max-w-2xl w-full bg-white dark:bg-luxury-charcoal rounded-[3rem] shadow-2xl overflow-hidden p-8 sm:p-12 lg:p-16 relative border border-gray-100 dark:border-white/5">
     <!-- Luxury Accents -->
     <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-gold-400 via-gold-600 to-gold-400"></div>
     
     <div class="text-center mb-12">
-      <img src="/images/logo.avif" class="w-48 mx-auto mb-10" alt="Venicara">
-      <h1 class="text-3xl font-serif font-bold text-luxury-black mb-2 uppercase tracking-tight">Email Verification</h1>
-      <p class="text-gray-500 text-sm italic">Unlock your access to artisanal fragrances.</p>
+      <img src="/images/logo.avif" class="w-48 mx-auto mb-10 dark:brightness-0 dark:invert" alt="Venicara">
+      <h1 class="text-3xl font-serif font-bold text-luxury-black dark:text-white mb-2 uppercase tracking-tight">Email Verification</h1>
+      <p class="text-gray-500 dark:text-gray-400 text-sm italic">Unlock your access to artisanal fragrances.</p>
     </div>
 
     <% if(messages.success && messages.success.length > 0) { %>
-      <div class="mb-8 p-4 bg-green-50 border border-green-100 text-green-600 text-[10px] font-bold uppercase tracking-widest rounded-2xl flex items-center justify-center shadow-sm">
+      <div class="mb-8 p-4 bg-green-50 dark:bg-green-500/10 border border-green-100 dark:border-green-500/20 text-green-600 dark:text-green-400 text-[10px] font-bold uppercase tracking-widest rounded-2xl flex items-center justify-center shadow-sm">
         <i class="fa-solid fa-circle-check mr-3"></i>
         <%= messages.success[0] %>
       </div>
     <% } %>
 
     <% if(messages.error && messages.error.length > 0) { %>
-      <div class="mb-8 p-4 bg-red-50 border border-red-100 text-red-600 text-[10px] font-bold uppercase tracking-widest rounded-2xl flex items-center justify-center shadow-sm">
+      <div class="mb-8 p-4 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 text-red-600 dark:text-red-400 text-[10px] font-bold uppercase tracking-widest rounded-2xl flex items-center justify-center shadow-sm">
         <i class="fa-solid fa-circle-exclamation mr-3"></i>
         <%= messages.error[0] %>
       </div>
@@ -55,32 +56,45 @@
 
     <form action="/auth/signup/verify-otp" method="post" class="space-y-10">
       <div class="space-y-6">
-        <input type="text" name="otp" placeholder="XXXXXX" class="w-full text-center text-4xl font-bold tracking-[0.5em] px-6 py-6 rounded-3xl bg-gray-50 border border-transparent focus:bg-white focus:ring-2 focus:ring-gold-500 transition outline-none text-luxury-black" maxlength="6">
+        <input type="text" name="otp" placeholder="XXXXXX" class="w-full text-center text-4xl font-bold tracking-[0.5em] px-6 py-6 rounded-3xl bg-gray-50 dark:bg-luxury-black border border-transparent dark:border-white/10 focus:bg-white dark:focus:bg-luxury-black focus:ring-2 focus:ring-gold-500 transition outline-none text-luxury-black dark:text-white" maxlength="6">
         
         <div class="flex flex-col items-center space-y-4">
            <div class="flex items-center space-x-2 text-xs font-bold uppercase tracking-widest">
              <span class="text-gray-400">Expiring in</span>
-             <span id="timer" class="text-gold-600">00:50s</span>
+             <span id="timer" class="text-gold-600 dark:text-gold-400 font-mono">00:50s</span>
            </div>
            
            <div class="text-[10px] font-bold uppercase tracking-widest">
               <span class="text-gray-400">Didn't receive code?</span>
-              <a href="#" id="resend-otp" class="text-gold-600 hover:text-luxury-black transition ml-2 border-b border-gold-600/30">Resend Now</a>
+              <a href="#" id="resend-otp" class="text-gold-600 dark:text-gold-400 hover:text-luxury-black dark:hover:text-white transition ml-2 border-b border-gold-600/30">Resend Now</a>
            </div>
         </div>
       </div>
 
-      <button type="submit" class="w-full bg-luxury-black text-white py-6 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 transition shadow-xl group">
+      <button type="submit" class="w-full bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black py-6 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 dark:hover:bg-gold-600 transition shadow-xl group">
         <span>Verify & Create Account</span>
         <i class="fa-solid fa-shield-check ml-3 group-hover:scale-110 transition-transform"></i>
       </button>
     </form>
 
-    <div class="mt-12 text-center pt-8 border-t border-gray-50">
-      <a href="/auth/signup" class="text-[10px] font-bold text-gray-400 hover:text-luxury-black uppercase tracking-widest transition">
+    <div class="mt-12 text-center pt-8 border-t border-gray-100 dark:border-white/5">
+      <a href="/auth/signup" class="text-[10px] font-bold text-gray-400 hover:text-luxury-black dark:hover:text-white uppercase tracking-widest transition">
         <i class="fa-solid fa-arrow-left mr-2"></i> Back to Signup
       </a>
     </div>
   </div>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle?.addEventListener('click', () => {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+  </script>
 </body>
 </html>

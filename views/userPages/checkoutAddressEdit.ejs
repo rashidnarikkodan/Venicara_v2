@@ -1,96 +1,96 @@
 
 <%- include('../partials/user/header.ejs') %>
 
-<main class="bg-white min-h-screen py-20">
+<main class="bg-luxury-cream dark:bg-luxury-black min-h-screen py-20 transition-colors duration-300">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     
     <!-- Progress Indicator -->
     <div class="mb-12">
       <div class="flex items-center justify-center space-x-4">
-        <div class="flex items-center space-x-2 text-gold-600">
-          <div class="w-8 h-8 rounded-full bg-luxury-black text-white flex items-center justify-center text-xs font-bold">1</div>
-          <span class="text-[10px] font-bold uppercase tracking-widest text-luxury-black">Address</span>
+        <div class="flex items-center space-x-2 text-gold-600 dark:text-gold-400">
+          <div class="w-8 h-8 rounded-full bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black flex items-center justify-center text-xs font-bold">1</div>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-luxury-black dark:text-white">Address</span>
         </div>
-        <div class="w-12 h-px bg-gray-200"></div>
+        <div class="w-12 h-px bg-gray-200 dark:bg-white/10"></div>
         <div class="flex items-center space-x-2 opacity-30">
-          <div class="w-8 h-8 rounded-full border-2 border-gray-200 text-gray-400 flex items-center justify-center text-xs font-bold">2</div>
+          <div class="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-white/10 text-gray-400 flex items-center justify-center text-xs font-bold">2</div>
           <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Payment</span>
         </div>
       </div>
     </div>
 
     <div class="mb-10 text-center">
-      <h1 class="text-3xl font-serif font-bold text-luxury-black mb-2 uppercase tracking-tight">Edit Shipping Address</h1>
-      <p class="text-gray-500 text-sm italic">Refine your delivery details for the perfect arrival.</p>
+      <h1 class="text-3xl font-serif font-bold text-luxury-black dark:text-white mb-2 uppercase tracking-tight">Edit Shipping Address</h1>
+      <p class="text-gray-500 dark:text-gray-400 text-sm italic">Refine your delivery details for the perfect arrival.</p>
     </div>
 
-    <div class="bg-white border border-gray-100 rounded-[3rem] p-8 sm:p-12 shadow-sm">
+    <div class="bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/10 rounded-[3rem] p-8 sm:p-12 shadow-sm">
       <form id="addressForm" action="/checkout/address/edit/<%= address._id %>?_method=PUT" method="POST" novalidate class="space-y-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           
           <!-- Full Name -->
           <div class="space-y-2">
-            <label for="fullName" class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Recipient Name</label>
+            <label for="fullName" class="text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-[0.2em] ml-2">Recipient Name</label>
             <div class="relative">
               <input type="text" id="fullName" name="fullName" placeholder="Enter full name" value="<%= address.fullName %>" required
-                class="w-full p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus:bg-white focus:border-gold-300 outline-none">
+                class="w-full p-5 bg-gray-50 dark:bg-luxury-black rounded-2xl border border-gray-100 dark:border-white/10 text-luxury-black dark:text-white font-medium transition focus:border-gold-300 outline-none">
               <div class="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-2 ml-2" id="error-fullName"></div>
             </div>
           </div>
 
           <!-- Mobile -->
           <div class="space-y-2">
-            <label for="mobile" class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Mobile Number</label>
+            <label for="mobile" class="text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-[0.2em] ml-2">Mobile Number</label>
             <div class="relative">
               <input type="tel" id="mobile" name="mobile" placeholder="10-digit mobile number" value="<%= address.mobile %>" required
-                class="w-full p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus:bg-white focus:border-gold-300 outline-none">
+                class="w-full p-5 bg-gray-50 dark:bg-luxury-black rounded-2xl border border-gray-100 dark:border-white/10 text-luxury-black dark:text-white font-medium transition focus:border-gold-300 outline-none">
               <div class="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-2 ml-2" id="error-mobile"></div>
             </div>
           </div>
 
           <!-- Pincode -->
           <div class="space-y-2">
-            <label for="pin" class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Pincode</label>
+            <label for="pin" class="text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-[0.2em] ml-2">Pincode</label>
             <div class="relative">
               <input type="text" id="pin" name="pin" placeholder="6-digit pincode" value="<%= address.pin %>" required
-                class="w-full p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus:bg-white focus:border-gold-300 outline-none">
+                class="w-full p-5 bg-gray-50 dark:bg-luxury-black rounded-2xl border border-gray-100 dark:border-white/10 text-luxury-black dark:text-white font-medium transition focus:border-gold-300 outline-none">
               <div class="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-2 ml-2" id="error-pin"></div>
             </div>
           </div>
 
           <!-- Locality -->
           <div class="space-y-2">
-            <label for="street" class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Locality / Area</label>
+            <label for="street" class="text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-[0.2em] ml-2">Locality / Area</label>
             <input type="text" id="street" name="street" placeholder="e.g. Near Central Park" value="<%= address.street %>"
-              class="w-full p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus:bg-white focus:border-gold-300 outline-none">
+              class="w-full p-5 bg-gray-50 dark:bg-luxury-black rounded-2xl border border-gray-100 dark:border-white/10 text-luxury-black dark:text-white font-medium transition focus:border-gold-300 outline-none">
           </div>
 
           <!-- Address (Textarea) -->
           <div class="col-span-full space-y-2">
-            <label for="address" class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Detailed Address</label>
+            <label for="address" class="text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-[0.2em] ml-2">Detailed Address</label>
             <div class="relative">
               <textarea id="address" name="address" rows="3" placeholder="Flat, House no., Building, Apartment" required
-                class="w-full p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus:bg-white focus:border-gold-300 outline-none resize-none"><%= address.address %></textarea>
+                class="w-full p-5 bg-gray-50 dark:bg-luxury-black rounded-2xl border border-gray-100 dark:border-white/10 text-luxury-black dark:text-white font-medium transition focus:border-gold-300 outline-none resize-none"><%= address.address %></textarea>
               <div class="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-2 ml-2" id="error-address"></div>
             </div>
           </div>
 
           <!-- City -->
           <div class="space-y-2">
-            <label for="city" class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">City / District</label>
+            <label for="city" class="text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-[0.2em] ml-2">City / District</label>
             <div class="relative">
               <input type="text" id="city" name="city" placeholder="Enter city" value="<%= address.city %>" required
-                class="w-full p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus:bg-white focus:border-gold-300 outline-none">
+                class="w-full p-5 bg-gray-50 dark:bg-luxury-black rounded-2xl border border-gray-100 dark:border-white/10 text-luxury-black dark:text-white font-medium transition focus:border-gold-300 outline-none">
               <div class="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-2 ml-2" id="error-city"></div>
             </div>
           </div>
 
           <!-- State -->
           <div class="space-y-2">
-            <label for="state" class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">State</label>
+            <label for="state" class="text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-[0.2em] ml-2">State</label>
             <div class="relative">
               <select id="state" name="state" required
-                class="w-full p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus:bg-white focus:border-gold-300 outline-none appearance-none">
+                class="w-full p-5 bg-gray-50 dark:bg-luxury-black rounded-2xl border border-gray-100 dark:border-white/10 text-luxury-black dark:text-white font-medium transition focus:border-gold-300 outline-none appearance-none">
                 <option value="" disabled>Select State</option>
                 <option value="Kerala" <%= address.state === "Kerala" ? "selected" : "" %>>Kerala</option>
                 <option value="Tamil Nadu" <%= address.state === "Tamil Nadu" ? "selected" : "" %>>Tamil Nadu</option>
@@ -108,42 +108,42 @@
 
         <!-- Address Type -->
         <div class="space-y-4 pt-4">
-          <label class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Address Type</label>
+          <label class="text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-[0.2em] ml-2">Address Type</label>
           <div class="flex flex-wrap gap-6">
             <label class="flex items-center space-x-3 cursor-pointer group">
               <div class="relative flex items-center justify-center">
                 <input type="radio" name="type" value="home" <%= address.type === "home" ? "checked" : "" %> class="peer sr-only">
-                <div class="w-6 h-6 border-2 border-gray-200 rounded-full peer-checked:border-gold-600 peer-checked:bg-gold-600 transition"></div>
+                <div class="w-6 h-6 border-2 border-gray-200 dark:border-white/20 rounded-full peer-checked:border-gold-600 peer-checked:bg-gold-600 transition"></div>
                 <div class="absolute w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100 transition"></div>
               </div>
-              <span class="text-xs font-bold text-gray-500 uppercase tracking-widest group-hover:text-luxury-black transition">Home</span>
+              <span class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest group-hover:text-luxury-black dark:group-hover:text-white transition">Home</span>
             </label>
             <label class="flex items-center space-x-3 cursor-pointer group">
               <div class="relative flex items-center justify-center">
                 <input type="radio" name="type" value="work" <%= address.type === "work" ? "checked" : "" %> class="peer sr-only">
-                <div class="w-6 h-6 border-2 border-gray-200 rounded-full peer-checked:border-gold-600 peer-checked:bg-gold-600 transition"></div>
+                <div class="w-6 h-6 border-2 border-gray-200 dark:border-white/20 rounded-full peer-checked:border-gold-600 peer-checked:bg-gold-600 transition"></div>
                 <div class="absolute w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100 transition"></div>
               </div>
-              <span class="text-xs font-bold text-gray-500 uppercase tracking-widest group-hover:text-luxury-black transition">Work</span>
+              <span class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest group-hover:text-luxury-black dark:group-hover:text-white transition">Work</span>
             </label>
             <label class="flex items-center space-x-3 cursor-pointer group">
               <div class="relative flex items-center justify-center">
                 <input type="radio" name="type" value="other" <%= address.type === "other" ? "checked" : "" %> class="peer sr-only">
-                <div class="w-6 h-6 border-2 border-gray-200 rounded-full peer-checked:border-gold-600 peer-checked:bg-gold-600 transition"></div>
+                <div class="w-6 h-6 border-2 border-gray-200 dark:border-white/20 rounded-full peer-checked:border-gold-600 peer-checked:bg-gold-600 transition"></div>
                 <div class="absolute w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100 transition"></div>
               </div>
-              <span class="text-xs font-bold text-gray-500 uppercase tracking-widest group-hover:text-luxury-black transition">Other</span>
+              <span class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest group-hover:text-luxury-black dark:group-hover:text-white transition">Other</span>
             </label>
           </div>
         </div>
 
         <!-- Action Buttons -->
-        <div class="pt-10 flex flex-col sm:flex-row gap-4 border-t border-gray-50">
-          <button type="submit" class="flex-1 bg-luxury-black text-white py-5 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 transition shadow-xl group">
+        <div class="pt-10 flex flex-col sm:flex-row gap-4 border-t border-gray-100 dark:border-white/10">
+          <button type="submit" class="flex-1 bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black py-5 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 dark:hover:bg-gold-600 transition shadow-xl group">
             Save Changes
             <i class="fa-solid fa-check ml-3 group-hover:scale-110 transition-transform"></i>
           </button>
-          <a href="/checkout/address" class="flex-1 text-center py-5 border-2 border-gray-100 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gray-50 transition">
+          <a href="/checkout/address" class="flex-1 text-center py-5 border-2 border-gray-200 dark:border-white/10 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gray-50 dark:hover:bg-white/5 text-luxury-black dark:text-white transition">
             Cancel
           </a>
         </div>

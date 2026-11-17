@@ -74,7 +74,7 @@
               </select>
             </div>
 
-            <button type="submit" class="w-full bg-luxury-black text-white py-3 rounded-md font-bold text-xs uppercase tracking-widest hover:bg-gold-600 transition duration-300 shadow-lg">
+            <button type="submit" class="w-full bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black py-3 rounded-md font-bold text-xs uppercase tracking-widest hover:bg-gold-600 dark:hover:bg-gold-600 transition duration-300 shadow-lg">
               Apply Filters
             </button>
           </form>
@@ -103,12 +103,12 @@
         <!-- Product Grid -->
         <% if(products.length === 0) { %>
           <div class="py-20 text-center">
-            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-300">
+            <div class="w-20 h-20 bg-gray-100 dark:bg-luxury-charcoal rounded-full flex items-center justify-center mx-auto mb-6 text-gray-300 dark:text-gray-600">
               <i class="fa-solid fa-magnifying-glass text-3xl"></i>
             </div>
-            <h3 class="text-xl font-serif font-bold mb-2 text-luxury-black">No fragrances found</h3>
-            <p class="text-gray-500 mb-8">Try adjusting your filters or search terms.</p>
-            <a href="/shop" class="inline-block px-8 py-3 bg-luxury-black text-white rounded-full text-xs font-bold uppercase tracking-widest hover:bg-gold-600 transition">Clear All Filters</a>
+            <h3 class="text-xl font-serif font-bold mb-2 text-luxury-black dark:text-white">No fragrances found</h3>
+            <p class="text-gray-500 dark:text-gray-400 mb-8">Try adjusting your filters or search terms.</p>
+            <a href="/shop" class="inline-block px-8 py-3 bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black rounded-full text-xs font-bold uppercase tracking-widest hover:bg-gold-600 dark:hover:bg-gold-600 transition">Clear All Filters</a>
           </div>
         <% } else { %>
           <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-x-6 gap-y-12">
@@ -156,10 +156,10 @@
   <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="mobileFilterOverlay"></div>
   <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex">
     <div class="w-screen max-w-md transform translate-x-full transition-transform duration-500 ease-in-out" id="mobileFilterContent">
-      <div class="h-full flex flex-col bg-white shadow-2xl">
-        <div class="flex items-center justify-between px-6 py-6 border-b border-gray-100">
-          <h2 class="text-lg font-bold tracking-tight text-luxury-black">Filters & Sort</h2>
-          <button id="closeMobileFilters" class="text-gray-400 hover:text-luxury-black">
+      <div class="h-full flex flex-col bg-white dark:bg-luxury-charcoal text-luxury-black dark:text-white shadow-2xl border-l border-gray-100 dark:border-white/10">
+        <div class="flex items-center justify-between px-6 py-6 border-b border-gray-100 dark:border-white/10">
+          <h2 class="text-lg font-bold tracking-tight text-luxury-black dark:text-white">Filters & Sort</h2>
+          <button id="closeMobileFilters" class="text-gray-400 hover:text-luxury-black dark:hover:text-white">
             <i class="fa-solid fa-xmark text-2xl"></i>
           </button>
         </div>
@@ -168,16 +168,16 @@
           <form action="/shop" id="mobileFilterForm" class="space-y-10">
              <!-- Categories (Mobile) -->
              <div>
-              <h4 class="text-sm font-bold uppercase tracking-widest mb-6 border-b border-gray-100 pb-2 text-gold-600">Category</h4>
+              <h4 class="text-sm font-bold uppercase tracking-widest mb-6 border-b border-gray-100 dark:border-white/10 pb-2 text-gold-600 dark:text-gold-400">Category</h4>
               <div class="space-y-4">
                 <div class="flex items-center">
-                  <input id="m-cat-all" name="category" value="all" type="radio" class="h-5 w-5 border-gray-300 text-gold-600 focus:ring-gold-500" <%= !selectedCategory || selectedCategory === 'all' ? 'checked' : '' %>>
-                  <label for="m-cat-all" class="ml-4 text-base text-gray-700">All Categories</label>
+                  <input id="m-cat-all" name="category" value="all" type="radio" class="h-5 w-5 border-gray-300 dark:border-white/20 text-gold-600 focus:ring-gold-500 bg-white dark:bg-luxury-black" <%= !selectedCategory || selectedCategory === 'all' ? 'checked' : '' %>>
+                  <label for="m-cat-all" class="ml-4 text-base text-gray-700 dark:text-gray-300">All Categories</label>
                 </div>
                 <% categories.forEach(category => { %>
                   <div class="flex items-center">
-                    <input id="m-cat-<%= category._id %>" name="category" value="<%= category._id %>" type="radio" class="h-5 w-5 border-gray-300 text-gold-600 focus:ring-gold-500" <%= selectedCategory && selectedCategory.toString() === category._id.toString() ? 'checked' : '' %>>
-                    <label for="m-cat-<%= category._id %>" class="ml-4 text-base text-gray-700"><%= category.name %></label>
+                    <input id="m-cat-<%= category._id %>" name="category" value="<%= category._id %>" type="radio" class="h-5 w-5 border-gray-300 dark:border-white/20 text-gold-600 focus:ring-gold-500 bg-white dark:bg-luxury-black" <%= selectedCategory && selectedCategory.toString() === category._id.toString() ? 'checked' : '' %>>
+                    <label for="m-cat-<%= category._id %>" class="ml-4 text-base text-gray-700 dark:text-gray-300"><%= category.name %></label>
                   </div>
                 <% }) %>
               </div>
@@ -185,17 +185,17 @@
 
             <!-- Price (Mobile) -->
             <div>
-              <h4 class="text-sm font-bold uppercase tracking-widest mb-6 border-b border-gray-100 pb-2 text-gold-600">Price Range</h4>
+              <h4 class="text-sm font-bold uppercase tracking-widest mb-6 border-b border-gray-100 dark:border-white/10 pb-2 text-gold-600 dark:text-gold-400">Price Range</h4>
               <div class="grid grid-cols-2 gap-6">
-                <input type="number" name="minPrice" value="<%= minPrice %>" placeholder="Min" class="w-full px-4 py-3 text-sm border border-gray-200 rounded-lg">
-                <input type="number" name="maxPrice" value="<%= maxPrice %>" placeholder="Max" class="w-full px-4 py-3 text-sm border border-gray-200 rounded-lg">
+                <input type="number" name="minPrice" value="<%= minPrice %>" placeholder="Min" class="w-full px-4 py-3 text-sm border border-gray-200 dark:border-white/10 rounded-lg bg-gray-50 dark:bg-luxury-black text-luxury-black dark:text-white">
+                <input type="number" name="maxPrice" value="<%= maxPrice %>" placeholder="Max" class="w-full px-4 py-3 text-sm border border-gray-200 dark:border-white/10 rounded-lg bg-gray-50 dark:bg-luxury-black text-luxury-black dark:text-white">
               </div>
             </div>
 
              <!-- Sorting (Mobile) -->
              <div>
-              <h4 class="text-sm font-bold uppercase tracking-widest mb-6 border-b border-gray-100 pb-2 text-gold-600">Sort By</h4>
-              <select name="sort" class="w-full bg-gray-50 border border-gray-200 px-4 py-3 rounded-lg outline-none">
+              <h4 class="text-sm font-bold uppercase tracking-widest mb-6 border-b border-gray-100 dark:border-white/10 pb-2 text-gold-600 dark:text-gold-400">Sort By</h4>
+              <select name="sort" class="w-full bg-gray-50 dark:bg-luxury-black border border-gray-200 dark:border-white/10 px-4 py-3 rounded-lg outline-none text-luxury-black dark:text-white">
                 <option value="newest" <%= sort === 'newest' ? 'selected' : '' %>>Newest Arrivals</option>
                 <option value="asc" <%= sort === 'asc' ? 'selected' : '' %>>Price: Low to High</option>
                 <option value="desc" <%= sort === 'desc' ? 'selected' : '' %>>Price: High to Low</option>
@@ -206,11 +206,11 @@
           </form>
         </div>
 
-        <div class="p-6 border-t border-gray-100 bg-gray-50">
-          <button type="submit" form="mobileFilterForm" class="w-full bg-luxury-black text-white py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-gold-600 transition">
+        <div class="p-6 border-t border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-luxury-black/50">
+          <button type="submit" form="mobileFilterForm" class="w-full bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-gold-600 dark:hover:bg-gold-600 transition shadow-lg">
             Apply Filters
           </button>
-          <a href="/shop" class="block text-center mt-4 text-xs font-bold uppercase tracking-widest text-gray-500">Reset All</a>
+          <a href="/shop" class="block text-center mt-4 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 hover:text-gold-500">Reset All</a>
         </div>
       </div>
     </div>

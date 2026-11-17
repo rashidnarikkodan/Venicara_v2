@@ -1,6 +1,6 @@
 <%- include('../partials/user/header.ejs') %>
 
-<main class="bg-white min-h-screen py-16">
+<main class="bg-luxury-cream dark:bg-luxury-black min-h-screen py-16 transition-colors duration-300">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="mb-12">
       <nav class="flex mb-8 text-[10px] font-bold uppercase tracking-widest text-gray-400">
@@ -8,18 +8,18 @@
         <span class="mx-3">/</span>
         <a href="/orders" class="hover:text-gold-600 transition">My Orders</a>
         <span class="mx-3">/</span>
-        <span class="text-luxury-black">Order Details</span>
+        <span class="text-luxury-black dark:text-white">Order Details</span>
       </nav>
-      <h1 class="text-3xl font-serif font-bold text-luxury-black mb-2 uppercase tracking-tight">Order Details</h1>
-      <p class="text-gray-500 text-sm italic">Tracking and history for your purchase.</p>
+      <h1 class="text-3xl font-serif font-bold text-luxury-black dark:text-white mb-2 uppercase tracking-tight">Order Details</h1>
+      <p class="text-gray-500 dark:text-gray-400 text-sm italic">Tracking and history for your purchase.</p>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-12">
       <!-- Product Details Card -->
       <div class="flex-1 space-y-8">
-        <div class="bg-white border border-gray-100 rounded-[2rem] p-8 shadow-sm">
+        <div class="bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/10 rounded-[2rem] p-8 shadow-sm">
           <div class="flex flex-col sm:flex-row gap-8 items-start">
-            <div class="w-40 h-48 bg-gray-50 rounded-2xl overflow-hidden flex-shrink-0 border border-gray-100">
+            <div class="w-40 h-48 bg-gray-50 dark:bg-luxury-black rounded-2xl overflow-hidden flex-shrink-0 border border-gray-100 dark:border-white/10">
               <a href="/products/<%=product.productId%>">
                 <img src="<%= product.image %>" class="w-full h-full object-cover transition hover:scale-110 duration-500" alt="<%= product.productName %>">
               </a>
@@ -27,19 +27,19 @@
             <div class="flex-1">
               <div class="flex justify-between items-start mb-4">
                 <div>
-                  <h2 class="text-xl font-serif font-bold text-luxury-black mb-1"><%= product.productName %></h2>
+                  <h2 class="text-xl font-serif font-bold text-luxury-black dark:text-white mb-1"><%= product.productName %></h2>
                   <p class="text-xs font-bold text-gray-400 uppercase tracking-widest"><%= product.volume %>ML × <%= product.quantity %></p>
                 </div>
                 <div class="text-right">
-                  <p class="text-lg font-bold text-gold-700">Rs.<%= product.subtotal.toLocaleString() %></p>
-                  <span class="inline-block mt-2 px-3 py-1 bg-gray-100 text-[10px] font-bold uppercase tracking-widest rounded-full text-gray-600 border border-gray-200">
+                  <p class="text-lg font-bold text-gold-700 dark:text-gold-400">Rs.<%= product.subtotal.toLocaleString() %></p>
+                  <span class="inline-block mt-2 px-3 py-1 bg-gray-100 dark:bg-luxury-black text-[10px] font-bold uppercase tracking-widest rounded-full text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-white/10">
                     <%= product.status %>
                   </span>
                 </div>
               </div>
 
               <% if(product.status === 'delivered' || product.status === 'returned') { %>
-                <button onclick="showReviewModal()" class="mt-6 px-8 py-3 bg-luxury-black text-white rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-gold-600 transition shadow-lg">
+                <button onclick="showReviewModal()" class="mt-6 px-8 py-3 bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-gold-600 dark:hover:bg-gold-600 transition shadow-lg">
                   Share Your Experience
                 </button>
               <% } %>
@@ -49,55 +49,55 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <!-- Price Breakdown -->
-          <div class="bg-luxury-cream/30 border border-gold-100 rounded-3xl p-8">
-            <h3 class="text-xs font-bold text-luxury-black uppercase tracking-widest mb-6 pb-4 border-b border-gold-200/50">Price Breakdown</h3>
+          <div class="bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/10 rounded-3xl p-8 shadow-sm">
+            <h3 class="text-xs font-bold text-luxury-black dark:text-white uppercase tracking-widest mb-6 pb-4 border-b border-gray-100 dark:border-white/10">Price Breakdown</h3>
             <ul class="space-y-4">
               <li class="flex justify-between text-sm">
-                <span class="text-gray-500">Unit Price</span>
-                <span class="font-bold text-luxury-black">Rs.<%= product.basePrice.toLocaleString() %></span>
+                <span class="text-gray-500 dark:text-gray-400">Unit Price</span>
+                <span class="font-bold text-luxury-black dark:text-white">Rs.<%= product.basePrice.toLocaleString() %></span>
               </li>
               <li class="flex justify-between text-sm">
-                <span class="text-gray-500">Discount (<%= product.discount %>%)</span>
+                <span class="text-gray-500 dark:text-gray-400">Discount (<%= product.discount %>%)</span>
                 <span class="font-bold text-red-500">-Rs.<%= (product.basePrice - product.finalAmount).toLocaleString() %></span>
               </li>
               <li class="flex justify-between text-sm">
-                <span class="text-gray-500">Net Price</span>
-                <span class="font-bold text-green-600">Rs.<%= product.finalAmount.toLocaleString() %></span>
+                <span class="text-gray-500 dark:text-gray-400">Net Price</span>
+                <span class="font-bold text-green-600 dark:text-green-400">Rs.<%= product.finalAmount.toLocaleString() %></span>
               </li>
-              <li class="pt-4 mt-4 border-t border-gold-200/50 flex justify-between items-center">
-                <span class="text-base font-serif font-bold text-luxury-black">Total Paid</span>
-                <span class="text-xl font-bold text-gold-700">Rs.<%= product.subtotal.toLocaleString() %></span>
+              <li class="pt-4 mt-4 border-t border-gray-100 dark:border-white/10 flex justify-between items-center">
+                <span class="text-base font-serif font-bold text-luxury-black dark:text-white">Total Paid</span>
+                <span class="text-xl font-bold text-gold-700 dark:text-gold-400">Rs.<%= product.subtotal.toLocaleString() %></span>
               </li>
             </ul>
-            <div class="mt-6 bg-gold-500/10 border border-gold-200 rounded-xl p-4 flex items-center justify-between">
-              <span class="text-[10px] font-bold text-gold-700 uppercase tracking-widest">Total Savings</span>
-              <span class="text-sm font-bold text-gold-700">Rs.<%= ((product.basePrice * product.quantity) - product.subtotal).toLocaleString() %></span>
+            <div class="mt-6 bg-gold-500/10 border border-gold-200 dark:border-gold-500/30 rounded-xl p-4 flex items-center justify-between">
+              <span class="text-[10px] font-bold text-gold-700 dark:text-gold-400 uppercase tracking-widest">Total Savings</span>
+              <span class="text-sm font-bold text-gold-700 dark:text-gold-400">Rs.<%= ((product.basePrice * product.quantity) - product.subtotal).toLocaleString() %></span>
             </div>
           </div>
 
           <!-- Shipping Details -->
-          <div class="bg-white border border-gray-100 rounded-3xl p-8">
-            <h3 class="text-xs font-bold text-luxury-black uppercase tracking-widest mb-6 pb-4 border-b border-gray-50">Delivery Information</h3>
+          <div class="bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/10 rounded-3xl p-8 shadow-sm">
+            <h3 class="text-xs font-bold text-luxury-black dark:text-white uppercase tracking-widest mb-6 pb-4 border-b border-gray-100 dark:border-white/10">Delivery Information</h3>
             <div class="space-y-4">
               <div class="flex items-start space-x-4">
-                <div class="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <i class="fa-solid fa-location-dot text-gold-600"></i>
+                <div class="w-10 h-10 bg-gray-50 dark:bg-luxury-black rounded-xl flex items-center justify-center flex-shrink-0">
+                  <i class="fa-solid fa-location-dot text-gold-600 dark:text-gold-400"></i>
                 </div>
                 <div>
-                  <h4 class="text-sm font-bold text-luxury-black mb-1"><%= shippedAddress.fullName %></h4>
-                  <p class="text-xs text-gray-500 leading-relaxed">
+                  <h4 class="text-sm font-bold text-luxury-black dark:text-white mb-1"><%= shippedAddress.fullName %></h4>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
                     <%= shippedAddress.address %>,<br>
                     <%= shippedAddress.city %>, <%= shippedAddress.state %> - <%= shippedAddress.pin %>
                   </p>
                 </div>
               </div>
               <div class="flex items-start space-x-4">
-                <div class="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <i class="fa-solid fa-phone text-gold-600"></i>
+                <div class="w-10 h-10 bg-gray-50 dark:bg-luxury-black rounded-xl flex items-center justify-center flex-shrink-0">
+                  <i class="fa-solid fa-phone text-gold-600 dark:text-gold-400"></i>
                 </div>
                 <div>
                    <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Contact Number</h4>
-                   <p class="text-sm font-bold text-luxury-black"><%= shippedAddress.mobile %></p>
+                   <p class="text-sm font-bold text-luxury-black dark:text-white"><%= shippedAddress.mobile %></p>
                 </div>
               </div>
             </div>
@@ -110,39 +110,39 @@
   <!-- Review Modal (Custom Tailwind) -->
   <div id="reviewModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300" onclick="hideReviewModal()"></div>
-    <div class="relative bg-white rounded-[2.5rem] p-8 sm:p-12 max-w-lg w-full shadow-2xl transform transition-all duration-300 scale-95 opacity-0" id="modalContent">
-      <button onclick="hideReviewModal()" class="absolute top-6 right-6 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-luxury-black transition">
+    <div class="relative bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/10 rounded-[2.5rem] p-8 sm:p-12 max-w-lg w-full shadow-2xl transform transition-all duration-300 scale-95 opacity-0" id="modalContent">
+      <button onclick="hideReviewModal()" class="absolute top-6 right-6 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-luxury-black dark:hover:text-white transition">
         <i class="fa-solid fa-xmark text-xl"></i>
       </button>
 
       <div class="text-center mb-8">
-        <h2 class="text-2xl font-serif font-bold text-luxury-black mb-2 uppercase tracking-tight">Product Review</h2>
-        <p class="text-gray-500 text-sm italic">Tell us about your olfactory experience.</p>
+        <h2 class="text-2xl font-serif font-bold text-luxury-black dark:text-white mb-2 uppercase tracking-tight">Product Review</h2>
+        <p class="text-gray-500 dark:text-gray-400 text-sm italic">Tell us about your olfactory experience.</p>
       </div>
 
       <form id="reviewForm" class="space-y-6">
         <div class="space-y-2">
-          <label for="reviewerName" class="text-[10px] font-bold text-luxury-black uppercase tracking-widest ml-4">Display Name</label>
-          <input type="text" name="name" id="reviewerName" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:ring-2 focus:ring-gold-500 transition outline-none text-sm font-medium" placeholder="Your Name" required>
+          <label for="reviewerName" class="text-[10px] font-bold text-luxury-black dark:text-white uppercase tracking-widest ml-4">Display Name</label>
+          <input type="text" name="name" id="reviewerName" class="w-full px-6 py-4 rounded-2xl bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/10 focus:ring-2 focus:ring-gold-500 transition outline-none text-sm font-medium text-luxury-black dark:text-white" placeholder="Your Name" required>
         </div>
 
         <div class="space-y-2 text-center">
-          <label class="text-[10px] font-bold text-luxury-black uppercase tracking-widest">Your Rating</label>
+          <label class="text-[10px] font-bold text-luxury-black dark:text-white uppercase tracking-widest">Your Rating</label>
           <div class="flex flex-row-reverse justify-center gap-2">
-            <input type="radio" id="star5" name="rating" value="5" class="peer hidden"><label for="star5" class="text-4xl text-gray-200 hover:text-gold-500 peer-checked:text-gold-500 transition cursor-pointer">&#9733;</label>
-            <input type="radio" id="star4" name="rating" value="4" class="peer hidden"><label for="star4" class="text-4xl text-gray-200 hover:text-gold-500 peer-checked:text-gold-500 transition cursor-pointer">&#9733;</label>
-            <input type="radio" id="star3" name="rating" value="3" class="peer hidden"><label for="star3" class="text-4xl text-gray-200 hover:text-gold-500 peer-checked:text-gold-500 transition cursor-pointer">&#9733;</label>
-            <input type="radio" id="star2" name="rating" value="2" class="peer hidden"><label for="star2" class="text-4xl text-gray-200 hover:text-gold-500 peer-checked:text-gold-500 transition cursor-pointer">&#9733;</label>
-            <input type="radio" id="star1" name="rating" value="1" class="peer hidden"><label for="star1" class="text-4xl text-gray-200 hover:text-gold-500 peer-checked:text-gold-500 transition cursor-pointer">&#9733;</label>
+            <input type="radio" id="star5" name="rating" value="5" class="peer hidden"><label for="star5" class="text-4xl text-gray-300 dark:text-gray-600 hover:text-gold-500 peer-checked:text-gold-500 transition cursor-pointer">&#9733;</label>
+            <input type="radio" id="star4" name="rating" value="4" class="peer hidden"><label for="star4" class="text-4xl text-gray-300 dark:text-gray-600 hover:text-gold-500 peer-checked:text-gold-500 transition cursor-pointer">&#9733;</label>
+            <input type="radio" id="star3" name="rating" value="3" class="peer hidden"><label for="star3" class="text-4xl text-gray-300 dark:text-gray-600 hover:text-gold-500 peer-checked:text-gold-500 transition cursor-pointer">&#9733;</label>
+            <input type="radio" id="star2" name="rating" value="2" class="peer hidden"><label for="star2" class="text-4xl text-gray-300 dark:text-gray-600 hover:text-gold-500 peer-checked:text-gold-500 transition cursor-pointer">&#9733;</label>
+            <input type="radio" id="star1" name="rating" value="1" class="peer hidden"><label for="star1" class="text-4xl text-gray-300 dark:text-gray-600 hover:text-gold-500 peer-checked:text-gold-500 transition cursor-pointer">&#9733;</label>
           </div>
         </div>
 
         <div class="space-y-2">
-          <label for="reviewMessage" class="text-[10px] font-bold text-luxury-black uppercase tracking-widest ml-4">Your Thoughts</label>
-          <textarea name="review" id="reviewMessage" data-id="<%=product.productId%>" rows="4" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:ring-2 focus:ring-gold-500 transition outline-none text-sm font-medium" placeholder="Describe the scent profile, longevity, and your general impression..." required></textarea>
+          <label for="reviewMessage" class="text-[10px] font-bold text-luxury-black dark:text-white uppercase tracking-widest ml-4">Your Thoughts</label>
+          <textarea name="review" id="reviewMessage" data-id="<%=product.productId%>" rows="4" class="w-full px-6 py-4 rounded-2xl bg-gray-50 dark:bg-luxury-black border border-gray-100 dark:border-white/10 focus:ring-2 focus:ring-gold-500 transition outline-none text-sm font-medium text-luxury-black dark:text-white" placeholder="Describe the scent profile, longevity, and your general impression..." required></textarea>
         </div>
 
-        <button type="submit" class="w-full bg-luxury-black text-white py-5 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 transition shadow-xl mt-4">
+        <button type="submit" class="w-full bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black py-5 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 dark:hover:bg-gold-600 transition shadow-xl mt-4">
           Submit Private Review
         </button>
       </form>
@@ -208,9 +208,5 @@
     }
   });
 </script>
-
-<%- include('../partials/user/footer.ejs') %>
-
-
 
 <%- include('../partials/user/footer.ejs') %>

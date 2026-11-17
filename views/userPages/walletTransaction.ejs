@@ -1,6 +1,6 @@
 <%- include("../partials/user/header.ejs") %>
 
-<main class="bg-white min-h-screen py-12">
+<main class="bg-luxury-cream dark:bg-luxury-black min-h-screen py-12 transition-colors duration-300">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex flex-col lg:flex-row gap-12">
       
@@ -9,58 +9,58 @@
       <!-- Wallet Transaction Content -->
       <div class="flex-1">
         <div class="mb-10">
-          <h1 class="text-3xl font-serif font-bold text-luxury-black mb-2 uppercase tracking-tight">Transaction History</h1>
-          <p class="text-gray-500 text-sm italic">A complete record of your wallet activities.</p>
+          <h1 class="text-3xl font-serif font-bold text-luxury-black dark:text-white mb-2 uppercase tracking-tight">Transaction History</h1>
+          <p class="text-gray-500 dark:text-gray-400 text-sm italic">A complete record of your wallet activities.</p>
         </div>
 
-        <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+        <div class="bg-white dark:bg-luxury-charcoal rounded-[2rem] border border-gray-100 dark:border-white/10 shadow-sm overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left">
               <thead>
-                <tr class="bg-gray-50/50">
-                  <th class="px-8 py-5 text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em]">Type</th>
-                  <th class="px-8 py-5 text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em]">Date</th>
-                  <th class="px-8 py-5 text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em]">Status</th>
-                  <th class="px-8 py-5 text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] text-right">Amount</th>
-                  <th class="px-8 py-5 text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] text-right">Balance After</th>
+                <tr class="bg-gray-50/50 dark:bg-luxury-black/50 border-b border-gray-100 dark:border-white/10">
+                  <th class="px-8 py-5 text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-[0.2em]">Type</th>
+                  <th class="px-8 py-5 text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-[0.2em]">Date</th>
+                  <th class="px-8 py-5 text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-[0.2em]">Status</th>
+                  <th class="px-8 py-5 text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-[0.2em] text-right">Amount</th>
+                  <th class="px-8 py-5 text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-[0.2em] text-right">Balance After</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-gray-50">
+              <tbody class="divide-y divide-gray-100 dark:divide-white/10">
                 <% if(transactions && transactions.length > 0) { %>
                   <% transactions.forEach(transaction => { %>
-                    <tr class="hover:bg-gray-50/30 transition">
+                    <tr class="hover:bg-gray-50/30 dark:hover:bg-white/5 transition">
                       <td class="px-8 py-6">
-                        <span class="text-xs font-bold text-luxury-black uppercase tracking-tight"><%= transaction.type %></span>
+                        <span class="text-xs font-bold text-luxury-black dark:text-white uppercase tracking-tight"><%= transaction.type %></span>
                       </td>
                       <td class="px-8 py-6">
-                        <p class="text-xs text-gray-600"><%= transaction.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></p>
+                        <p class="text-xs text-gray-600 dark:text-gray-400"><%= transaction.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></p>
                       </td>
                       <td class="px-8 py-6">
                         <% 
-                           let statusColor = 'bg-gray-50 text-gray-500 border-gray-100';
-                           if(transaction.status === 'success') statusColor = 'bg-green-50 text-green-600 border-green-100';
-                           if(transaction.status === 'failed') statusColor = 'bg-red-50 text-red-500 border-red-100';
-                           if(transaction.status === 'pending') statusColor = 'bg-gold-50 text-gold-600 border-gold-100';
+                           let statusColor = 'bg-gray-50 dark:bg-luxury-black text-gray-500 border-gray-100 dark:border-white/10';
+                           if(transaction.status === 'success') statusColor = 'bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400 border-green-100 dark:border-green-900/40';
+                           if(transaction.status === 'failed') statusColor = 'bg-red-50 dark:bg-red-950/30 text-red-500 dark:text-red-400 border-red-100 dark:border-red-900/40';
+                           if(transaction.status === 'pending') statusColor = 'bg-gold-50 dark:bg-gold-950/30 text-gold-600 dark:text-gold-400 border-gold-100 dark:border-gold-500/20';
                         %>
                         <span class="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border <%= statusColor %>">
                            <%= transaction.status %>
                         </span>
                       </td>
                       <td class="px-8 py-6 text-right">
-                        <p class="text-sm font-bold <%= transaction.type === 'credit' ? 'text-green-600' : 'text-red-500' %> tracking-tight">
+                        <p class="text-sm font-bold <%= transaction.type === 'credit' ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400' %> tracking-tight">
                           <%= transaction.type === 'credit' ? '+' : '-' %> Rs.<%= (transaction.amount/100).toLocaleString() %>
                         </p>
                       </td>
                       <td class="px-8 py-6 text-right">
-                        <p class="text-xs font-bold text-luxury-black">Rs.<%= transaction.lastBalance.toLocaleString() %></p>
+                        <p class="text-xs font-bold text-luxury-black dark:text-white">Rs.<%= transaction.lastBalance.toLocaleString() %></p>
                       </td>
                     </tr>
                   <% }) %>
                 <% } else { %>
                   <tr>
                     <td colspan="5" class="px-8 py-32 text-center">
-                       <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                          <i class="fa-solid fa-receipt text-2xl text-gray-200"></i>
+                       <div class="w-20 h-20 bg-gray-50 dark:bg-luxury-black rounded-full flex items-center justify-center mx-auto mb-6">
+                          <i class="fa-solid fa-receipt text-2xl text-gray-300 dark:text-gray-600"></i>
                        </div>
                        <p class="text-gray-400 text-xs uppercase tracking-[0.2em] font-bold">No transactions recorded yet.</p>
                     </td>
@@ -75,19 +75,19 @@
         <div class="mt-12 flex justify-center sm:justify-end">
           <nav class="inline-flex space-x-2">
             <% if (page > 1) { %>
-              <a href="?page=<%= page - 1 %>&limit=<%= limit %>" class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-100 text-luxury-black hover:border-gold-500 hover:text-gold-600 transition">
+              <a href="?page=<%= page - 1 %>&limit=<%= limit %>" class="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/10 text-luxury-black dark:text-white hover:border-gold-500 hover:text-gold-600 transition">
                 <i class="fa-solid fa-chevron-left text-xs"></i>
               </a>
             <% } %>
             
             <% for(let i=1; i<=totalPages; i++) { %>
-              <a href="?page=<%= i %>&limit=<%= limit %>" class="w-10 h-10 flex items-center justify-center rounded-full <%= page == i ? 'bg-luxury-black text-white shadow-lg' : 'bg-white border border-gray-100 text-luxury-black hover:bg-gray-50' %> text-[10px] font-bold transition">
+              <a href="?page=<%= i %>&limit=<%= limit %>" class="w-10 h-10 flex items-center justify-center rounded-full <%= page == i ? 'bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black shadow-lg' : 'bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/10 text-luxury-black dark:text-white hover:bg-gray-50 dark:hover:bg-white/5' %> text-[10px] font-bold transition">
                 <%= i %>
               </a>
             <% } %>
 
             <% if (page < totalPages) { %>
-              <a href="?page=<%= page + 1 %>&limit=<%= limit %>" class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-100 text-luxury-black hover:border-gold-500 hover:text-gold-600 transition">
+              <a href="?page=<%= page + 1 %>&limit=<%= limit %>" class="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/10 text-luxury-black dark:text-white hover:border-gold-500 hover:text-gold-600 transition">
                 <i class="fa-solid fa-chevron-right text-xs"></i>
               </a>
             <% } %>

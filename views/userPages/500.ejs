@@ -5,52 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Server Error | VENICARA</title>
   <link rel="shortcut icon" href="/images/fevicon.png" type="image/x-icon">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/output.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'luxury-black': '#121212',
-            'luxury-cream': '#f8f5f0',
-            'gold-600': '#d4af37',
-          },
-          fontFamily: {
-            'serif': ['Playfair Display', 'serif'],
-            'sans': ['Inter', 'sans-serif'],
-          }
-        }
-      }
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
 </head>
-<body class="bg-luxury-cream min-h-screen flex items-center justify-center p-4">
-  <div class="max-w-2xl w-full bg-white rounded-[3rem] shadow-2xl overflow-hidden p-12 text-center relative">
+<body class="bg-luxury-cream dark:bg-luxury-black text-luxury-black dark:text-luxury-white min-h-screen flex items-center justify-center p-4 transition-colors duration-300 relative">
+
+  <!-- Floating Theme Toggle -->
+  <div class="fixed top-6 right-6 z-50">
+    <button id="theme-toggle" class="w-12 h-12 rounded-full bg-white dark:bg-luxury-charcoal border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:text-gold-600 dark:hover:text-gold-400 transition shadow-lg" title="Toggle Theme">
+      <i class="fa-solid fa-moon dark:hidden text-lg"></i>
+      <i class="fa-solid fa-sun hidden dark:block text-lg"></i>
+    </button>
+  </div>
+
+  <div class="max-w-2xl w-full bg-white dark:bg-luxury-charcoal rounded-[3rem] shadow-2xl overflow-hidden p-12 text-center relative border border-gray-100 dark:border-white/5">
     
     <div class="relative z-10">
-      <img src="/images/logo.avif" class="w-48 mx-auto mb-16" alt="Venicara">
+      <img src="/images/logo.avif" class="w-48 mx-auto mb-16 dark:brightness-0 dark:invert" alt="Venicara">
       
       <div class="mb-12">
         <h1 class="text-[12rem] font-serif font-black text-red-500 leading-none opacity-5 select-none absolute left-1/2 -translate-x-1/2 -top-16">500</h1>
-        <h2 class="text-4xl font-serif font-bold text-luxury-black mb-4 uppercase tracking-tight">Technical Disturbance</h2>
-        <p class="text-gray-500 text-lg italic max-w-sm mx-auto">Our atelier is currently experiencing a rare complication. Our master perfumers are working to resolve it.</p>
+        <h2 class="text-4xl font-serif font-bold text-luxury-black dark:text-white mb-4 uppercase tracking-tight">Technical Disturbance</h2>
+        <p class="text-gray-500 dark:text-gray-400 text-lg italic max-w-sm mx-auto">Our atelier is currently experiencing a rare complication. Our master perfumers are working to resolve it.</p>
       </div>
 
       <div class="flex flex-col sm:flex-row items-center justify-center gap-6 mb-12">
-        <button onclick="history.back()" class="w-full sm:w-auto px-10 py-5 bg-luxury-black text-white rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 transition shadow-xl group">
+        <button onclick="history.back()" class="w-full sm:w-auto px-10 py-5 bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 dark:hover:bg-gold-600 transition shadow-xl group">
           <i class="fa-solid fa-rotate-left mr-3 group-hover:-rotate-45 transition-transform"></i>
           Try Again
         </button>
-        <button id="showErrorBtn" class="w-full sm:w-auto px-10 py-5 border-2 border-red-100 text-red-600 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-red-50 transition">
+        <button id="showErrorBtn" class="w-full sm:w-auto px-10 py-5 border-2 border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-red-50 dark:hover:bg-red-500/10 transition">
           Debug View
         </button>
       </div>
 
-      <div id="errorDiv" class="hidden text-left bg-red-50 border border-red-100 rounded-2xl p-6 overflow-x-auto">
-        <p class="text-[10px] font-mono text-red-700 leading-relaxed break-all">
-          <%= message || "500 Internal Server Error: An unexpected complication occurred within our alchemy labs." %>
+      <div id="errorDiv" class="hidden text-left bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 rounded-2xl p-6 overflow-x-auto">
+        <p class="text-[10px] font-mono text-red-700 dark:text-red-400 leading-relaxed break-all">
+          <%= typeof message !== 'undefined' ? message : "500 Internal Server Error: An unexpected complication occurred within our alchemy labs." %>
         </p>
       </div>
     </div>
@@ -62,6 +61,17 @@
 
     showErrorBtn.addEventListener('click', () => {
       errorDiv.classList.toggle('hidden');
+    });
+
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle?.addEventListener('click', () => {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
     });
   </script>
 </body>

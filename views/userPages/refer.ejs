@@ -1,6 +1,6 @@
 <%-include('../partials/user/header.ejs')%>
 
-<main class="bg-white min-h-screen py-12">
+<main class="bg-luxury-cream dark:bg-luxury-black min-h-screen py-12 transition-colors duration-300">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex flex-col lg:flex-row gap-12">
       
@@ -9,34 +9,34 @@
       <!-- Main Content -->
       <div class="flex-1">
         <div class="mb-10">
-          <h1 class="text-3xl font-serif font-bold text-luxury-black mb-2 uppercase tracking-tight">Refer & Earn</h1>
-          <p class="text-gray-500 text-sm italic">Share the luxury of Venicara with your circle.</p>
+          <h1 class="text-3xl font-serif font-bold text-luxury-black dark:text-white mb-2 uppercase tracking-tight">Refer & Earn</h1>
+          <p class="text-gray-500 dark:text-gray-400 text-sm italic">Share the luxury of Venicara with your circle.</p>
         </div>
 
         <div class="flex flex-col xl:flex-row gap-8">
           <!-- Referral Card -->
-          <div class="flex-1 bg-white border border-gray-100 rounded-[3rem] p-8 sm:p-16 text-center shadow-sm relative overflow-hidden">
+          <div class="flex-1 bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/10 rounded-[3rem] p-8 sm:p-16 text-center shadow-sm relative overflow-hidden">
             <!-- Luxury Decoration -->
             <div class="absolute -top-10 -right-10 w-40 h-40 bg-gold-500/5 rounded-full blur-3xl"></div>
             
             <div class="relative z-10">
-              <div class="w-24 h-24 bg-luxury-cream rounded-full flex items-center justify-center mx-auto mb-8">
-                <i class="fa-solid fa-gift text-4xl text-gold-600"></i>
+              <div class="w-24 h-24 bg-luxury-cream dark:bg-luxury-black rounded-full flex items-center justify-center mx-auto mb-8 border border-gold-100 dark:border-gold-500/20">
+                <i class="fa-solid fa-gift text-4xl text-gold-600 dark:text-gold-400"></i>
               </div>
               
-              <h2 class="text-2xl font-serif font-bold text-luxury-black mb-4 uppercase tracking-widest">Invite Your Connoisseurs</h2>
-              <p class="text-gray-500 text-sm mb-10 max-w-md mx-auto leading-relaxed">
-                Gift your friends the experience of artisanal fragrances. When they join using your code, you both unlock exclusive rewards up to <span class="font-bold text-luxury-black">Rs.200</span>.
+              <h2 class="text-2xl font-serif font-bold text-luxury-black dark:text-white mb-4 uppercase tracking-widest">Invite Your Connoisseurs</h2>
+              <p class="text-gray-500 dark:text-gray-400 text-sm mb-10 max-w-md mx-auto leading-relaxed">
+                Gift your friends the experience of artisanal fragrances. When they join using your code, you both unlock exclusive rewards up to <span class="font-bold text-luxury-black dark:text-white">Rs.200</span>.
               </p>
 
               <div class="mb-12">
                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-4">Your Private Invitation Code</p>
-                <div class="inline-flex items-center space-x-4 bg-gray-50 border-2 border-dashed border-gray-200 px-8 py-4 rounded-2xl">
-                  <span class="text-2xl font-serif font-bold text-luxury-black tracking-[0.3em] ml-2"><%=referralCode%></span>
+                <div class="inline-flex items-center space-x-4 bg-gray-50 dark:bg-luxury-black border-2 border-dashed border-gray-200 dark:border-white/20 px-8 py-4 rounded-2xl">
+                  <span class="text-2xl font-serif font-bold text-luxury-black dark:text-gold-400 tracking-[0.3em] ml-2"><%=referralCode%></span>
                 </div>
               </div>
 
-              <button onclick="copyMessage(this)" class="w-full max-w-sm mx-auto bg-luxury-black text-white py-5 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 transition shadow-xl group">
+              <button onclick="copyMessage(this)" class="w-full max-w-sm mx-auto bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black py-5 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-gold-600 dark:hover:bg-gold-600 transition shadow-xl group">
                 <span id="copyText">Copy Invitation Message</span>
                 <i class="fa-solid fa-copy ml-3 group-hover:scale-110 transition-transform"></i>
               </button>
@@ -46,18 +46,18 @@
           <!-- Rewards Sidebar -->
           <% if(rewards && rewards.length) { %>
             <div class="w-full xl:w-96">
-              <div class="bg-luxury-cream/50 border border-gold-100 rounded-[2.5rem] p-8">
-                <h3 class="text-xs font-bold text-luxury-black uppercase tracking-widest mb-8 pb-4 border-b border-gold-200/50">Your Rewards</h3>
+              <div class="bg-white dark:bg-luxury-charcoal border border-gray-100 dark:border-white/10 rounded-[2.5rem] p-8 shadow-sm">
+                <h3 class="text-xs font-bold text-luxury-black dark:text-white uppercase tracking-widest mb-8 pb-4 border-b border-gray-100 dark:border-white/10">Your Rewards</h3>
                 
                 <div id="rewardList" class="space-y-4">
                   <% rewards.forEach(reward => { %>
-                    <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex items-center justify-between group hover:border-gold-300 transition">
+                    <div class="bg-gray-50 dark:bg-luxury-black rounded-2xl p-5 border border-gray-100 dark:border-white/10 shadow-sm flex items-center justify-between group hover:border-gold-300 transition">
                       <div class="flex-1">
-                        <h4 class="text-xs font-bold text-luxury-black mb-1">Referral Reward</h4>
-                        <p class="text-[10px] font-bold text-gold-600 uppercase tracking-widest">₹<%=reward.amount%></p>
+                        <h4 class="text-xs font-bold text-luxury-black dark:text-white mb-1">Referral Reward</h4>
+                        <p class="text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-widest">₹<%=reward.amount%></p>
                       </div>
                       <button 
-                        class="claim-reward px-4 py-2 bg-luxury-black text-white rounded-full text-[9px] font-bold uppercase tracking-widest hover:bg-gold-600 transition disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed" 
+                        class="claim-reward px-4 py-2 bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black rounded-full text-[9px] font-bold uppercase tracking-widest hover:bg-gold-600 dark:hover:bg-gold-600 transition disabled:bg-gray-200 dark:disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed" 
                         data-id="<%= reward._id %>"
                         <%= (reward.status === 'claimed' || reward.status === 'pending') ? 'disabled' : '' %>>
                         <%= reward.status === 'claimed' ? 'Claimed' : reward.status === 'pending' ? 'Pending' : 'Claim Now' %>

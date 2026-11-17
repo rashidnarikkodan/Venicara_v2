@@ -11,8 +11,23 @@
   
   <link rel="stylesheet" href="/css/output.css" />
   <script src="https://kit.fontawesome.com/f45c5ea548.js" crossorigin="anonymous"></script>
+  <script>
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
 </head>
-<body class="h-full bg-luxury-cream dark:bg-luxury-black font-sans transition-colors duration-300 flex items-center justify-center p-6">
+<body class="h-full bg-luxury-cream dark:bg-luxury-black font-sans transition-colors duration-300 flex items-center justify-center p-6 relative">
+
+  <!-- Floating Theme Toggle -->
+  <div class="fixed top-6 right-6 z-50">
+    <button id="theme-toggle" class="w-12 h-12 rounded-full bg-white dark:bg-luxury-charcoal border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:text-gold-600 dark:hover:text-gold-400 transition shadow-lg" title="Toggle Theme">
+      <i class="fa-solid fa-moon dark:hidden text-lg"></i>
+      <i class="fa-solid fa-sun hidden dark:block text-lg"></i>
+    </button>
+  </div>
 
   <div class="max-w-4xl w-full bg-white dark:bg-luxury-charcoal rounded-[3rem] shadow-2xl overflow-hidden animate-zoom-in">
     <div class="flex flex-col md:flex-row flex-row-reverse">
@@ -128,6 +143,17 @@
       });
 
       startTimer(50);
+    });
+
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle?.addEventListener('click', () => {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
     });
   </script>
 </body>

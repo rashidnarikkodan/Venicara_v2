@@ -1,6 +1,6 @@
 <%- include("../partials/user/header.ejs") %>
 
-<main class="bg-white min-h-screen py-12">
+<main class="bg-luxury-cream dark:bg-luxury-black min-h-screen py-12 transition-colors duration-300">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex flex-col lg:flex-row gap-12">
       
@@ -8,12 +8,12 @@
 
       <!-- Profile Content -->
       <div class="flex-1">
-        <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="bg-white dark:bg-luxury-charcoal rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm overflow-hidden">
           <!-- Profile Banner/Header -->
-          <div class="h-32 bg-luxury-black relative">
+          <div class="h-32 bg-luxury-black relative border-b border-white/10">
             <div class="absolute -bottom-12 left-8 sm:left-12">
-              <div class="w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-3xl p-1 shadow-2xl">
-                <div class="w-full h-full bg-luxury-cream rounded-2xl flex items-center justify-center text-luxury-black text-4xl font-serif font-bold border border-gold-100">
+              <div class="w-24 h-24 sm:w-32 sm:h-32 bg-white dark:bg-luxury-charcoal rounded-3xl p-1 shadow-2xl border border-gray-100 dark:border-white/10">
+                <div class="w-full h-full bg-luxury-cream dark:bg-luxury-black rounded-2xl flex items-center justify-center text-luxury-black dark:text-gold-400 text-4xl font-serif font-bold border border-gold-100 dark:border-gold-500/20">
                   <% if (user.photoUrl) { %>
                     <img src="<%= user.photoUrl %>" alt="Profile" class="w-full h-full rounded-2xl object-cover">
                   <% } else { %>
@@ -27,10 +27,10 @@
           <div class="p-8 sm:p-12 pt-16 sm:pt-20">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-6">
               <div>
-                <h1 class="text-3xl font-serif font-bold text-luxury-black mb-2 uppercase tracking-tight"><%= user.name %></h1>
-                <p class="text-gray-500 text-sm italic">Manage your personal information and account preferences.</p>
+                <h1 class="text-3xl font-serif font-bold text-luxury-black dark:text-white mb-2 uppercase tracking-tight"><%= user.name %></h1>
+                <p class="text-gray-500 dark:text-gray-400 text-sm italic">Manage your personal information and account preferences.</p>
               </div>
-              <a href="/profile/edit" class="bg-luxury-black text-white px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-gold-600 transition shadow-lg">
+              <a href="/profile/edit" class="bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-gold-600 dark:hover:bg-gold-600 transition shadow-lg">
                 Edit Profile
               </a>
             </div>
@@ -38,53 +38,53 @@
             <!-- Profile Details Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div class="space-y-2">
-                <label class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Full Name</label>
-                <div class="p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus-within:bg-white focus-within:border-gold-300">
+                <label class="text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-[0.2em] ml-2">Full Name</label>
+                <div class="p-5 bg-gray-50 dark:bg-luxury-black rounded-2xl border border-gray-100 dark:border-white/10 text-luxury-black dark:text-white font-medium">
                   <%= user.name %>
                 </div>
               </div>
               <div class="space-y-2">
-                <label class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Email Address</label>
-                <div class="p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus-within:bg-white focus-within:border-gold-300">
+                <label class="text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-[0.2em] ml-2">Email Address</label>
+                <div class="p-5 bg-gray-50 dark:bg-luxury-black rounded-2xl border border-gray-100 dark:border-white/10 text-luxury-black dark:text-white font-medium">
                   <%= user.email %>
                 </div>
               </div>
               <div class="space-y-2">
-                <label class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Mobile Number</label>
-                <div class="p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus-within:bg-white focus-within:border-gold-300">
+                <label class="text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-[0.2em] ml-2">Mobile Number</label>
+                <div class="p-5 bg-gray-50 dark:bg-luxury-black rounded-2xl border border-gray-100 dark:border-white/10 text-luxury-black dark:text-white font-medium">
                   <%= user.mobile || 'Not updated' %>
                 </div>
               </div>
               <div class="space-y-2">
-                <label class="text-[10px] font-bold text-gold-600 uppercase tracking-[0.2em] ml-2">Gender</label>
-                <div class="p-5 bg-gray-50 rounded-2xl border border-gray-100 text-luxury-black font-medium transition focus-within:bg-white focus-within:border-gold-300">
+                <label class="text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-[0.2em] ml-2">Gender</label>
+                <div class="p-5 bg-gray-50 dark:bg-luxury-black rounded-2xl border border-gray-100 dark:border-white/10 text-luxury-black dark:text-white font-medium">
                   <%= user.gender || 'Not specified' %>
                 </div>
               </div>
             </div>
 
             <!-- Security Section -->
-            <div class="mt-16 pt-12 border-t border-gray-50">
-              <h2 class="text-xl font-serif font-bold text-luxury-black mb-8 uppercase tracking-tighter">Security & Access</h2>
+            <div class="mt-16 pt-12 border-t border-gray-100 dark:border-white/10">
+              <h2 class="text-xl font-serif font-bold text-luxury-black dark:text-white mb-8 uppercase tracking-tighter">Security & Access</h2>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="flex items-center justify-between p-6 bg-luxury-cream rounded-2xl border border-gold-100">
+                <div class="flex items-center justify-between p-6 bg-luxury-cream dark:bg-luxury-black rounded-2xl border border-gold-100 dark:border-gold-500/20">
                   <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-gold-600 shadow-sm">
+                    <div class="w-12 h-12 bg-white dark:bg-luxury-charcoal rounded-xl flex items-center justify-center text-gold-600 dark:text-gold-400 shadow-sm border border-gold-100 dark:border-white/10">
                       <i class="fa-solid fa-shield-halved text-xl"></i>
                     </div>
                     <div>
-                      <p class="text-sm font-bold text-luxury-black uppercase tracking-tight">Password</p>
+                      <p class="text-sm font-bold text-luxury-black dark:text-white uppercase tracking-tight">Password</p>
                       <p class="text-[10px] text-gray-400 uppercase font-medium">Securely hidden</p>
                     </div>
                   </div>
-                  <a href="/profile/changePassword" class="text-[10px] font-bold text-gold-600 uppercase tracking-widest hover:text-gold-700 transition underline underline-offset-8">
+                  <a href="/profile/changePassword" class="text-[10px] font-bold text-gold-600 dark:text-gold-400 uppercase tracking-widest hover:text-gold-700 transition underline underline-offset-8">
                     Update
                   </a>
                 </div>
 
-                <div class="flex items-center justify-between p-6 bg-red-50/30 rounded-2xl border border-red-100">
+                <div class="flex items-center justify-between p-6 bg-red-50/30 dark:bg-red-950/20 rounded-2xl border border-red-100 dark:border-red-900/40">
                   <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-red-400 shadow-sm">
+                    <div class="w-12 h-12 bg-white dark:bg-luxury-charcoal rounded-xl flex items-center justify-center text-red-400 shadow-sm border border-red-100 dark:border-red-900/30">
                       <i class="fa-solid fa-trash-can text-xl"></i>
                     </div>
                     <div>
