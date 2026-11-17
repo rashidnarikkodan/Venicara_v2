@@ -62,7 +62,7 @@
 
       <div class="space-y-6">
         <!-- Google Signup -->
-        <a href="/auth/google" class="flex items-center justify-center space-x-3 w-full py-4 rounded-full border border-gray-200 dark:border-white/10 bg-white dark:bg-luxury-black hover:bg-gray-50 dark:hover:bg-white/5 transition shadow-sm text-sm font-bold text-luxury-black dark:text-white uppercase tracking-widest group">
+        <a href="/auth/google<%= (typeof nextUrl !== 'undefined' && nextUrl) ? '?next=' + encodeURIComponent(nextUrl) : '' %>" class="flex items-center justify-center space-x-3 w-full py-4 rounded-full border border-gray-200 dark:border-white/10 bg-white dark:bg-luxury-black hover:bg-gray-50 dark:hover:bg-white/5 transition shadow-sm text-sm font-bold text-luxury-black dark:text-white uppercase tracking-widest group">
           <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="w-5">
           <span>Continue with Google</span>
         </a>
@@ -74,6 +74,7 @@
         </div>
 
         <form action="/auth/signup" method="post" id="form" class="space-y-6">
+          <input type="hidden" name="next" value="<%= typeof nextUrl !== 'undefined' ? nextUrl : '' %>">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-2">
               <label class="text-[10px] font-bold text-luxury-black dark:text-gray-300 uppercase tracking-widest ml-4">Full Name</label>
@@ -115,7 +116,7 @@
 
         <div class="mt-12 text-center">
            <p class="text-gray-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-4">Already a member?</p>
-           <a href="/auth/login" class="text-luxury-black dark:text-white font-bold uppercase tracking-widest text-[11px] hover:text-gold-600 dark:hover:text-gold-400 transition underline underline-offset-8 decoration-gold-400/30">Login to Account</a>
+           <a href="/auth/login<%= (typeof nextUrl !== 'undefined' && nextUrl) ? '?next=' + encodeURIComponent(nextUrl) : '' %>" class="text-luxury-black dark:text-white font-bold uppercase tracking-widest text-[11px] hover:text-gold-600 dark:hover:text-gold-400 transition underline underline-offset-8 decoration-gold-400/30">Login to Account</a>
         </div>
       </div>
       

@@ -3,12 +3,35 @@ const handleError = require("../../helpers/handleError.helper");
 const apiResponse = require("../../helpers/apiResponse.helper");
 
 /**
+ * Validates and sanitizes post-login redirect targets.
+ * Prevents open redirects, action endpoints (wishlist/cart items), and auth loops.
+ */
+const getSafeRedirectUrl = (url) => {
+  if (!url || typeof url !== "string") return "/home";
+  // Must start with single / and not // or /\\ (prevent open redirect / protocol-relative attacks)
+  if (!url.startsWith("/") || url.startsWith("//") || url.startsWith("/\\")) return "/home";
+  // Must not be an auth, api, or item action route
+  if (
+    url.startsWith("/auth") ||
+    url.includes("/api/") ||
+    url.startsWith("/wishlist/items") ||
+    url.startsWith("/cart/items") ||
+    url.startsWith("/checkout/placeOrder")
+  ) {
+    return "/home";
+  }
+  return url;
+};
+
+/**
  * Show login form
  * GET /auth/login
  */
 const showLogin = (req, res) => {
   try {
-    res.render("userPages/login", { nextUrl: req.query.next || "" });
+    const rawNext = req.query.next || "";
+    const safeNext = getSafeRedirectUrl(rawNext);
+    res.render("userPages/login", { nextUrl: safeNext !== "/home" ? safeNext : (rawNext === "/home" ? "/home" : "") });
   } catch (err) {
     handleError(res, "showLogin", err);
   }
@@ -21,20 +44,21 @@ const showLogin = (req, res) => {
 const handleLogin = async (req, res) => {
   try {
     const { email, password, next: nextParam } = req.body;
-    const loginRedirect = nextParam
-      ? `/auth/login?next=${encodeURIComponent(nextParam)}`
+    const safeRedirect = getSafeRedirectUrl(nextParam);
+    const loginRedirect = safeRedirect && safeRedirect !== "/home"
+      ? `/auth/login?next=${encodeURIComponent(safeRedirect)}`
       : "/auth/login";
 
     const userSessionData = await authService.login({ email, password });
     req.session.user = userSessionData;
 
     req.flash("success", "Logged in successfully");
-    const safeRedirect = nextParam && nextParam.startsWith("/") ? nextParam : "/home";
     return res.redirect(safeRedirect);
   } catch (err) {
     const nextParam = req.body.next;
-    const loginRedirect = nextParam
-      ? `/auth/login?next=${encodeURIComponent(nextParam)}`
+    const safeRedirect = getSafeRedirectUrl(nextParam);
+    const loginRedirect = safeRedirect && safeRedirect !== "/home"
+      ? `/auth/login?next=${encodeURIComponent(safeRedirect)}`
       : "/auth/login";
 
     if (err.statusCode) {
@@ -55,7 +79,10 @@ const handleGoogleAuth = async (req, res) => {
     req.session.user = userSessionData;
 
     req.flash("success", "Logged in successfully with Google");
-    return res.redirect("/home");
+    const returnTo = req.session.returnTo;
+    delete req.session.returnTo;
+    const safeRedirect = getSafeRedirectUrl(returnTo);
+    return res.redirect(safeRedirect);
   } catch (err) {
     if (err.statusCode) {
       req.flash("error", err.message);
@@ -179,7 +206,9 @@ const handleChangePass = async (req, res) => {
  */
 const showSignup = (req, res) => {
   try {
-    res.render("userPages/signup");
+    const rawNext = req.query.next || "";
+    const safeNext = getSafeRedirectUrl(rawNext);
+    res.render("userPages/signup", { nextUrl: safeNext !== "/home" ? safeNext : (rawNext === "/home" ? "/home" : "") });
   } catch (err) {
     handleError(res, "showSignup", err);
   }

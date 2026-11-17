@@ -9,6 +9,12 @@ const auth = require("../../middlewares/auth.user.middleware");
 router.get(
   "/google",
   auth.loggedIn,
+  (req, res, next) => {
+    if (req.query.next) {
+      req.session.returnTo = req.query.next;
+    }
+    next();
+  },
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 

@@ -65,7 +65,12 @@
   // Global 401/unauthenticated redirect handler for fetch() API calls
   window.handleApiResponse = function (response, data) {
     if (response.status === 401) {
-      const redirectUrl = (data && data.data && data.data.redirect) || '/auth/login';
+      let redirectUrl = data && data.data && data.data.redirect;
+      // If server didn't specify or specified an action endpoint, use the current page user was viewing
+      if (!redirectUrl || redirectUrl.includes('/items/') || redirectUrl.includes('/api/')) {
+        const currentPath = window.location.pathname + window.location.search;
+        redirectUrl = `/auth/login?next=${encodeURIComponent(currentPath)}`;
+      }
       window.location.href = redirectUrl;
       return false;
     }
