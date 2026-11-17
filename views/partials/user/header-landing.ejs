@@ -64,20 +64,41 @@
         <nav class="hidden md:flex space-x-10">
           <a href="/" class="text-sm font-semibold tracking-widest hover:text-gold-600 dark:text-gray-300 dark:hover:text-gold-400 transition duration-200">HOME</a>
           <a href="/shop" class="text-sm font-semibold tracking-widest hover:text-gold-600 dark:text-gray-300 dark:hover:text-gold-400 transition duration-200">SHOP</a>
+          <a href="/about" class="text-sm font-semibold tracking-widest hover:text-gold-600 dark:text-gray-300 dark:hover:text-gold-400 transition duration-200">OUR STORY</a>
+          <a href="/contact" class="text-sm font-semibold tracking-widest hover:text-gold-600 dark:text-gray-300 dark:hover:text-gold-400 transition duration-200">CONTACT</a>
         </nav>
 
         <!-- Auth Buttons -->
         <div class="flex items-center space-x-6">
-          <a href="/auth/login" class="text-sm font-semibold hover:text-gold-600 dark:text-gray-300 dark:hover:text-gold-400 transition">LOG IN</a>
-          <a href="/auth/signup" class="bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black px-6 py-2 rounded-full text-sm font-bold hover:bg-gold-600 transition shadow-lg">SIGN UP</a>
+          <a href="/auth/login" class="text-sm font-semibold hover:text-gold-600 dark:text-gray-300 dark:hover:text-gold-400 transition hidden sm:inline-block">LOG IN</a>
+          <a href="/auth/signup" class="bg-luxury-black dark:bg-gold-500 text-white dark:text-luxury-black px-6 py-2 rounded-full text-sm font-bold hover:bg-gold-600 transition shadow-lg hidden sm:inline-block">SIGN UP</a>
           
           <!-- Theme Toggle -->
           <button id="theme-toggle" class="text-gray-700 dark:text-gray-300 hover:text-gold-600 dark:hover:text-gold-400 transition p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5" title="Toggle Theme">
             <i class="fa-solid fa-moon dark:hidden text-xl"></i>
             <i class="fa-solid fa-sun hidden dark:block text-xl"></i>
           </button>
+
+          <!-- Mobile Toggle -->
+          <button id="landing-mobile-btn" class="md:hidden text-gray-700 dark:text-gray-300 hover:text-gold-600 p-2" aria-label="Toggle menu">
+            <i class="fa-solid fa-bars text-xl" id="landing-mobile-icon"></i>
+          </button>
         </div>
       </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="landing-mobile-menu" class="hidden md:hidden border-t border-gray-100 dark:border-white/10 bg-white/95 dark:bg-luxury-black/95 backdrop-blur-md px-6 py-6 transition-all duration-300">
+      <nav class="flex flex-col space-y-4 text-sm font-semibold tracking-widest uppercase">
+        <a href="/" class="py-2 hover:text-gold-600 dark:text-gray-200 border-b border-gray-50 dark:border-white/5">Home</a>
+        <a href="/shop" class="py-2 hover:text-gold-600 dark:text-gray-200 border-b border-gray-50 dark:border-white/5">Shop Collection</a>
+        <a href="/about" class="py-2 hover:text-gold-600 dark:text-gray-200 border-b border-gray-50 dark:border-white/5">Our Story</a>
+        <a href="/contact" class="py-2 hover:text-gold-600 dark:text-gray-200 border-b border-gray-50 dark:border-white/5">Contact Concierge</a>
+        <div class="pt-4 flex flex-col space-y-3">
+          <a href="/auth/login" class="text-center py-3 rounded-full border border-gray-300 dark:border-white/20 text-xs font-bold tracking-widest">LOG IN</a>
+          <a href="/auth/signup" class="text-center py-3 rounded-full bg-gold-500 text-black text-xs font-bold tracking-widest">SIGN UP</a>
+        </div>
+      </nav>
     </div>
 
     <!-- Flash Messages Container for toast.js -->
@@ -98,6 +119,21 @@
       } else {
         document.documentElement.classList.add('dark');
         localStorage.setItem('theme', 'dark');
+      }
+    });
+
+    // Mobile menu toggle
+    const landingMobileBtn = document.getElementById('landing-mobile-btn');
+    const landingMobileMenu = document.getElementById('landing-mobile-menu');
+    const landingMobileIcon = document.getElementById('landing-mobile-icon');
+    landingMobileBtn?.addEventListener('click', () => {
+      const isHidden = landingMobileMenu.classList.contains('hidden');
+      if (isHidden) {
+        landingMobileMenu.classList.remove('hidden');
+        landingMobileIcon.classList.replace('fa-bars', 'fa-xmark');
+      } else {
+        landingMobileMenu.classList.add('hidden');
+        landingMobileIcon.classList.replace('fa-xmark', 'fa-bars');
       }
     });
 

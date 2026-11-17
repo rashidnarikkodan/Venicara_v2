@@ -4,14 +4,14 @@
       <!-- Brand Section -->
       <div class="col-span-1 md:col-span-1">
         <h2 class="text-3xl font-serif font-bold tracking-tighter text-gold-400 mb-6 uppercase">VENICARA</h2>
-        <p class="text-gray-400 leading-relaxed mb-8">
+        <p class="text-gray-400 leading-relaxed mb-8 text-sm">
           Crafting memories through scent. Discover the essence of luxury with our exclusive range of high-end perfumes.
         </p>
         <div class="flex space-x-5">
-          <a href="#" class="text-gray-400 hover:text-gold-400 transition duration-300"><i class="fa-brands fa-instagram text-2xl"></i></a>
-          <a href="#" class="text-gray-400 hover:text-gold-400 transition duration-300"><i class="fa-brands fa-facebook text-2xl"></i></a>
-          <a href="#" class="text-gray-400 hover:text-gold-400 transition duration-300"><i class="fa-brands fa-pinterest text-2xl"></i></a>
-          <a href="#" class="text-gray-400 hover:text-gold-400 transition duration-300"><i class="fa-brands fa-twitter text-2xl"></i></a>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-gold-400 transition duration-300" aria-label="Instagram"><i class="fa-brands fa-instagram text-2xl"></i></a>
+          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-gold-400 transition duration-300" aria-label="Facebook"><i class="fa-brands fa-facebook text-2xl"></i></a>
+          <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-gold-400 transition duration-300" aria-label="Pinterest"><i class="fa-brands fa-pinterest text-2xl"></i></a>
+          <a href="https://x.com" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-gold-400 transition duration-300" aria-label="Twitter"><i class="fa-brands fa-x-twitter text-2xl"></i></a>
         </div>
       </div>
 
@@ -34,16 +34,29 @@
           <li><a href="/footer/terms-conditions" class="text-gray-400 hover:text-gold-400 transition text-sm">Terms & Conditions</a></li>
           <li><a href="/footer/return-policy" class="text-gray-400 hover:text-gold-400 transition text-sm">Return & Refund Policy</a></li>
           <li><a href="/footer/shipping-policy" class="text-gray-400 hover:text-gold-400 transition text-sm">Shipping Policy</a></li>
+          <li><a href="/footer/cookie-policy" class="text-gray-400 hover:text-gold-400 transition text-sm">Cookie Policy</a></li>
         </ul>
       </div>
 
       <!-- Newsletter -->
       <div>
         <h4 class="text-sm font-bold tracking-widest uppercase text-white mb-6">Stay Connected</h4>
-        <p class="text-gray-400 text-sm mb-6">Join our mailing list for exclusive launches and fragrance tips.</p>
-        <form class="flex">
-          <input type="email" placeholder="Your email address" class="bg-luxury-charcoal border border-gray-800 text-white text-sm px-4 py-3 rounded-l-md w-full focus:outline-none focus:border-gold-500 transition" />
-          <button type="submit" class="bg-gold-500 hover:bg-gold-600 text-black px-4 py-3 rounded-r-md transition font-bold">
+        <p class="text-gray-400 text-sm mb-6">Join our private registry for exclusive launches and fragrance notes.</p>
+        <form id="newsletter-form" class="flex" action="/api/newsletter/subscribe" method="POST">
+          <input
+            type="email"
+            id="newsletter-email"
+            name="email"
+            required
+            placeholder="Your email address"
+            class="bg-luxury-charcoal border border-gray-800 text-white text-sm px-4 py-3 rounded-l-md w-full focus:outline-none focus:border-gold-500 transition"
+          />
+          <button
+            type="submit"
+            id="newsletter-btn"
+            class="bg-gold-500 hover:bg-gold-600 text-black px-4 py-3 rounded-r-md transition font-bold"
+            aria-label="Subscribe to newsletter"
+          >
             <i class="fa-solid fa-arrow-right"></i>
           </button>
         </form>
@@ -63,6 +76,47 @@
 
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
+
+  document.getElementById("newsletter-form")?.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const emailInput = document.getElementById("newsletter-email");
+    const email = emailInput.value.trim();
+    if (!email) return;
+
+    const btn = document.getElementById("newsletter-btn");
+    const originalIcon = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
+
+    try {
+      const res = await fetch("/api/newsletter/subscribe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest"
+        },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (data.success) {
+        if (typeof showToast === "function") {
+          showToast("success", data.message || "Thank you for subscribing to Venicara previews!");
+        }
+        emailInput.value = "";
+      } else {
+        if (typeof showToast === "function") {
+          showToast("error", data.message || "Unable to subscribe. Please try again.");
+        }
+      }
+    } catch (err) {
+      if (typeof showToast === "function") {
+        showToast("error", "Network error. Please try again.");
+      }
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalIcon;
+    }
+  });
 </script>
 </body>
 </html>

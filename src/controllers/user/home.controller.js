@@ -84,9 +84,101 @@ const cartCount = async (req, res) => {
   }
 };
 
+/**
+ * About page ("Our Story")
+ * GET /about
+ */
+const showAbout = (req, res) => {
+  try {
+    const user = req.session?.user || null;
+    return res.render("userPages/about", { user });
+  } catch (err) {
+    handleError(res, "showAbout", err);
+  }
+};
+
+/**
+ * Contact Us page
+ * GET /contact
+ */
+const showContact = (req, res) => {
+  try {
+    const user = req.session?.user || null;
+    return res.render("userPages/contact", { user });
+  } catch (err) {
+    handleError(res, "showContact", err);
+  }
+};
+
+/**
+ * Handle Contact Inquiry
+ * POST /contact
+ */
+const handleContactInquiry = (req, res) => {
+  try {
+    const { name, email, subject, message } = req.body;
+    const isApi = req.xhr || (req.headers.accept || '').includes('application/json');
+
+    if (!name || !email || !message) {
+      if (isApi) {
+        return res.status(400).json({ success: false, message: 'Please provide your name, email, and message.' });
+      }
+      req.flash('error', 'Please fill in all required fields.');
+      return res.redirect('/contact');
+    }
+
+    if (isApi) {
+      return res.status(200).json({
+        success: true,
+        message: 'Thank you for reaching out to Venicara. Our concierge will be in touch shortly.',
+      });
+    }
+
+    req.flash('success', 'Thank you for reaching out. We will respond to your inquiry shortly.');
+    return res.redirect('/contact');
+  } catch (err) {
+    handleError(res, 'handleContactInquiry', err);
+  }
+};
+
+/**
+ * Handle Newsletter Subscription
+ * POST /api/newsletter/subscribe
+ */
+const subscribeNewsletter = (req, res) => {
+  try {
+    const { email } = req.body;
+    const isApi = req.xhr || (req.headers.accept || '').includes('application/json');
+
+    if (!email || !email.includes('@')) {
+      if (isApi) {
+        return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
+      }
+      req.flash('error', 'Please enter a valid email address.');
+      return res.redirect('back');
+    }
+
+    if (isApi) {
+      return res.status(200).json({
+        success: true,
+        message: 'Thank you for subscribing to Venicara private previews!',
+      });
+    }
+
+    req.flash('success', 'Thank you for subscribing to Venicara private previews!');
+    return res.redirect('back');
+  } catch (err) {
+    handleError(res, 'subscribeNewsletter', err);
+  }
+};
+
 module.exports = {
   landingPage,
   showHome,
   showShop,
   cartCount,
+  showAbout,
+  showContact,
+  handleContactInquiry,
+  subscribeNewsletter,
 };

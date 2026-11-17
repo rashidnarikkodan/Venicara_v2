@@ -28,6 +28,13 @@ router.post('/edit/otp',userController.handleNewEmailOTP)
 router.post('/resendOTP',userController.resendNewEmailOTP)
 router
   .route("/changePassword")
-  .get(auth.requireLogin,userController.showProfileChangePass)
-  .patch(auth.requireLogin,userController.handleProfileChangePass);
-module.exports = router
+  .get(auth.requireLogin, userController.showProfileChangePass)
+  .patch(auth.requireLogin, userController.handleProfileChangePass);
+
+// Backward-compatible alias
+router
+  .route("/changePass")
+  .get(auth.requireLogin, userController.showProfileChangePass)
+  .patch(auth.requireLogin, userController.handleProfileChangePass);
+
+module.exports = router;
