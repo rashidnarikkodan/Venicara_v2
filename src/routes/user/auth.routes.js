@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const { authController } = require("../../controllers/user/index");
-const { asyncFunction } = require("../../helpers");
+const { asyncHandler } = require("../../helpers");
 const auth = require("../../middlewares/auth.user.middleware");
 
 /* ------------------ GOOGLE OAUTH ------------------ */
@@ -21,55 +21,55 @@ router.get(
 router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/auth/login" }),
-  asyncFunction(authController.handleGoogleAuth)
+  asyncHandler(authController.handleGoogleAuth)
 );
 
 /* ------------------ LOGIN ------------------ */
 router
   .route("/login")
-  .get(auth.loggedIn, asyncFunction(authController.showLogin))
-  .post(auth.loggedIn, asyncFunction(authController.handleLogin));
+  .get(auth.loggedIn, asyncHandler(authController.showLogin))
+  .post(auth.loggedIn, asyncHandler(authController.handleLogin));
 
 /* ------------------ FORGOT PASSWORD + OTP ------------------ */
 router
   .route("/forgot")
-  .get(auth.loggedIn, asyncFunction(authController.showForgot))
-  .post(auth.loggedIn, asyncFunction(authController.handleForgot));
+  .get(auth.loggedIn, asyncHandler(authController.showForgot))
+  .post(auth.loggedIn, asyncHandler(authController.handleForgot));
 
 router
   .route("/forgot/otp")
-  .get(auth.loggedIn, asyncFunction(authController.showForgotOTP))
-  .post(auth.loggedIn, asyncFunction(authController.handleForgotOTP));
+  .get(auth.loggedIn, asyncHandler(authController.showForgotOTP))
+  .post(auth.loggedIn, asyncHandler(authController.handleForgotOTP));
 
 router.post(
   "/forgot/resend-otp",
   auth.loggedIn,
-  asyncFunction(authController.resendForgotOTP)
+  asyncHandler(authController.resendForgotOTP)
 );
 
 router
   .route("/forgot/change-password")
-  .get(auth.loggedIn, asyncFunction(authController.showChangePass))
-  .patch(auth.loggedIn, asyncFunction(authController.handleChangePass));
+  .get(auth.loggedIn, asyncHandler(authController.showChangePass))
+  .patch(auth.loggedIn, asyncHandler(authController.handleChangePass));
 
 /* ------------------ SIGNUP + OTP ------------------ */
 router
   .route("/signup")
-  .get(auth.loggedIn, asyncFunction(authController.showSignup))
-  .post(auth.loggedIn, asyncFunction(authController.handleSignup));
+  .get(auth.loggedIn, asyncHandler(authController.showSignup))
+  .post(auth.loggedIn, asyncHandler(authController.handleSignup));
 
 router
   .route("/signup/verify-otp")
-  .get(auth.loggedIn, asyncFunction(authController.showSignupOTP))
-  .post(auth.loggedIn, asyncFunction(authController.handleSignupOTP));
+  .get(auth.loggedIn, asyncHandler(authController.showSignupOTP))
+  .post(auth.loggedIn, asyncHandler(authController.handleSignupOTP));
 
 router.post(
   "/signup/resend-otp",
   auth.loggedIn,
-  asyncFunction(authController.resendOTP)
+  asyncHandler(authController.resendOTP)
 );
 
 /* ------------------ LOGOUT ------------------ */
-router.route("/logout").all(asyncFunction(authController.handleLogout));
+router.route("/logout").all(asyncHandler(authController.handleLogout));
 
 module.exports = router;

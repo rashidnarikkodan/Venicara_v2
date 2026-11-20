@@ -1,39 +1,39 @@
 const express = require("express");
 const router = express.Router();
 const { userController } = require("../../controllers/user/index");
-const { asyncFunction } = require("../../helpers");
+const { asyncHandler } = require("../../helpers");
 const auth = require("../../middlewares/auth.user.middleware");
 const upload = require("../../middlewares/multer.middleware");
 
-router.get("/", asyncFunction(userController.showProfile));
+router.get("/", asyncHandler(userController.showProfile));
 
 router
   .route("/delete")
-  .get(auth.requireLogin, asyncFunction(userController.showDeleteAc))
-  .patch(asyncFunction(userController.handleDeleteAc));
+  .get(auth.requireLogin, asyncHandler(userController.showDeleteAc))
+  .patch(asyncHandler(userController.handleDeleteAc));
 
 router.route("/edit")
-  .get(asyncFunction(userController.showEditProfile))
+  .get(asyncHandler(userController.showEditProfile))
   .patch(
     upload.single("userProfile"),
     auth.requireLogin,
-    asyncFunction(userController.editProfile)
+    asyncHandler(userController.editProfile)
   );
 
-router.patch("/api/deleteProfile", asyncFunction(userController.deleteProfile));
+router.patch("/api/deleteProfile", asyncHandler(userController.deleteProfile));
 
-router.post("/edit/otp", asyncFunction(userController.handleNewEmailOTP));
-router.post("/resendOTP", asyncFunction(userController.resendNewEmailOTP));
+router.post("/edit/otp", asyncHandler(userController.handleNewEmailOTP));
+router.post("/resendOTP", asyncHandler(userController.resendNewEmailOTP));
 
 router
   .route("/changePassword")
-  .get(auth.requireLogin, asyncFunction(userController.showProfileChangePass))
-  .patch(auth.requireLogin, asyncFunction(userController.handleProfileChangePass));
+  .get(auth.requireLogin, asyncHandler(userController.showProfileChangePass))
+  .patch(auth.requireLogin, asyncHandler(userController.handleProfileChangePass));
 
 // Backward-compatible alias
 router
   .route("/changePass")
-  .get(auth.requireLogin, asyncFunction(userController.showProfileChangePass))
-  .patch(auth.requireLogin, asyncFunction(userController.handleProfileChangePass));
+  .get(auth.requireLogin, asyncHandler(userController.showProfileChangePass))
+  .patch(auth.requireLogin, asyncHandler(userController.handleProfileChangePass));
 
 module.exports = router;

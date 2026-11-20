@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const { deleteController } = require("../../controllers/user/index");
-const { asyncFunction } = require("../../helpers");
+const { asyncHandler } = require("../../helpers");
 
 router.route('/')
-  .get(asyncFunction(deleteController.show))
-  .patch(asyncFunction(deleteController.deleteAc));
+  .get(asyncHandler(deleteController.show))
+  .patch(asyncHandler(deleteController.deleteAc));
 
 module.exports = router;

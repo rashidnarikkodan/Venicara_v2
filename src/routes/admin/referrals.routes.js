@@ -1,16 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const { referralsController } = require("../../controllers/admin/index");
-const { asyncFunction } = require("../../helpers");
+const { asyncHandler } = require("../../helpers");
 const auth = require("../../middlewares/auth.admin.middleware");
 
 router
   .route("/")
-  .get(auth.requireLogin, asyncFunction(referralsController.showReferrals));
+  .get(auth.requireLogin, asyncHandler(referralsController.showReferrals));
 router.patch(
   "/:id",
   auth.requireLogin,
-  asyncFunction(referralsController.approveReward)
+  asyncHandler(referralsController.approveReward)
 );
 
 module.exports = router;

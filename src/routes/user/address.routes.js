@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { addressController } = require("../../controllers/user/index");
-const { asyncFunction } = require("../../helpers");
+const { asyncHandler } = require("../../helpers");
 const auth = require("../../middlewares/auth.user.middleware");
 
 router.use(auth.requireLogin, auth.isUserBlocked);
@@ -11,32 +11,32 @@ router.use(auth.requireLogin, auth.isUserBlocked);
 // List addresses & create address
 router
   .route("/")
-  .get(asyncFunction(addressController.showAddress))
-  .post(asyncFunction(addressController.handleNewAddress));
+  .get(asyncHandler(addressController.showAddress))
+  .post(asyncHandler(addressController.handleNewAddress));
 
 // New address form
-router.get("/new", asyncFunction(addressController.showNewAddress));
+router.get("/new", asyncHandler(addressController.showNewAddress));
 
 // Edit address form
-router.get("/:id/edit", asyncFunction(addressController.showEditAddress));
+router.get("/:id/edit", asyncHandler(addressController.showEditAddress));
 
 // Update address & Delete address
 router
   .route("/:id")
-  .put(asyncFunction(addressController.handleEditAddress))
-  .delete(asyncFunction(addressController.deleteAddress));
+  .put(asyncHandler(addressController.handleEditAddress))
+  .delete(asyncHandler(addressController.deleteAddress));
 
 // Set default address
 router
   .route("/:id/default")
-  .patch(asyncFunction(addressController.setDefaultAddress))
-  .get(asyncFunction(addressController.setDefaultAddress)); // For HTML link clicks
+  .patch(asyncHandler(addressController.setDefaultAddress))
+  .get(asyncHandler(addressController.setDefaultAddress)); // For HTML link clicks
 
 /* ------------------ Backward-Compatible Aliases ------------------ */
-router.post("/new", asyncFunction(addressController.handleNewAddress));
-router.get("/edit/:id", asyncFunction(addressController.showEditAddress));
-router.put("/edit/:id", asyncFunction(addressController.handleEditAddress));
-router.delete("/delete/:id", asyncFunction(addressController.deleteAddress));
-router.get("/default/:id", asyncFunction(addressController.setDefaultAddress));
+router.post("/new", asyncHandler(addressController.handleNewAddress));
+router.get("/edit/:id", asyncHandler(addressController.showEditAddress));
+router.put("/edit/:id", asyncHandler(addressController.handleEditAddress));
+router.delete("/delete/:id", asyncHandler(addressController.deleteAddress));
+router.get("/default/:id", asyncHandler(addressController.setDefaultAddress));
 
 module.exports = router;

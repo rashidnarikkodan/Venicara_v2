@@ -1,17 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const { ordersController } = require("../../controllers/admin/index");
-const { asyncFunction } = require("../../helpers");
+const { asyncHandler } = require("../../helpers");
 const auth = require("../../middlewares/auth.admin.middleware");
 
-router.route("/").get(auth.requireLogin, asyncFunction(ordersController.showOrders));
+router.route("/").get(auth.requireLogin, asyncHandler(ordersController.showOrders));
 router.patch(
   "/product/status/:id",
-  asyncFunction(ordersController.handleProductStatus)
+  asyncHandler(ordersController.handleProductStatus)
 );
-router.patch("/:id/status", asyncFunction(ordersController.handleOrderStatus));
-router.patch("/:orderId/return/reject", asyncFunction(ordersController.rejectReturn));
-router.patch("/:orderId/return/approve", asyncFunction(ordersController.approveReturn));
-router.get("/:id", auth.requireLogin, asyncFunction(ordersController.showOrderDetails));
+router.patch("/:id/status", asyncHandler(ordersController.handleOrderStatus));
+router.patch("/:orderId/return/reject", asyncHandler(ordersController.rejectReturn));
+router.patch("/:orderId/return/approve", asyncHandler(ordersController.approveReturn));
+router.get("/:id", auth.requireLogin, asyncHandler(ordersController.showOrderDetails));
 
 module.exports = router;
