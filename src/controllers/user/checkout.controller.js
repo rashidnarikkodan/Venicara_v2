@@ -1,31 +1,23 @@
 const { checkoutService, addressService } = require("../../services");
 const { render, success } = require("../../helpers/response.helper");
-const handleError = require("../../helpers/handleError.helper");
+const { AppError } = require("../../helpers/errors.helper");
 
 /**
  * Show addresses for checkout
  * GET /checkout/address
  */
 const showAddress = async (req, res) => {
-  try {
-    const userId = req.session.user.id;
-    const { addresses, items, deliveryCharge } = await checkoutService.prepareAddressStep(userId);
+  const userId = req.session.user.id;
+  const { addresses, items, deliveryCharge } = await checkoutService.prepareAddressStep(userId);
 
-    req.session.order = req.session.order || {};
-    req.session.order.deliveryCharge = deliveryCharge;
+  req.session.order = req.session.order || {};
+  req.session.order.deliveryCharge = deliveryCharge;
 
-    return render(res, "userPages/checkoutAddress", {
-      addresses,
-      items,
-      deliveryCharge,
-    });
-  } catch (error) {
-    if (error.statusCode) {
-      req.flash("error", error.message);
-      return res.redirect("/cart");
-    }
-    handleError(res, "showAddress", error);
-  }
+  return render(res, "userPages/checkoutAddress", {
+    addresses,
+    items,
+    deliveryCharge,
+  });
 };
 
 /**
@@ -33,11 +25,7 @@ const showAddress = async (req, res) => {
  * GET /checkout/address/new
  */
 const showAddAddress = (req, res) => {
-  try {
-    return render(res, "userPages/checkoutAddressAdd");
-  } catch (error) {
-    handleError(res, "showAddAddress", error);
-  }
+  return render(res, "userPages/checkoutAddressAdd");
 };
 
 /**
@@ -45,18 +33,10 @@ const showAddAddress = (req, res) => {
  * POST /checkout/address
  */
 const handleAddAddress = async (req, res) => {
-  try {
-    const userId = req.session.user.id;
-    await addressService.createAddress(userId, req.body);
-    req.flash("success", "Address added successfully");
-    return res.redirect("/checkout/address");
-  } catch (error) {
-    if (error.statusCode) {
-      req.flash("error", error.message);
-      return res.redirect("/checkout/address/new");
-    }
-    handleError(res, "handleAddAddress", error);
-  }
+  const userId = req.session.user.id;
+  await addressService.createAddress(userId, req.body);
+  req.flash("success", "Address added successfully");
+  return res.redirect("/checkout/address");
 };
 
 /**
@@ -64,17 +44,9 @@ const handleAddAddress = async (req, res) => {
  * GET /checkout/address/:id/edit
  */
 const showEditAddress = async (req, res) => {
-  try {
-    const userId = req.session.user.id;
-    const address = await addressService.getAddressById(userId, req.params.id);
-    return render(res, "userPages/checkoutAddressEdit", { address });
-  } catch (error) {
-    if (error.statusCode) {
-      req.flash("error", error.message);
-      return res.redirect("/checkout/address");
-    }
-    handleError(res, "showEditAddress", error);
-  }
+  const userId = req.session.user.id;
+  const address = await addressService.getAddressById(userId, req.params.id);
+  return render(res, "userPages/checkoutAddressEdit", { address });
 };
 
 /**
@@ -82,18 +54,10 @@ const showEditAddress = async (req, res) => {
  * PUT /checkout/address/:id
  */
 const handleEditAddress = async (req, res) => {
-  try {
-    const userId = req.session.user.id;
-    await addressService.updateAddress(userId, req.params.id, req.body);
-    req.flash("success", "Address updated successfully");
-    return res.redirect("/checkout/address");
-  } catch (error) {
-    if (error.statusCode) {
-      req.flash("error", error.message);
-      return res.redirect(`/checkout/address/edit/${req.params.id}`);
-    }
-    handleError(res, "handleEditAddress", error);
-  }
+  const userId = req.session.user.id;
+  await addressService.updateAddress(userId, req.params.id, req.body);
+  req.flash("success", "Address updated successfully");
+  return res.redirect("/checkout/address");
 };
 
 /**
@@ -101,16 +65,12 @@ const handleEditAddress = async (req, res) => {
  * POST /checkout/address/select
  */
 const handleSelectAddress = (req, res) => {
-  try {
-    const { selectedAddress } = req.body;
-    if (!selectedAddress) {
-      return handleError(res, "handleSelectAddress", { statusCode: 400, message: "Address is required" });
-    }
-    req.session.address = selectedAddress;
-    return success(res, "Address selected");
-  } catch (error) {
-    handleError(res, "handleSelectAddress", error);
+  const { selectedAddress } = req.body;
+  if (!selectedAddress) {
+    throw new AppError("Address is required", 400);
   }
+  req.session.address = selectedAddress;
+  return success(res, "Address selected");
 };
 
 /**
@@ -118,21 +78,13 @@ const handleSelectAddress = (req, res) => {
  * GET /checkout/payment
  */
 const showPaymentMethods = async (req, res) => {
-  try {
-    const userId = req.session.user.id;
-    delete req.session.coupon;
+  const userId = req.session.user.id;
+  delete req.session.coupon;
 
-    const deliveryCharge = req.session.order?.deliveryCharge || 0;
-    const data = await checkoutService.getPaymentStepData(userId, deliveryCharge);
+  const deliveryCharge = req.session.order?.deliveryCharge || 0;
+  const data = await checkoutService.getPaymentStepData(userId, deliveryCharge);
 
-    return render(res, "userPages/checkoutPayment", data);
-  } catch (error) {
-    if (error.statusCode) {
-      req.flash("error", error.message);
-      return res.redirect("/cart");
-    }
-    handleError(res, "showPaymentMethods", error);
-  }
+  return render(res, "userPages/checkoutPayment", data);
 };
 
 /**
@@ -140,22 +92,18 @@ const showPaymentMethods = async (req, res) => {
  * POST /checkout/coupon
  */
 const applyCoupon = async (req, res) => {
-  try {
-    delete req.session.coupon;
-    const { code } = req.body;
-    const userId = req.session.user.id;
-    const deliveryCharge = req.session.order?.deliveryCharge || 0;
+  delete req.session.coupon;
+  const { code } = req.body;
+  const userId = req.session.user.id;
+  const deliveryCharge = req.session.order?.deliveryCharge || 0;
 
-    const result = await checkoutService.calculateCoupon(userId, code, deliveryCharge);
-    req.session.coupon = result.couponId;
+  const result = await checkoutService.calculateCoupon(userId, code, deliveryCharge);
+  req.session.coupon = result.couponId;
 
-    return success(res, {
-      message: "Coupon applied successfully",
-      ...result,
-    });
-  } catch (error) {
-    handleError(res, "applyCoupon", error);
-  }
+  return success(res, {
+    message: "Coupon applied successfully",
+    ...result,
+  });
 };
 
 /**
@@ -163,19 +111,15 @@ const applyCoupon = async (req, res) => {
  * DELETE /checkout/coupon
  */
 const cancelCoupon = async (req, res) => {
-  try {
-    delete req.session.coupon;
-    const userId = req.session.user.id;
-    const { total } = await (require("../../services").cartService).getCart(userId);
-    const deliveryCharge = req.session.order?.deliveryCharge || 0;
+  delete req.session.coupon;
+  const userId = req.session.user.id;
+  const { total } = await (require("../../services").cartService).getCart(userId);
+  const deliveryCharge = req.session.order?.deliveryCharge || 0;
 
-    return success(res, {
-      message: "Coupon removed",
-      finalAmount: total + deliveryCharge,
-    });
-  } catch (error) {
-    handleError(res, "cancelCoupon", error);
-  }
+  return success(res, {
+    message: "Coupon removed",
+    finalAmount: total + deliveryCharge,
+  });
 };
 
 /**
@@ -183,32 +127,28 @@ const cancelCoupon = async (req, res) => {
  * POST /checkout/orders
  */
 const handlePlaceOrder = async (req, res) => {
-  try {
-    const userId = req.session.user?.id;
-    const addressId = req.session.address;
-    const { paymentMethod } = req.body;
-    const couponId = req.session.coupon;
-    const deliveryCharge = req.session.order?.deliveryCharge || 0;
+  const userId = req.session.user?.id;
+  const addressId = req.session.address;
+  const { paymentMethod } = req.body;
+  const couponId = req.session.coupon;
+  const deliveryCharge = req.session.order?.deliveryCharge || 0;
 
-    const result = await checkoutService.placeOrder({
-      userId,
-      addressId,
-      paymentMethod,
-      couponId,
-      deliveryCharge,
-    });
+  const result = await checkoutService.placeOrder({
+    userId,
+    addressId,
+    paymentMethod,
+    couponId,
+    deliveryCharge,
+  });
 
-    delete req.session.coupon;
+  delete req.session.coupon;
 
-    return success(res, {
-      message: "Order created successfully",
-      orderId: result.orderId,
-      razorpayOrderId: result.razorpayOrderId,
-      finalAmount: result.finalAmount,
-    });
-  } catch (error) {
-    handleError(res, "handlePlaceOrder", error);
-  }
+  return success(res, {
+    message: "Order created successfully",
+    orderId: result.orderId,
+    razorpayOrderId: result.razorpayOrderId,
+    finalAmount: result.finalAmount,
+  });
 };
 
 /**
@@ -216,13 +156,9 @@ const handlePlaceOrder = async (req, res) => {
  * POST /checkout/payments/verify
  */
 const handleRazorpaySuccess = async (req, res) => {
-  try {
-    const result = await checkoutService.verifyRazorpaySuccess(req.body);
-    delete req.session.coupon;
-    return success(res, result.message);
-  } catch (err) {
-    handleError(res, "handleRazorpaySuccess", err);
-  }
+  const result = await checkoutService.verifyRazorpaySuccess(req.body);
+  delete req.session.coupon;
+  return success(res, result.message);
 };
 
 /**
@@ -230,14 +166,10 @@ const handleRazorpaySuccess = async (req, res) => {
  * POST /checkout/payments/fail
  */
 const handleRazorpayFailed = async (req, res) => {
-  try {
-    const { orderId } = req.body;
-    await checkoutService.handleRazorpayFailure(orderId);
-    delete req.session.coupon;
-    return success(res, "Payment failed, Order placed as pending, Please Retry.");
-  } catch (error) {
-    handleError(res, "handleRazorpayFailed", error);
-  }
+  const { orderId } = req.body;
+  await checkoutService.handleRazorpayFailure(orderId);
+  delete req.session.coupon;
+  return success(res, "Payment failed, Order placed as pending, Please Retry.");
 };
 
 /**
@@ -245,12 +177,8 @@ const handleRazorpayFailed = async (req, res) => {
  * GET /checkout/orders/:id/success
  */
 const showPlaceOrder = async (req, res) => {
-  try {
-    const orderId = req.params.id;
-    return render(res, "userPages/placeOrder", { orderId });
-  } catch (error) {
-    handleError(res, "showPlaceOrder", error);
-  }
+  const orderId = req.params.id;
+  return render(res, "userPages/placeOrder", { orderId });
 };
 
 module.exports = {

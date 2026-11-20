@@ -1,13 +1,13 @@
 const { HTTP_STATUS } = require('../constants');
-const { AppError } = require('./errors.helper');
 
-const handleError = (res, controllerName, error) => {
+const handleError = (res, controllerName = 'GlobalError', error) => {
   console.error(`[${controllerName}]`, error);
+  const req = res.req;
   const isApi = Boolean(
-    res.req?.xhr || 
-    (res.req?.headers?.accept || '').includes('application/json') ||
-    res.req?.originalUrl?.startsWith('/api') ||
-    res.req?.headers['content-type'] === 'application/json'
+    req?.xhr || 
+    (req?.headers?.accept || '').includes('application/json') ||
+    req?.originalUrl?.startsWith('/api') ||
+    req?.headers?.['content-type'] === 'application/json'
   );
   const statusCode = error?.statusCode || HTTP_STATUS.INTERNAL_SERVER_ERROR;
   const message = error?.message || 'Something went wrong. Please try again.';
@@ -18,11 +18,18 @@ const handleError = (res, controllerName, error) => {
     return res.status(statusCode).json(payload);
   }
 
-  if (statusCode === HTTP_STATUS.NOT_FOUND) {
-    return res.status(HTTP_STATUS.NOT_FOUND).render('userPages/404', { message, url: res.req?.originalUrl });
+  // Flash message and redirect back for client/validation errors on non-GET form submissions
+  if (statusCode < 500 && req?.flash && req.method !== 'GET') {
+    req.flash('error', message);
+    const referer = req.header('Referer') || req.originalUrl || '/';
+    return res.redirect(referer);
   }
 
-  res.status(statusCode).render('userPages/500', { message: `Error from ${controllerName}: ${message}` });
+  if (statusCode === HTTP_STATUS.NOT_FOUND) {
+    return res.status(HTTP_STATUS.NOT_FOUND).render('userPages/404', { message, url: req?.originalUrl });
+  }
+
+  res.status(statusCode).render('userPages/500', { message: `Error: ${message}` });
 };
 
 module.exports = handleError;

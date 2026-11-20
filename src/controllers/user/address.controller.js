@@ -1,19 +1,14 @@
 const { addressService } = require("../../services");
 const { render } = require("../../helpers/response.helper");
-const handleError = require("../../helpers/handleError.helper");
 
 /**
  * List all user addresses
  * GET /address
  */
 const showAddress = async (req, res) => {
-  try {
-    const userId = req.session.user.id;
-    const { addresses, user } = await addressService.getUserAddresses(userId);
-    return render(res, "userPages/address", { addresses, user });
-  } catch (err) {
-    handleError(res, "showAddress", err);
-  }
+  const userId = req.session.user.id;
+  const { addresses, user } = await addressService.getUserAddresses(userId);
+  return render(res, "userPages/address", { addresses, user });
 };
 
 /**
@@ -21,11 +16,7 @@ const showAddress = async (req, res) => {
  * GET /address/new
  */
 const showNewAddress = async (req, res) => {
-  try {
-    return render(res, "userPages/newAddress");
-  } catch (err) {
-    handleError(res, "showNewAddress", err);
-  }
+  return render(res, "userPages/newAddress");
 };
 
 /**
@@ -33,18 +24,10 @@ const showNewAddress = async (req, res) => {
  * POST /address
  */
 const handleNewAddress = async (req, res) => {
-  try {
-    const userId = req.session.user.id;
-    await addressService.createAddress(userId, req.body);
-    req.flash("success", "Address added successfully");
-    return res.redirect("/address");
-  } catch (err) {
-    if (err.statusCode) {
-      req.flash("error", err.message);
-      return res.redirect("/address/new");
-    }
-    handleError(res, "handleNewAddress", err);
-  }
+  const userId = req.session.user.id;
+  await addressService.createAddress(userId, req.body);
+  req.flash("success", "Address added successfully");
+  return res.redirect("/address");
 };
 
 /**
@@ -52,18 +35,10 @@ const handleNewAddress = async (req, res) => {
  * GET /address/:id/edit
  */
 const showEditAddress = async (req, res) => {
-  try {
-    const userId = req.session.user.id;
-    const { id } = req.params;
-    const address = await addressService.getAddressById(userId, id);
-    return render(res, "userPages/editAddress", { address });
-  } catch (err) {
-    if (err.statusCode) {
-      req.flash("error", err.message);
-      return res.redirect("/address");
-    }
-    handleError(res, "showEditAddress", err);
-  }
+  const userId = req.session.user.id;
+  const { id } = req.params;
+  const address = await addressService.getAddressById(userId, id);
+  return render(res, "userPages/editAddress", { address });
 };
 
 /**
@@ -71,19 +46,11 @@ const showEditAddress = async (req, res) => {
  * PUT /address/:id
  */
 const handleEditAddress = async (req, res) => {
-  try {
-    const userId = req.session.user.id;
-    const { id } = req.params;
-    await addressService.updateAddress(userId, id, req.body);
-    req.flash("success", "Address updated successfully");
-    return res.redirect("/address");
-  } catch (err) {
-    if (err.statusCode) {
-      req.flash("error", err.message);
-      return res.redirect(`/address/edit/${req.params.id}`);
-    }
-    handleError(res, "handleEditAddress", err);
-  }
+  const userId = req.session.user.id;
+  const { id } = req.params;
+  await addressService.updateAddress(userId, id, req.body);
+  req.flash("success", "Address updated successfully");
+  return res.redirect("/address");
 };
 
 /**
@@ -91,19 +58,11 @@ const handleEditAddress = async (req, res) => {
  * DELETE /address/:id
  */
 const deleteAddress = async (req, res) => {
-  try {
-    const userId = req.session.user.id;
-    const { id } = req.params;
-    await addressService.deleteAddress(userId, id);
-    req.flash("success", "Address deleted successfully");
-    return res.redirect("/address");
-  } catch (err) {
-    if (err.statusCode) {
-      req.flash("error", err.message);
-      return res.redirect("/address");
-    }
-    handleError(res, "deleteAddress", err);
-  }
+  const userId = req.session.user.id;
+  const { id } = req.params;
+  await addressService.deleteAddress(userId, id);
+  req.flash("success", "Address deleted successfully");
+  return res.redirect("/address");
 };
 
 /**
@@ -111,19 +70,11 @@ const deleteAddress = async (req, res) => {
  * PATCH /address/:id/default
  */
 const setDefaultAddress = async (req, res) => {
-  try {
-    const userId = req.session.user.id;
-    const { id } = req.params;
-    await addressService.setDefaultAddress(userId, id);
-    req.flash("success", "Default address updated");
-    return res.redirect("/address");
-  } catch (err) {
-    if (err.statusCode) {
-      req.flash("error", err.message);
-      return res.redirect("/address");
-    }
-    handleError(res, "setDefaultAddress", err);
-  }
+  const userId = req.session.user.id;
+  const { id } = req.params;
+  await addressService.setDefaultAddress(userId, id);
+  req.flash("success", "Default address updated");
+  return res.redirect("/address");
 };
 
 module.exports = {

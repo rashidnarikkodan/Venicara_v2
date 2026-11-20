@@ -1,26 +1,21 @@
 const { adminService } = require("../../services");
 const { render } = require("../../helpers/response.helper");
-const handleError = require("../../helpers/handleError.helper");
 
 /**
  * List coupons
  * GET /admin/coupons
  */
 const showCoupons = async (req, res) => {
-  try {
-    const data = await adminService.getCoupons({
-      page: req.query.page,
-      limit: req.query.limit,
-      search: req.query.search,
-    });
+  const data = await adminService.getCoupons({
+    page: req.query.page,
+    limit: req.query.limit,
+    search: req.query.search,
+  });
 
-    return render(res, "adminPages/coupons", {
-      page: "coupons",
-      ...data,
-    });
-  } catch (err) {
-    handleError(res, "showCoupons", err);
-  }
+  return render(res, "adminPages/coupons", {
+    page: "coupons",
+    ...data,
+  });
 };
 
 /**
@@ -28,17 +23,9 @@ const showCoupons = async (req, res) => {
  * POST /admin/coupons
  */
 const addCoupon = async (req, res) => {
-  try {
-    await adminService.createCoupon(req.body);
-    req.flash("success", "Coupon created successfully");
-    return res.redirect("/admin/coupons");
-  } catch (err) {
-    if (err.statusCode) {
-      req.flash("error", err.message);
-      return res.redirect("/admin/coupons");
-    }
-    handleError(res, "addCoupon", err);
-  }
+  await adminService.createCoupon(req.body);
+  req.flash("success", "Coupon created successfully");
+  return res.redirect("/admin/coupons");
 };
 
 /**
@@ -46,13 +33,9 @@ const addCoupon = async (req, res) => {
  * DELETE /admin/coupons/:id
  */
 const deleteCoupon = async (req, res) => {
-  try {
-    await adminService.deleteCoupon(req.params.id);
-    req.flash("success", "Coupon removed successfully");
-    return res.redirect("/admin/coupons");
-  } catch (err) {
-    handleError(res, "deleteCoupon", err);
-  }
+  await adminService.deleteCoupon(req.params.id);
+  req.flash("success", "Coupon removed successfully");
+  return res.redirect("/admin/coupons");
 };
 
 module.exports = {

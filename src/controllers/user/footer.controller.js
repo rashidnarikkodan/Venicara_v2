@@ -1,44 +1,23 @@
 const { render } = require('../../helpers/response.helper');
-const handleError = require('../../helpers/handleError.helper');
 
 const privacyPolicy = (req, res) => {
-  try {
-    return render(res, 'userPages/privacyPolicy');
-  } catch (error) {
-    handleError(res, 'privacyPolicy', error);
-  }
+  return render(res, 'userPages/privacyPolicy');
 };
 
 const returnPolicy = (req, res) => {
-  try {
-    return render(res, 'userPages/returnPolicy');
-  } catch (error) {
-    handleError(res, 'returnPolicy', error);
-  }
+  return render(res, 'userPages/returnPolicy');
 };
 
 const termsConditions = (req, res) => {
-  try {
-    return render(res, 'userPages/termsConditions');
-  } catch (error) {
-    handleError(res, 'termsConditions', error);
-  }
+  return render(res, 'userPages/termsConditions');
 };
 
 const cookiePolicy = (req, res) => {
-  try {
-    return render(res, 'userPages/cookiePolicy');
-  } catch (error) {
-    handleError(res, 'cookiePolicy', error);
-  }
+  return render(res, 'userPages/cookiePolicy');
 };
 
 const shippingPolicy = (req, res) => {
-  try {
-    return render(res, 'userPages/shippingPolicy');
-  } catch (error) {
-    handleError(res, 'shippingPolicy', error);
-  }
+  return render(res, 'userPages/shippingPolicy');
 };
 
 module.exports = {

@@ -1,19 +1,14 @@
 const { wishlistService } = require("../../services");
 const { success, render } = require("../../helpers/response.helper");
-const handleError = require("../../helpers/handleError.helper");
 
 /**
  * Show Wishlist page
  * GET /wishlist
  */
 const show = async (req, res) => {
-  try {
-    const userId = req.session.user.id;
-    const { items, user } = await wishlistService.getWishlist(userId);
-    return render(res, "userPages/wishlist", { items, user });
-  } catch (err) {
-    handleError(res, "showWishlist", err);
-  }
+  const userId = req.session.user.id;
+  const { items, user } = await wishlistService.getWishlist(userId);
+  return render(res, "userPages/wishlist", { items, user });
 };
 
 /**
@@ -21,16 +16,12 @@ const show = async (req, res) => {
  * POST /wishlist/items/:id
  */
 const addToWishlist = async (req, res) => {
-  try {
-    const { id: productId } = req.params;
-    const { variantId } = req.body;
-    const userId = req.session.user.id;
+  const { id: productId } = req.params;
+  const { variantId } = req.body;
+  const userId = req.session.user.id;
 
-    const result = await wishlistService.toggleWishlist(userId, productId, variantId);
-    return success(res, result.message, { action: result.action, item: result.item });
-  } catch (err) {
-    handleError(res, "addToWishlist", err);
-  }
+  const result = await wishlistService.toggleWishlist(userId, productId, variantId);
+  return success(res, result.message, { action: result.action, item: result.item });
 };
 
 /**
@@ -38,15 +29,11 @@ const addToWishlist = async (req, res) => {
  * POST /wishlist/items/:id/cart
  */
 const addToCart = async (req, res) => {
-  try {
-    const { id: wishlistId } = req.params;
-    const userId = req.session.user.id;
+  const { id: wishlistId } = req.params;
+  const userId = req.session.user.id;
 
-    const result = await wishlistService.moveToCart(userId, wishlistId);
-    return success(res, result.message, { cartItem: result.cartItem });
-  } catch (err) {
-    handleError(res, "addToCart", err);
-  }
+  const result = await wishlistService.moveToCart(userId, wishlistId);
+  return success(res, result.message, { cartItem: result.cartItem });
 };
 
 /**
@@ -54,15 +41,11 @@ const addToCart = async (req, res) => {
  * DELETE /wishlist/items/:id
  */
 const remove = async (req, res) => {
-  try {
-    const { id: wishlistId } = req.params;
-    const userId = req.session.user.id;
+  const { id: wishlistId } = req.params;
+  const userId = req.session.user.id;
 
-    await wishlistService.removeFromWishlist(userId, wishlistId);
-    return success(res, "Product removed from wishlist");
-  } catch (err) {
-    handleError(res, "removeWishlist", err);
-  }
+  await wishlistService.removeFromWishlist(userId, wishlistId);
+  return success(res, "Product removed from wishlist");
 };
 
 module.exports = {
