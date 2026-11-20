@@ -13,6 +13,7 @@ const method = require('method-override')
 const passport = require('passport')
 const nocache = require('nocache')
 const { success, render } = require('./helpers/response.helper')
+const handleError = require('./helpers/handleError.helper')
 const { HTTP_STATUS } = require('./constants')
 
 //settings
@@ -55,10 +56,7 @@ app.use((req, res, next) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error('[GlobalError]', err);
-  const isApi = req.xhr || (req.headers.accept || '').includes('application/json');
-  if (isApi) return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
-  render(res, 'userPages/500', { message: err.message }, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  handleError(res, 'GlobalError', err);
 });
 
 //app.listen to start server based mongoDB connected or not

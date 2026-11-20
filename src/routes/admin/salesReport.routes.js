@@ -1,18 +1,19 @@
 const express = require("express");
 const router = express.Router();
 const { salesReportController } = require("../../controllers/admin/index");
+const { asyncFunction } = require("../../helpers");
 const auth = require("../../middlewares/auth.admin.middleware");
 
-router.route("/").get(auth.requireLogin, salesReportController.showSalesReport);
+router.route("/").get(auth.requireLogin, asyncFunction(salesReportController.showSalesReport));
 router.post(
   "/export/pdf",
   auth.requireLogin,
-  salesReportController.exportSalesPDF
+  asyncFunction(salesReportController.exportSalesPDF || salesReportController.downloadPDF)
 );
 router.post(
   "/export/excel",
   auth.requireLogin,
-  salesReportController.exportSalesExcel
+  asyncFunction(salesReportController.exportSalesExcel || salesReportController.downloadExcel)
 );
 
 module.exports = router;

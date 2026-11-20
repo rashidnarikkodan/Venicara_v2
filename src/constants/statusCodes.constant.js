@@ -21,3 +21,4 @@ const HTTP_STATUS = Object.freeze({
 });
 
 module.exports = HTTP_STATUS;
+

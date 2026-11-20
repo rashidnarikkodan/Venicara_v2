@@ -73,3 +73,4 @@ module.exports = {
   USER_GENDER,
   CART_ITEM_STATUS,
 };
+

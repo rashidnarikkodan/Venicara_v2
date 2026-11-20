@@ -193,4 +193,6 @@ module.exports = {
   showSalesReport,
   downloadPDF,
   downloadExcel,
+  exportSalesPDF: downloadPDF,
+  exportSalesExcel: downloadExcel,
 };

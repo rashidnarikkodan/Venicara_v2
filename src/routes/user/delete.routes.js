@@ -1,11 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const {
-  deleteController,
-} = require("../../controllers/user/index");
+const { deleteController } = require("../../controllers/user/index");
+const { asyncFunction } = require("../../helpers");
 
 router.route('/')
-.get(deleteController.show)
-.patch(deleteController.deleteAc)
+  .get(asyncFunction(deleteController.show))
+  .patch(asyncFunction(deleteController.deleteAc));
 
-module.exports = router
+module.exports = router;

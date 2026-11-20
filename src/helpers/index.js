@@ -1,5 +1,6 @@
 const apiResponse = require('./apiResponse.helper');
 const { success, render, created } = require('./response.helper');
+const asyncFunction = require('./asyncFunction.helper');
 const { AppError } = require('./errors.helper');
 const generateInvoice = require('./generateInvoice.helper');
 const generateOTP = require('./generateOTP.helper');
@@ -19,6 +20,8 @@ module.exports = {
   success,
   render,
   created,
+  asyncFunction,
+  asyncHandler: asyncFunction,
   AppError,
   generateInvoice,
   generateOTP,
