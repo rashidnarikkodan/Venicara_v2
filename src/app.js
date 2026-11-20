@@ -12,6 +12,8 @@ const flashMsg = require('./middlewares/flash.middleware')
 const method = require('method-override')
 const passport = require('passport')
 const nocache = require('nocache')
+const { success, render } = require('./helpers/response.helper')
+const { HTTP_STATUS } = require('./constants')
 
 //settings
 app.set('view engine', 'ejs')
@@ -27,9 +29,11 @@ app.use(flashMsg)
 app.use(passport.initialize())
 app.use(passport.session())
 
-// Global user middleware
+// Global user & response helper middleware
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
+  res.success = (message, data, statusCode) => success(res, message, data, statusCode);
+  res.renderPage = (view, data, statusCode) => render(res, view, data, statusCode);
   next();
 });
 app.use(method('_method'))
@@ -46,15 +50,15 @@ app.use('/',userRoutes)
 
 //pagenotfound
 app.use((req, res, next) => {
-  res.status(404).render('userPages/404', { url: req.originalUrl })
+  render(res, 'userPages/404', { url: req.originalUrl }, HTTP_STATUS.NOT_FOUND);
 })
 
 // Global error handler
 app.use((err, req, res, next) => {
   console.error('[GlobalError]', err);
   const isApi = req.xhr || (req.headers.accept || '').includes('application/json');
-  if (isApi) return res.status(500).json({ success: false, message: 'Internal server error' });
-  res.status(500).render('userPages/500', { message: err.message });
+  if (isApi) return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
+  render(res, 'userPages/500', { message: err.message }, HTTP_STATUS.INTERNAL_SERVER_ERROR);
 });
 
 //app.listen to start server based mongoDB connected or not

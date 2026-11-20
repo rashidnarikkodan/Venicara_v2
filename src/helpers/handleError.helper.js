@@ -1,3 +1,4 @@
+const { HTTP_STATUS } = require('../constants');
 const { AppError } = require('./errors.helper');
 
 const handleError = (res, controllerName, error) => {
@@ -8,7 +9,7 @@ const handleError = (res, controllerName, error) => {
     res.req?.originalUrl?.startsWith('/api') ||
     res.req?.headers['content-type'] === 'application/json'
   );
-  const statusCode = error?.statusCode || 500;
+  const statusCode = error?.statusCode || HTTP_STATUS.INTERNAL_SERVER_ERROR;
   const message = error?.message || 'Something went wrong. Please try again.';
 
   if (isApi) {
@@ -17,8 +18,8 @@ const handleError = (res, controllerName, error) => {
     return res.status(statusCode).json(payload);
   }
 
-  if (statusCode === 404) {
-    return res.status(404).render('userPages/404', { message, url: res.req?.originalUrl });
+  if (statusCode === HTTP_STATUS.NOT_FOUND) {
+    return res.status(HTTP_STATUS.NOT_FOUND).render('userPages/404', { message, url: res.req?.originalUrl });
   }
 
   res.status(statusCode).render('userPages/500', { message: `Error from ${controllerName}: ${message}` });

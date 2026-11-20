@@ -1,5 +1,5 @@
 const { wishlistService } = require("../../services");
-const apiResponse = require("../../helpers/apiResponse.helper");
+const { success, render } = require("../../helpers/response.helper");
 const handleError = require("../../helpers/handleError.helper");
 
 /**
@@ -10,7 +10,7 @@ const show = async (req, res) => {
   try {
     const userId = req.session.user.id;
     const { items, user } = await wishlistService.getWishlist(userId);
-    res.render("userPages/wishlist", { items, user });
+    return render(res, "userPages/wishlist", { items, user });
   } catch (err) {
     handleError(res, "showWishlist", err);
   }
@@ -27,11 +27,8 @@ const addToWishlist = async (req, res) => {
     const userId = req.session.user.id;
 
     const result = await wishlistService.toggleWishlist(userId, productId, variantId);
-    return apiResponse.ok(res, result.message, { action: result.action, item: result.item });
+    return success(res, result.message, { action: result.action, item: result.item });
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ success: false, message: err.message });
-    }
     handleError(res, "addToWishlist", err);
   }
 };
@@ -46,11 +43,8 @@ const addToCart = async (req, res) => {
     const userId = req.session.user.id;
 
     const result = await wishlistService.moveToCart(userId, wishlistId);
-    return apiResponse.ok(res, result.message, { cartItem: result.cartItem });
+    return success(res, result.message, { cartItem: result.cartItem });
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ success: false, message: err.message });
-    }
     handleError(res, "addToCart", err);
   }
 };
@@ -65,11 +59,8 @@ const remove = async (req, res) => {
     const userId = req.session.user.id;
 
     await wishlistService.removeFromWishlist(userId, wishlistId);
-    return apiResponse.ok(res, "Product removed from wishlist");
+    return success(res, "Product removed from wishlist");
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ success: false, message: err.message });
-    }
     handleError(res, "removeWishlist", err);
   }
 };

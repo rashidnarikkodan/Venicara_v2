@@ -1,6 +1,6 @@
 const { adminService } = require("../../services");
+const { render } = require("../../helpers/response.helper");
 const handleError = require("../../helpers/handleError.helper");
-const apiResponse = require("../../helpers/apiResponse.helper");
 
 /**
  * List registered customers
@@ -14,7 +14,7 @@ const showCustomers = async (req, res) => {
       search: req.query.search,
     });
 
-    return res.render("adminPages/customers", {
+    return render(res, "adminPages/customers", {
       page: "customers",
       users: data.customers,
       ...data,

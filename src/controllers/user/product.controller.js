@@ -1,5 +1,5 @@
 const { productService } = require("../../services");
-const apiResponse = require("../../helpers/apiResponse.helper");
+const { success, render } = require("../../helpers/response.helper");
 const handleError = require("../../helpers/handleError.helper");
 
 /**
@@ -9,7 +9,7 @@ const handleError = require("../../helpers/handleError.helper");
 const searchProducts = async (req, res) => {
   try {
     const products = await productService.searchProducts(req.query.search);
-    return res.status(200).json({ success: true, products });
+    return success(res, "Products retrieved successfully", { products });
   } catch (err) {
     handleError(res, "searchProducts", err);
   }
@@ -23,7 +23,7 @@ const showProductDetails = async (req, res) => {
   try {
     const { id } = req.params;
     const data = await productService.getProductDetails(id);
-    return res.render("userPages/productDetails", data);
+    return render(res, "userPages/productDetails", data);
   } catch (err) {
     if (err.statusCode) {
       req.flash("error", err.message);

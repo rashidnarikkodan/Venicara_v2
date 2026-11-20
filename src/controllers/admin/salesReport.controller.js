@@ -1,3 +1,4 @@
+const { render } = require("../../helpers/response.helper");
 const handleError = require("../../helpers/handleError.helper");
 const Order = require("../../models/order.model");
 const generatePDF = require("../../helpers/salesPdf.helper");
@@ -23,7 +24,7 @@ const showSalesReport = async (req, res) => {
         break;
       case "monthly":
         startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-        endDate = new Date(now.getFullYear(),now.getMonth() + 1,0,23,59,59,999);
+        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
         break;
       case "yearly":
         startDate = new Date(now.getFullYear(), 0, 1);
@@ -32,8 +33,8 @@ const showSalesReport = async (req, res) => {
       case "custom":
         startDate = new Date(req.query.startDate);
         endDate = new Date(req.query.endDate);
-        if(!req.query.startDate || !req.query.endDate){
-          req.flash("error"," Please select both start and end dates for custom filter.");
+        if (!req.query.startDate || !req.query.endDate) {
+          req.flash("error", " Please select both start and end dates for custom filter.");
           return res.redirect(`/admin/salesReport?filter=daily`);
         }
         endDate.setHours(23, 59, 59, 999);
@@ -51,129 +52,145 @@ const showSalesReport = async (req, res) => {
     };
     const returned = {
       updatedAt: { $gte: startDate, $lte: endDate },
-      'return.status': "approved",
-    };
-    const refunded = {
-      updatedAt: { $gte: startDate, $lte: endDate },
-      "payment.status": "refunded" ,
-    };
-    const productCancelled = {
-      updatedAt: { $gte: startDate, $lte: endDate },
-      products: { $elemMatch: { status: "cancelled" } },
-    };
-    const productReturned = {
-      updatedAt: { $gte: startDate, $lte: endDate },
-      products: { $elemMatch: { status: "returned" } },
+      status: "returned",
     };
 
-    // Fetch orders within the date range and confirmed status
-    const orders = await Order.find(delivered).populate('userId','name').sort({ createdAt: -1 })
+    const orders = await Order.find(delivered)
+      .populate("userId")
+      .populate("items.productId")
+      .sort({ updatedAt: -1 });
 
-    // Fetch essential data for the report
-    const totalOrders = orders.length;
-    const totalRevenue = orders.reduce((sum, order) => sum + order.finalAmount,0);
-    
-    const totalProductSold = orders.reduce((sum, order) => {
-      const productCount = order.products.reduce((productSum, product) => productSum + product.quantity,0);
-      return sum + productCount;
-    }, 0);
+    const totalOrders = await Order.countDocuments(delivered);
+    const totalCancelledOrders = await Order.countDocuments(cancelled);
+    const totalReturnedOrders = await Order.countDocuments(returned);
 
-    const totalDiscountPerProduct = orders.reduce((sum, order) => {
-      const productDiscount = order.products.reduce((discSum, product) =>discSum+(product.basePrice-product.finalAmount)*product.quantity,0);
-        return sum + productDiscount;
-      }, 0);
+    const metrics = await Order.aggregate([
+      { $match: delivered },
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: "$finalAmount" },
+          totalDiscount: { $sum: "$couponDiscount" },
+        },
+      },
+    ]);
 
+    const totalSales = metrics[0]?.totalSales || 0;
+    const totalDiscount = metrics[0]?.totalDiscount || 0;
 
-    const totalDiscountPerOrder= orders.reduce((sum, order) => {
-      const productDiscount = order.products.reduce((discSum, product) =>discSum+(product.basePrice-product.finalAmount)*product.quantity,0);
-      const orderDiscount = (order.totalOrderPrice - order.finalAmount)+productDiscount;
-        return sum + orderDiscount;
-      }, 0);    
-    const totalRefund = await Order.find(refunded).then((refundOrders)=>refundOrders.reduce((sum, order) => sum + order.refundAmount, 0));
-    const AverageOrderValue = totalOrders ? totalRevenue / totalOrders : 0;
-    const countUser = await Order.distinct("userId",delivered);
-    const totalCustomers = countUser.length;
-    const totalCancelled = await Order.countDocuments(cancelled);
-    const totalReturned = await Order.countDocuments(returned);
-    
-    const totalProductCancelled = await Order.find(productCancelled).then(orders => 
-      orders.reduce((sum, order) => {
-        const cancelledCount = order.products
-          .filter(p => p.status === "cancelled")
-          .reduce((s, p) => s + p.quantity, 0);
-        return sum + cancelledCount;
-      }, 0)
-    );
-    
-    const totalProductReturned = await Order.find(productReturned).then(orders => 
-      orders.reduce((sum, order) => {
-        const returnedCount = order.products
-          .filter(p => p.status === "returned")
-          .reduce((s, p) => s + p.quantity, 0);
-        return sum + returnedCount;
-      }, 0)
-    );
-
-    orders.forEach(order => {
-     const productDisc = order.products.reduce((s,product) =>s+(product.basePrice*product.quantity)-product.subtotal, 0);
-      order.productDiscount = productDisc;
-    });
-
-    const data = {
+    return render(res, "adminPages/salesReport", {
+      orders,
       totalOrders,
-      totalRevenue,
-      totalProductSold,
-      totalCustomers,
-      totalCancelled,
-      totalReturned,
-      totalDiscountPerProduct,
-      totalDiscountPerOrder,
-      totalRefund,
-      AverageOrderValue,
-      totalProductCancelled,
-      totalProductReturned
-    };
-    req.session.salesReport = { data, filter, startDate, endDate, orders };
-
-
-    return res.render("adminPages/salesReport", {
+      totalSales,
+      totalDiscount,
+      totalCancelledOrders,
+      totalReturnedOrders,
       page: "salesReport",
       filter,
-      startDate: req.query.startDate,
-      endDate: req.query.endDate,
-      orders,
-      data,
-      today
+      startDate: req.query.startDate || today,
+      endDate: req.query.endDate || today,
     });
-  } catch (err) {
-    handleError(res, "showSalesReport", err);
-  }
-};
-const exportSalesPDF = async (req, res) => {
-  try {
-
-    const { data, filter, startDate, endDate, orders } = req.session.salesReport;
-    // Create a new PDF document
-    generatePDF(req, res, data, orders, filter, startDate, endDate);
-
-  } catch (err) {
-    handleError(res, "exportSalesPDF", err);
+  } catch (error) {
+    handleError(res, "showSalesReport", error);
   }
 };
 
-const exportSalesExcel = async (req, res) => {
+const downloadPDF = async (req, res) => {
   try {
+    const { startDate, endDate } = req.query;
+    const query = {
+      updatedAt: {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      },
+      status: "delivered",
+      "payment.status": "paid",
+    };
 
-    const { data, filter, startDate, endDate, orders } = req.session.salesReport;
-    generateSalesReportExcel(req, res, data, orders, filter, startDate, endDate);
-   
-  } catch (err) {
-    handleError(res, "exportSalesExcel", err);
+    const orders = await Order.find(query)
+      .populate("userId")
+      .populate("items.productId")
+      .sort({ updatedAt: -1 });
+
+    const metrics = await Order.aggregate([
+      { $match: query },
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: "$finalAmount" },
+          totalDiscount: { $sum: "$couponDiscount" },
+        },
+      },
+    ]);
+
+    const totalSales = metrics[0]?.totalSales || 0;
+    const totalDiscount = metrics[0]?.totalDiscount || 0;
+
+    const stream = res.writeHead(200, {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename=SalesReport_${startDate}_to_${endDate}.pdf`,
+    });
+
+    generatePDF(
+      (chunk) => stream.write(chunk),
+      () => stream.end(),
+      orders,
+      totalSales,
+      totalDiscount,
+      startDate,
+      endDate
+    );
+  } catch (error) {
+    handleError(res, "downloadPDF", error);
+  }
+};
+
+const downloadExcel = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+    const query = {
+      updatedAt: {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      },
+      status: "delivered",
+      "payment.status": "paid",
+    };
+
+    const orders = await Order.find(query)
+      .populate("userId")
+      .populate("items.productId")
+      .sort({ updatedAt: -1 });
+
+    const metrics = await Order.aggregate([
+      { $match: query },
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: "$finalAmount" },
+          totalDiscount: { $sum: "$couponDiscount" },
+        },
+      },
+    ]);
+
+    const totalSales = metrics[0]?.totalSales || 0;
+    const totalDiscount = metrics[0]?.totalDiscount || 0;
+
+    await generateSalesReportExcel(
+      res,
+      orders,
+      totalSales,
+      totalDiscount,
+      startDate,
+      endDate
+    );
+  } catch (error) {
+    handleError(res, "downloadExcel", error);
   }
 };
 
 module.exports = {
   showSalesReport,
-  exportSalesPDF,
-  exportSalesExcel,
+  downloadPDF,
+  downloadExcel,
 };

@@ -1,5 +1,5 @@
 const { addressService } = require("../../services");
-const apiResponse = require("../../helpers/apiResponse.helper");
+const { render } = require("../../helpers/response.helper");
 const handleError = require("../../helpers/handleError.helper");
 
 /**
@@ -10,7 +10,7 @@ const showAddress = async (req, res) => {
   try {
     const userId = req.session.user.id;
     const { addresses, user } = await addressService.getUserAddresses(userId);
-    res.render("userPages/address", { addresses, user });
+    return render(res, "userPages/address", { addresses, user });
   } catch (err) {
     handleError(res, "showAddress", err);
   }
@@ -22,7 +22,7 @@ const showAddress = async (req, res) => {
  */
 const showNewAddress = async (req, res) => {
   try {
-    res.render("userPages/newAddress");
+    return render(res, "userPages/newAddress");
   } catch (err) {
     handleError(res, "showNewAddress", err);
   }
@@ -37,7 +37,7 @@ const handleNewAddress = async (req, res) => {
     const userId = req.session.user.id;
     await addressService.createAddress(userId, req.body);
     req.flash("success", "Address added successfully");
-    res.redirect("/address");
+    return res.redirect("/address");
   } catch (err) {
     if (err.statusCode) {
       req.flash("error", err.message);
@@ -56,7 +56,7 @@ const showEditAddress = async (req, res) => {
     const userId = req.session.user.id;
     const { id } = req.params;
     const address = await addressService.getAddressById(userId, id);
-    res.render("userPages/editAddress", { address });
+    return render(res, "userPages/editAddress", { address });
   } catch (err) {
     if (err.statusCode) {
       req.flash("error", err.message);
@@ -76,7 +76,7 @@ const handleEditAddress = async (req, res) => {
     const { id } = req.params;
     await addressService.updateAddress(userId, id, req.body);
     req.flash("success", "Address updated successfully");
-    res.redirect("/address");
+    return res.redirect("/address");
   } catch (err) {
     if (err.statusCode) {
       req.flash("error", err.message);
@@ -96,7 +96,7 @@ const deleteAddress = async (req, res) => {
     const { id } = req.params;
     await addressService.deleteAddress(userId, id);
     req.flash("success", "Address deleted successfully");
-    res.redirect("/address");
+    return res.redirect("/address");
   } catch (err) {
     if (err.statusCode) {
       req.flash("error", err.message);
@@ -116,7 +116,7 @@ const setDefaultAddress = async (req, res) => {
     const { id } = req.params;
     await addressService.setDefaultAddress(userId, id);
     req.flash("success", "Default address updated");
-    res.redirect("/address");
+    return res.redirect("/address");
   } catch (err) {
     if (err.statusCode) {
       req.flash("error", err.message);

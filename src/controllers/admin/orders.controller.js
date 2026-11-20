@@ -3,6 +3,7 @@ const User = require("../../models/user.model");
 const Wallet = require("../../models/wallet.model");
 const WalletTransaction = require("../../models/walletTransaction.model");
 const Product = require("../../models/product.model"); // ✅ Need this for stock update
+const { render, success } = require("../../helpers/response.helper");
 const handleError = require("../../helpers/handleError.helper");
 const Coupon = require("../../models/coupon.model");
 // SHOW ALL ORDERS (with pagination + search)
@@ -62,7 +63,7 @@ const showOrders = async (req, res) => {
 
     const totalPages = Math.ceil(totalOrders / limit);
 
-    return res.render("adminPages/orders", {
+    return render(res, "adminPages/orders", {
       page: "orders",
       orders,
       currentPage: page,
@@ -92,7 +93,7 @@ const showOrderDetails = async (req, res) => {
       return res.redirect("/admin/orders");
     }
 
-    return res.render("adminPages/orderDetails", {
+    return render(res, "adminPages/orderDetails", {
       page: "orders",
       order,
       count: 0,
@@ -533,14 +534,9 @@ const approveReturn = async (req, res) => {
     if (allReturned) order.status = "returned";
 
     await order.save();
-    return res
-      .status(200)
-      .json({ success: true, message: "Return request approved" });
+    return success(res, "Return request approved");
   } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .json({ success: false, message: "Error approving return request" });
+    handleError(res, "approveReturn", error);
   }
 };
 

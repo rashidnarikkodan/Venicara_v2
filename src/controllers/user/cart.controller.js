@@ -1,5 +1,5 @@
 const { cartService } = require("../../services");
-const apiResponse = require("../../helpers/apiResponse.helper");
+const { success, render } = require("../../helpers/response.helper");
 const handleError = require("../../helpers/handleError.helper");
 
 /**
@@ -10,7 +10,7 @@ const showCart = async (req, res) => {
   try {
     const userId = req.session.user.id;
     const { items, total } = await cartService.getCart(userId);
-    res.render("userPages/cart", { items, total });
+    return render(res, "userPages/cart", { items, total });
   } catch (err) {
     handleError(res, "showCart", err);
   }
@@ -27,11 +27,8 @@ const addToCart = async (req, res) => {
     const userId = req.session.user.id;
 
     const result = await cartService.addToCart(userId, productId, variantId);
-    return apiResponse.ok(res, "Added to bag", result);
+    return success(res, "Added to bag", result);
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ success: false, message: err.message });
-    }
     handleError(res, "addToCart", err);
   }
 };
@@ -46,11 +43,8 @@ const removeFromCart = async (req, res) => {
     const userId = req.session.user.id;
 
     await cartService.removeFromCart(userId, cartItemId);
-    return apiResponse.ok(res, "Item removed from cart");
+    return success(res, "Item removed from cart");
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ success: false, message: err.message });
-    }
     handleError(res, "removeFromCart", err);
   }
 };
@@ -66,15 +60,8 @@ const updateCartItemQuantity = async (req, res) => {
     const action = req.body.action || (req.path.includes("increase") ? "increase" : "decrease");
 
     const result = await cartService.updateQuantity(userId, cartItemId, action);
-    return res.status(200).json({ success: true, ...result });
+    return success(res, { ...result });
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({
-        success: false,
-        message: err.message,
-        ...(err.data || {}),
-      });
-    }
     handleError(res, "updateCartItemQuantity", err);
   }
 };

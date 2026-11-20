@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const Admin = require('../../models/admin.model');
+const { render } = require('../../helpers/response.helper');
 const handleError = require('../../helpers/handleError.helper');
 
 const handleEntry = (req, res) => {
@@ -13,7 +14,7 @@ const handleEntry = (req, res) => {
 // SHOW LOGIN
 const showLogin = (req, res) => {
   try {
-    return res.render('adminPages/login');
+    return render(res, 'adminPages/login');
   } catch (err) {
     handleError(res, "showLogin", err);
   }
@@ -48,26 +49,21 @@ const handleLogin = async (req, res) => {
     req.session.admin = {
       id: admin._id,
       email: admin.email,
-      role: admin.role
     };
 
     req.flash('success', 'Logged in successfully');
-    return res.redirect('/admin/dashboard');
+    return res.redirect('/admin');
   } catch (err) {
     handleError(res, "handleLogin", err);
   }
 };
 
+// HANDLE LOGOUT
 const handleLogout = (req, res) => {
   try {
-    req.session.destroy(err => {
-      if (err) {
-        console.error("Logout error:", err);
-        return res.redirect("/admin/dashboard");
-      }
-      res.clearCookie("admin.sid");
-      return res.redirect("/admin/login");
-    });
+    req.session.admin = null;
+    req.flash('success', 'Logged out successfully');
+    return res.redirect('/admin/login');
   } catch (err) {
     handleError(res, "handleLogout", err);
   }

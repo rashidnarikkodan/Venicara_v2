@@ -1,5 +1,5 @@
 const { checkoutService, addressService } = require("../../services");
-const apiResponse = require("../../helpers/apiResponse.helper");
+const { render, success } = require("../../helpers/response.helper");
 const handleError = require("../../helpers/handleError.helper");
 
 /**
@@ -14,7 +14,7 @@ const showAddress = async (req, res) => {
     req.session.order = req.session.order || {};
     req.session.order.deliveryCharge = deliveryCharge;
 
-    res.render("userPages/checkoutAddress", {
+    return render(res, "userPages/checkoutAddress", {
       addresses,
       items,
       deliveryCharge,
@@ -34,7 +34,7 @@ const showAddress = async (req, res) => {
  */
 const showAddAddress = (req, res) => {
   try {
-    res.render("userPages/checkoutAddressAdd");
+    return render(res, "userPages/checkoutAddressAdd");
   } catch (error) {
     handleError(res, "showAddAddress", error);
   }
@@ -49,7 +49,7 @@ const handleAddAddress = async (req, res) => {
     const userId = req.session.user.id;
     await addressService.createAddress(userId, req.body);
     req.flash("success", "Address added successfully");
-    res.redirect("/checkout/address");
+    return res.redirect("/checkout/address");
   } catch (error) {
     if (error.statusCode) {
       req.flash("error", error.message);
@@ -67,7 +67,7 @@ const showEditAddress = async (req, res) => {
   try {
     const userId = req.session.user.id;
     const address = await addressService.getAddressById(userId, req.params.id);
-    res.render("userPages/checkoutAddressEdit", { address });
+    return render(res, "userPages/checkoutAddressEdit", { address });
   } catch (error) {
     if (error.statusCode) {
       req.flash("error", error.message);
@@ -86,7 +86,7 @@ const handleEditAddress = async (req, res) => {
     const userId = req.session.user.id;
     await addressService.updateAddress(userId, req.params.id, req.body);
     req.flash("success", "Address updated successfully");
-    res.redirect("/checkout/address");
+    return res.redirect("/checkout/address");
   } catch (error) {
     if (error.statusCode) {
       req.flash("error", error.message);
@@ -104,10 +104,10 @@ const handleSelectAddress = (req, res) => {
   try {
     const { selectedAddress } = req.body;
     if (!selectedAddress) {
-      return apiResponse.badRequest(res, "Address is required");
+      return handleError(res, "handleSelectAddress", { statusCode: 400, message: "Address is required" });
     }
     req.session.address = selectedAddress;
-    return apiResponse.ok(res, "Address selected");
+    return success(res, "Address selected");
   } catch (error) {
     handleError(res, "handleSelectAddress", error);
   }
@@ -125,7 +125,7 @@ const showPaymentMethods = async (req, res) => {
     const deliveryCharge = req.session.order?.deliveryCharge || 0;
     const data = await checkoutService.getPaymentStepData(userId, deliveryCharge);
 
-    res.render("userPages/checkoutPayment", data);
+    return render(res, "userPages/checkoutPayment", data);
   } catch (error) {
     if (error.statusCode) {
       req.flash("error", error.message);
@@ -149,16 +149,11 @@ const applyCoupon = async (req, res) => {
     const result = await checkoutService.calculateCoupon(userId, code, deliveryCharge);
     req.session.coupon = result.couponId;
 
-    return res.status(200).json({
-      success: true,
-      status: true,
+    return success(res, {
       message: "Coupon applied successfully",
       ...result,
     });
   } catch (error) {
-    if (error.statusCode) {
-      return res.status(error.statusCode).json({ success: false, status: false, message: error.message });
-    }
     handleError(res, "applyCoupon", error);
   }
 };
@@ -174,9 +169,7 @@ const cancelCoupon = async (req, res) => {
     const { total } = await (require("../../services").cartService).getCart(userId);
     const deliveryCharge = req.session.order?.deliveryCharge || 0;
 
-    return res.status(200).json({
-      success: true,
-      status: true,
+    return success(res, {
       message: "Coupon removed",
       finalAmount: total + deliveryCharge,
     });
@@ -207,18 +200,13 @@ const handlePlaceOrder = async (req, res) => {
 
     delete req.session.coupon;
 
-    return res.status(200).json({
-      success: true,
-      status: true,
+    return success(res, {
       message: "Order created successfully",
       orderId: result.orderId,
       razorpayOrderId: result.razorpayOrderId,
       finalAmount: result.finalAmount,
     });
   } catch (error) {
-    if (error.statusCode) {
-      return res.status(error.statusCode).json({ success: false, status: false, message: error.message });
-    }
     handleError(res, "handlePlaceOrder", error);
   }
 };
@@ -231,11 +219,8 @@ const handleRazorpaySuccess = async (req, res) => {
   try {
     const result = await checkoutService.verifyRazorpaySuccess(req.body);
     delete req.session.coupon;
-    return apiResponse.ok(res, result.message);
+    return success(res, result.message);
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ success: false, status: false, message: err.message });
-    }
     handleError(res, "handleRazorpaySuccess", err);
   }
 };
@@ -249,7 +234,7 @@ const handleRazorpayFailed = async (req, res) => {
     const { orderId } = req.body;
     await checkoutService.handleRazorpayFailure(orderId);
     delete req.session.coupon;
-    return apiResponse.ok(res, "Payment failed, Order placed as pending, Please Retry.");
+    return success(res, "Payment failed, Order placed as pending, Please Retry.");
   } catch (error) {
     handleError(res, "handleRazorpayFailed", error);
   }
@@ -262,7 +247,7 @@ const handleRazorpayFailed = async (req, res) => {
 const showPlaceOrder = async (req, res) => {
   try {
     const orderId = req.params.id;
-    res.render("userPages/placeOrder", { orderId });
+    return render(res, "userPages/placeOrder", { orderId });
   } catch (error) {
     handleError(res, "showPlaceOrder", error);
   }

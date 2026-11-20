@@ -1,6 +1,6 @@
 const { orderService } = require("../../services");
+const { render, success, created } = require("../../helpers/response.helper");
 const generateInvoice = require("../../helpers/generateInvoice.helper");
-const apiResponse = require("../../helpers/apiResponse.helper");
 const handleError = require("../../helpers/handleError.helper");
 const Order = require("../../models/order.model");
 
@@ -16,7 +16,7 @@ const showOrders = async (req, res) => {
       limit: req.query.limit,
     });
 
-    res.render("userPages/orders", {
+    return render(res, "userPages/orders", {
       orders,
       user,
       page,
@@ -38,11 +38,8 @@ const cancelOrder = async (req, res) => {
     const userId = req.session.user.id;
 
     const result = await orderService.cancelOrder(userId, orderId);
-    return apiResponse.ok(res, result.message);
+    return success(res, result.message);
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ success: false, message: err.message });
-    }
     handleError(res, "cancelOrder", err);
   }
 };
@@ -58,11 +55,8 @@ const cancelProduct = async (req, res) => {
     const userId = req.session.user.id;
 
     const result = await orderService.cancelOrderItem(userId, orderId, index);
-    return apiResponse.ok(res, result.message);
+    return success(res, result.message);
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ success: false, message: err.message });
-    }
     handleError(res, "cancelProduct", err);
   }
 };
@@ -78,11 +72,8 @@ const returnOrderRequest = async (req, res) => {
     const userId = req.session.user.id;
 
     const result = await orderService.requestOrderReturn(userId, orderId, reason);
-    return apiResponse.ok(res, result.message);
+    return success(res, result.message);
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ success: false, message: err.message });
-    }
     handleError(res, "returnOrderRequest", err);
   }
 };
@@ -99,11 +90,8 @@ const returnProductRequest = async (req, res) => {
     const userId = req.session.user.id;
 
     const result = await orderService.requestOrderItemReturn(userId, orderId, index, reason);
-    return apiResponse.ok(res, result.message);
+    return success(res, result.message);
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ success: false, message: err.message });
-    }
     handleError(res, "returnProductRequest", err);
   }
 };
@@ -119,7 +107,7 @@ const orderDetails = async (req, res) => {
     const userId = req.session.user.id;
 
     const details = await orderService.getOrderDetails(userId, id, index);
-    res.render("userPages/orderDetails", details);
+    return render(res, "userPages/orderDetails", details);
   } catch (err) {
     if (err.statusCode) {
       req.flash("error", err.message);
@@ -197,11 +185,8 @@ const addReview = async (req, res) => {
     const { name, rating, message } = req.body;
 
     const result = await orderService.addReview(userId, productId, { name, rating, message });
-    return apiResponse.created(res, result.message, result.review);
+    return created(res, result.message, result.review);
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ success: false, message: err.message });
-    }
     handleError(res, "addReview", err);
   }
 };
@@ -216,11 +201,8 @@ const retryPayment = async (req, res) => {
     const userId = req.session.user.id;
 
     const result = await orderService.retryPayment(userId, orderId);
-    return apiResponse.ok(res, "Payment order created", result);
+    return success(res, "Payment order created", result);
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ success: false, message: err.message });
-    }
     handleError(res, "retryPayment", err);
   }
 };
@@ -233,11 +215,8 @@ const retryPaymentSuccess = async (req, res) => {
   try {
     const userId = req.session.user.id;
     const result = await orderService.verifyRetryPayment(userId, req.body);
-    return apiResponse.ok(res, result.message);
+    return success(res, result.message);
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ success: false, message: err.message });
-    }
     handleError(res, "retryPaymentSuccess", err);
   }
 };

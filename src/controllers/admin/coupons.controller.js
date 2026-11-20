@@ -1,6 +1,6 @@
 const { adminService } = require("../../services");
+const { render } = require("../../helpers/response.helper");
 const handleError = require("../../helpers/handleError.helper");
-const apiResponse = require("../../helpers/apiResponse.helper");
 
 /**
  * List coupons
@@ -14,7 +14,7 @@ const showCoupons = async (req, res) => {
       search: req.query.search,
     });
 
-    return res.render("adminPages/coupons", {
+    return render(res, "adminPages/coupons", {
       page: "coupons",
       ...data,
     });

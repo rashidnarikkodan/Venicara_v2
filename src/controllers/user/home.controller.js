@@ -1,4 +1,6 @@
 const { productService, cartService } = require("../../services");
+const { render, success } = require("../../helpers/response.helper");
+const { HTTP_STATUS } = require("../../constants");
 const handleError = require("../../helpers/handleError.helper");
 
 /**
@@ -11,7 +13,7 @@ const landingPage = async (req, res) => {
     const { products, categories, wishlistIds } = await productService.getLandingData(userId);
     const user = req.session?.user || null;
 
-    return res.render("userPages/landing", {
+    return render(res, "userPages/landing", {
       products,
       categories,
       user,
@@ -32,7 +34,7 @@ const showHome = async (req, res) => {
     const { products, categories, wishlistIds } = await productService.getLandingData(userId);
     const user = req.session?.user || null;
 
-    return res.render("userPages/home", {
+    return render(res, "userPages/home", {
       products,
       categories,
       user,
@@ -53,7 +55,7 @@ const showShop = async (req, res) => {
     const data = await productService.getShopData(userId, req.query);
     const user = req.session?.user || null;
 
-    return res.render("userPages/shop", {
+    return render(res, "userPages/shop", {
       ...data,
       user,
       buildQuery: (extra) => {
@@ -75,10 +77,10 @@ const showShop = async (req, res) => {
 const cartCount = async (req, res) => {
   try {
     const userId = req.session?.user?.id;
-    if (!userId) return res.json({ count: 0 });
+    if (!userId) return success(res, "Cart count retrieved", { count: 0 });
 
     const count = await cartService.getCartCount(userId);
-    return res.json({ success: true, count });
+    return success(res, "Cart count retrieved", { count });
   } catch (err) {
     handleError(res, "cartCount", err);
   }
@@ -91,7 +93,7 @@ const cartCount = async (req, res) => {
 const showAbout = (req, res) => {
   try {
     const user = req.session?.user || null;
-    return res.render("userPages/about", { user });
+    return render(res, "userPages/about", { user });
   } catch (err) {
     handleError(res, "showAbout", err);
   }
@@ -104,7 +106,7 @@ const showAbout = (req, res) => {
 const showContact = (req, res) => {
   try {
     const user = req.session?.user || null;
-    return res.render("userPages/contact", { user });
+    return render(res, "userPages/contact", { user });
   } catch (err) {
     handleError(res, "showContact", err);
   }
@@ -121,17 +123,14 @@ const handleContactInquiry = (req, res) => {
 
     if (!name || !email || !message) {
       if (isApi) {
-        return res.status(400).json({ success: false, message: 'Please provide your name, email, and message.' });
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({ success: false, message: 'Please provide your name, email, and message.' });
       }
       req.flash('error', 'Please fill in all required fields.');
       return res.redirect('/contact');
     }
 
     if (isApi) {
-      return res.status(200).json({
-        success: true,
-        message: 'Thank you for reaching out to Venicara. Our concierge will be in touch shortly.',
-      });
+      return success(res, 'Thank you for reaching out to Venicara. Our concierge will be in touch shortly.');
     }
 
     req.flash('success', 'Thank you for reaching out. We will respond to your inquiry shortly.');
@@ -152,17 +151,14 @@ const subscribeNewsletter = (req, res) => {
 
     if (!email || !email.includes('@')) {
       if (isApi) {
-        return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({ success: false, message: 'Please enter a valid email address.' });
       }
       req.flash('error', 'Please enter a valid email address.');
       return res.redirect('back');
     }
 
     if (isApi) {
-      return res.status(200).json({
-        success: true,
-        message: 'Thank you for subscribing to Venicara private previews!',
-      });
+      return success(res, 'Thank you for subscribing to Venicara private previews!');
     }
 
     req.flash('success', 'Thank you for subscribing to Venicara private previews!');

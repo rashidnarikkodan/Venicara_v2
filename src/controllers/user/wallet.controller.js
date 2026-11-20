@@ -1,5 +1,5 @@
 const { walletService } = require("../../services");
-const apiResponse = require("../../helpers/apiResponse.helper");
+const { render, success } = require("../../helpers/response.helper");
 const handleError = require("../../helpers/handleError.helper");
 
 /**
@@ -10,7 +10,7 @@ const showWallet = async (req, res) => {
   try {
     const userId = req.session.user.id;
     const { wallet, user } = await walletService.getWallet(userId);
-    res.render("userPages/wallet", { wallet, user });
+    return render(res, "userPages/wallet", { wallet, user });
   } catch (err) {
     handleError(res, "showWallet", err);
   }
@@ -25,11 +25,8 @@ const addToWallet = async (req, res) => {
     const userId = req.session.user.id;
     const { amount } = req.body;
     const result = await walletService.createAddMoneyOrder(userId, amount);
-    return res.status(200).json({ success: true, ...result });
+    return success(res, { ...result });
   } catch (error) {
-    if (error.statusCode) {
-      return res.status(error.statusCode).json({ success: false, message: error.message });
-    }
     handleError(res, "addToWallet", error);
   }
 };
@@ -42,16 +39,8 @@ const verifyPayment = async (req, res) => {
   try {
     const userId = req.session.user.id;
     const result = await walletService.verifyAddMoneyPayment(userId, req.body);
-    return res.status(200).json({
-      status: true,
-      success: true,
-      message: result.message,
-      balance: result.balance,
-    });
+    return success(res, result.message, { balance: result.balance });
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ status: false, success: false, message: err.message });
-    }
     handleError(res, "verifyPayment", err);
   }
 };
@@ -65,11 +54,7 @@ const paymentFailed = async (req, res) => {
     const userId = req.session.user.id;
     const { razorpayId } = req.body;
     await walletService.recordPaymentFailure(userId, razorpayId);
-    return res.status(200).json({
-      status: true,
-      success: true,
-      message: "The payment window was closed before completing transaction.",
-    });
+    return success(res, "The payment window was closed before completing transaction.");
   } catch (error) {
     handleError(res, "paymentFailed", error);
   }
@@ -87,7 +72,7 @@ const showTransactionHistory = async (req, res) => {
       limit: req.query.limit,
     });
 
-    res.render("userPages/walletTransaction", {
+    return render(res, "userPages/walletTransaction", {
       transactions: data.transactions,
       user: data.user,
       search: null,

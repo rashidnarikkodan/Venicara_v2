@@ -3,13 +3,14 @@ const sendEmail = require("../../helpers/sendMail.helper");
 const generateOTP = require("../../helpers/generateOTP.helper");
 const bcrypt = require("bcrypt");
 const processImages = require("../../helpers/imgProcess.helper");
+const { render, success } = require("../../helpers/response.helper");
 const handleError = require("../../helpers/handleError.helper");
 const cloudinary = require("../../config/cloudinary.config");
 
 const showProfile = async (req, res) => {
   try {
     const user = await User.findById(req.session.user.id);
-    res.render("userPages/profile", { user });
+    return render(res, "userPages/profile", { user });
   } catch (err) {
     handleError(res, "showProfile", err);
   }
@@ -18,7 +19,7 @@ const showProfile = async (req, res) => {
 const showEditProfile = async (req, res) => {
   try {
     const user = await User.findById(req.session.user.id);
-    res.render("userPages/profileEdit", { user });
+    return render(res, "userPages/profileEdit", { user });
   } catch (err) {
     handleError(res, "showEditProfile", err);
   }
@@ -41,10 +42,9 @@ const editProfile = async (req, res) => {
     let public_id = user.public_id;
     if (req.file) {
       const result = await processImages(req.file, "profiles");
-      photoUrl = result.url
-      public_id = result.public_id
+      photoUrl = result.url;
+      public_id = result.public_id;
     }
-
 
     const updateData = {
       name,
@@ -67,31 +67,31 @@ const editProfile = async (req, res) => {
       });
       sendEmail(email, otp);
       req.flash("success", `New OTP sent to your email: ${email}`);
-      return res.render("userPages/newEmailOTP", { email });
+      return render(res, "userPages/newEmailOTP", { email });
     }
 
     req.flash("success", "Profile updated successfully");
-    res.redirect("/profile");
+    return res.redirect("/profile");
   } catch (err) {
-    console.log(err)
-    req.flash("error", "Failed to update profile" + err);
-    res.redirect("/profile");
+    console.log(err);
+    req.flash("error", "Failed to update profile: " + err.message);
+    return res.redirect("/profile");
   }
 };
 
-const deleteProfile= async (req,res)=>{
-  try{
-    const {public_id} = req.body
-    const user = await User.findById(req.session.user.id)
-    user.photoUrl = ''
-    user.public_id = ''
-    user.save()
-    if(public_id) await cloudinary.uploader.destroy(public_id);
-    res.status(200).json({status:true,message:'Profile picture removed'})
-  }catch(error){
-    res.status(500).json({status:false,message:'server error'})
+const deleteProfile = async (req, res) => {
+  try {
+    const { public_id } = req.body;
+    const user = await User.findById(req.session.user.id);
+    user.photoUrl = '';
+    user.public_id = '';
+    await user.save();
+    if (public_id) await cloudinary.uploader.destroy(public_id);
+    return success(res, "Profile picture removed");
+  } catch (error) {
+    handleError(res, "deleteProfile", error);
   }
-}
+};
 
 const handleNewEmailOTP = async (req, res) => {
   try {
@@ -99,7 +99,7 @@ const handleNewEmailOTP = async (req, res) => {
     const user = await User.findById(req.session.user.id);
 
     if (user.otp !== otp || user.otpExpiry < Date.now()) {
-      return res.render("userPages/newEmailOTP", {
+      return render(res, "userPages/newEmailOTP", {
         email,
         messages: { error: ["Invalid or expired OTP"] },
       });
@@ -127,7 +127,7 @@ const resendNewEmailOTP = async (req, res) => {
     await user.save();
 
     sendEmail(req.body.email, otp, user.name);
-    res.json({ success: true });
+    return success(res, "OTP resent successfully");
   } catch (err) {
     handleError(res, "resendNewEmailOTP", err);
   }
@@ -136,7 +136,7 @@ const resendNewEmailOTP = async (req, res) => {
 const showProfileChangePass = async (req, res) => {
   try {
     const user = await User.findById(req.session.user.id);
-    res.render("userPages/profileChangePass", { user });
+    return render(res, "userPages/profileChangePass", { user });
   } catch (err) {
     handleError(res, "showProfileChangePass", err);
   }
@@ -170,7 +170,7 @@ const handleProfileChangePass = async (req, res) => {
     });
 
     req.flash("success", "Password updated");
-    res.redirect("/profile");
+    return res.redirect("/profile");
   } catch (err) {
     handleError(res, "handleProfileChangePass", err);
   }
@@ -179,7 +179,7 @@ const handleProfileChangePass = async (req, res) => {
 const showDeleteAc = async (req, res) => {
   try {
     const user = await User.findById(req.session.user.id);
-    res.render("userPages/deleteAc", { user });
+    return render(res, "userPages/deleteAc", { user });
   } catch (err) {
     handleError(res, "showDeleteAc", err);
   }
@@ -189,7 +189,7 @@ const handleDeleteAc = async (req, res) => {
   try {
     await User.findByIdAndUpdate(req.session.user.id, { isDeleted: true });
     req.flash("success", "Account deleted");
-    res.redirect("/");
+    return res.redirect("/");
   } catch (err) {
     handleError(res, "handleDeleteAc", err);
   }

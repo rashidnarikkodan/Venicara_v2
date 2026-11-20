@@ -1,6 +1,6 @@
 const { authService } = require("../../services");
+const { render, success } = require("../../helpers/response.helper");
 const handleError = require("../../helpers/handleError.helper");
-const apiResponse = require("../../helpers/apiResponse.helper");
 
 /**
  * Validates and sanitizes post-login redirect targets.
@@ -31,7 +31,7 @@ const showLogin = (req, res) => {
   try {
     const rawNext = req.query.next || "";
     const safeNext = getSafeRedirectUrl(rawNext);
-    res.render("userPages/login", { nextUrl: safeNext !== "/home" ? safeNext : (rawNext === "/home" ? "/home" : "") });
+    return render(res, "userPages/login", { nextUrl: safeNext !== "/home" ? safeNext : (rawNext === "/home" ? "/home" : "") });
   } catch (err) {
     handleError(res, "showLogin", err);
   }
@@ -98,7 +98,7 @@ const handleGoogleAuth = async (req, res) => {
  */
 const showForgot = (req, res) => {
   try {
-    return res.render("userPages/forgot");
+    return render(res, "userPages/forgot");
   } catch (err) {
     handleError(res, "showForgot", err);
   }
@@ -129,7 +129,7 @@ const handleForgot = async (req, res) => {
  */
 const showForgotOTP = (req, res) => {
   try {
-    return res.render("userPages/forgotOTP");
+    return render(res, "userPages/forgotOTP");
   } catch (err) {
     handleError(res, "showForgotOTP", err);
   }
@@ -160,11 +160,8 @@ const handleForgotOTP = async (req, res) => {
 const resendForgotOTP = async (req, res) => {
   try {
     await authService.resendForgotOTP(req.session.userId);
-    return res.json({ success: true, message: "OTP resent successfully" });
+    return success(res, "OTP resent successfully");
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ success: false, message: err.message });
-    }
     handleError(res, "resendForgotOTP", err);
   }
 };
@@ -175,7 +172,7 @@ const resendForgotOTP = async (req, res) => {
  */
 const showChangePass = (req, res) => {
   try {
-    return res.render("userPages/changePass");
+    return render(res, "userPages/changePass");
   } catch (err) {
     handleError(res, "showChangePass", err);
   }
@@ -208,7 +205,7 @@ const showSignup = (req, res) => {
   try {
     const rawNext = req.query.next || "";
     const safeNext = getSafeRedirectUrl(rawNext);
-    res.render("userPages/signup", { nextUrl: safeNext !== "/home" ? safeNext : (rawNext === "/home" ? "/home" : "") });
+    return render(res, "userPages/signup", { nextUrl: safeNext !== "/home" ? safeNext : (rawNext === "/home" ? "/home" : "") });
   } catch (err) {
     handleError(res, "showSignup", err);
   }
@@ -239,7 +236,7 @@ const handleSignup = async (req, res) => {
  */
 const showSignupOTP = async (req, res) => {
   try {
-    res.render("userPages/verify-otp");
+    return render(res, "userPages/verify-otp");
   } catch (err) {
     handleError(res, "showSignupOTP", err);
   }
@@ -271,11 +268,8 @@ const handleSignupOTP = async (req, res) => {
 const resendOTP = async (req, res) => {
   try {
     await authService.resendSignupOTP(req.session.userId);
-    return res.json({ success: true, message: "OTP resent successfully" });
+    return success(res, "OTP resent successfully");
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ success: false, message: err.message });
-    }
     handleError(res, "resendOTP", err);
   }
 };

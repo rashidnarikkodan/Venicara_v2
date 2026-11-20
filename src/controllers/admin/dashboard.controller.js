@@ -1,6 +1,7 @@
+const { render } = require('../../helpers/response.helper');
 const handleError = require('../../helpers/handleError.helper');
-const getChartData = require('../../helpers/getChartData.helper')
-const getDashboardData = require("../../helpers/getDashboardData.helper")
+const getChartData = require('../../helpers/getChartData.helper');
+const getDashboardData = require("../../helpers/getDashboardData.helper");
 
 const showDashboard = async (req, res) => {
   try {
@@ -12,40 +13,37 @@ const showDashboard = async (req, res) => {
       productsSold,
       newCustomers,
       topProducts
-    }=  await getDashboardData(filter)
+    } = await getDashboardData(filter);
     
     const {
-      labels:productsSoldLabels,
+      labels: productsSoldLabels,
       data,
-    } = await getChartData(filter,'products.quantity')
-    
+    } = await getChartData(filter, 'products.quantity');
 
-    const productsSoldData = []
-    const productsReturnedData = []
-    const productsCancelledData = []
+    const productsSoldData = [];
+    const productsReturnedData = [];
+    const productsCancelledData = [];
     
-    for(let elem of data){
-      productsSoldData.push(elem.soldCount)
-      productsReturnedData.push(elem.returnCount)
-      productsCancelledData.push(elem.cancelCount)
+    for (let elem of data) {
+      productsSoldData.push(elem.soldCount);
+      productsReturnedData.push(elem.returnCount);
+      productsCancelledData.push(elem.cancelCount);
     }
 
-    
     const {
-      labels:revenueLabels,
-      data:revenue
-    } = await getChartData(filter,'finalAmount')
+      labels: revenueLabels,
+      data: revenue
+    } = await getChartData(filter, 'finalAmount');
 
-  
-    const refundChartData = []
-    const revenueChartData = []
+    const refundChartData = [];
+    const revenueChartData = [];
     
-    for(let elem of revenue){
-      revenueChartData.push(elem.revenueCount)
-      refundChartData.push(elem.refundCount)
+    for (let elem of revenue) {
+      revenueChartData.push(elem.revenueCount);
+      refundChartData.push(elem.refundCount);
     }
    
-    return res.render('adminPages/dashboard', {
+    return render(res, 'adminPages/dashboard', {
       page: 'dashboard',
       filter,
       dashboardData: {
@@ -63,10 +61,11 @@ const showDashboard = async (req, res) => {
         refundChartData,
       }
     });
-
-  } catch(err) {
+  } catch (err) {
     handleError(res, "showDashboard", err);
   }
 };
 
-module.exports = { showDashboard };
+module.exports = {
+  showDashboard,
+};

@@ -1,5 +1,7 @@
+const { HTTP_STATUS } = require("../constants");
+
 class AppError extends Error {
-  constructor(message, statusCode = 400, data = null) {
+  constructor(message, statusCode = HTTP_STATUS.BAD_REQUEST, data = null) {
     super(message);
     this.statusCode = statusCode;
     this.data = data;
@@ -10,4 +12,3 @@ class AppError extends Error {
 module.exports = {
   AppError,
 };
-

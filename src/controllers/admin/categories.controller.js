@@ -1,6 +1,6 @@
 const { adminService } = require("../../services");
+const { render, success } = require("../../helpers/response.helper");
 const handleError = require("../../helpers/handleError.helper");
-const apiResponse = require("../../helpers/apiResponse.helper");
 
 /**
  * List categories
@@ -14,7 +14,7 @@ const showCategory = async (req, res) => {
       search: req.query.search,
     });
 
-    return res.render("adminPages/categories", {
+    return render(res, "adminPages/categories", {
       page: "categories",
       ...data,
     });
@@ -43,7 +43,7 @@ const deleteCategory = async (req, res) => {
  */
 const showAddCategory = (req, res) => {
   try {
-    res.render("adminPages/addCategory", { page: "categories" });
+    return render(res, "adminPages/addCategory", { page: "categories" });
   } catch (err) {
     handleError(res, "showAddCategory", err);
   }
@@ -79,7 +79,7 @@ const showEditCategory = async (req, res) => {
       req.flash("error", "Category not found");
       return res.redirect("/admin/categories");
     }
-    return res.render("adminPages/editCategory", { category, page: "categories" });
+    return render(res, "adminPages/editCategory", { category, page: "categories" });
   } catch (err) {
     handleError(res, "showEditCategory", err);
   }
@@ -112,11 +112,8 @@ const activeCategory = async (req, res) => {
   try {
     const { id } = req.params;
     const category = await adminService.toggleCategoryStatus(id);
-    return res.json({ success: true, status: category.isActive });
+    return success(res, "Category status updated", { status: category.isActive });
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ success: false, message: err.message });
-    }
     handleError(res, "activeCategory", err);
   }
 };

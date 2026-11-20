@@ -1,6 +1,7 @@
+const { render, success } = require("../../helpers/response.helper");
 const handleError = require("../../helpers/handleError.helper");
-const Referrals=require('../../models/referrals.model')
-const User=require('../../models/user.model')
+const Referrals = require('../../models/referrals.model');
+const User = require('../../models/user.model');
 
 const showReferrals = async (req, res) => {
   try {
@@ -48,49 +49,47 @@ const showReferrals = async (req, res) => {
 
     let totalPaid = 0;
     let totalPending = 0;
-    for (let reward of referrals) {
-      if (reward.status === "claimed") totalPaid += reward.amount;
-      else totalPending += reward.amount;
+
+    for (let r of referrals) {
+      if (r.status === "claimed") totalPaid += r.rewardAmount;
+      if (r.status === "pending") totalPending += r.rewardAmount;
     }
 
-    const data = {
-      referredCount: totalReferredUsers,
-      referrerCount: totalReferrerUsers,
+    return render(res, "adminPages/referrals", {
+      page: "referrals",
+      referrals,
+      totalReferrals,
+      totalPages: Math.ceil(totalReferrals / limit),
+      currentPage: page,
+      limit,
+      totalReferrerUsers,
+      totalReferredUsers,
       totalPaid,
       totalPending,
-    };
-
-    const totalPages = Math.ceil(totalReferrals / limit);
-
-    return res.render("adminPages/referrals", {
-      page: "referrals",
-      referrals, // table rows
-      currentPage: page,
-      totalPages,
-      limit,
-      count: (page - 1) * limit,
-      data,      // global stats
     });
-  } catch (err) {
-    handleError(res, "showReferrals", err);
+  } catch (error) {
+    handleError(res, "showReferrals", error);
   }
 };
 
-const approveReward= async (req,res)=>{
-  try{
-    const {id}=req.params
-    await Referrals.findOneAndUpdate({_id:id},{status:'claim'})
-    res.json({success:true,message:'Claim'})
-  }catch(error){
-    res.json({status:false,message:error.message})
+const approveReward = async (req, res) => {
+  try {
+    const referralId = req.params.id;
+    const referral = await Referrals.findById(referralId);
+    if (!referral) {
+      return handleError(res, "approveReward", { statusCode: 404, message: "Referral not found" });
+    }
+
+    referral.status = "claim";
+    await referral.save();
+
+    return success(res, "Reward claimed successfully");
+  } catch (error) {
+    handleError(res, "approveReward", error);
   }
-}
+};
 
 module.exports = {
   showReferrals,
   approveReward,
 };
-
-
-
-

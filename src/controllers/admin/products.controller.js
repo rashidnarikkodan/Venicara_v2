@@ -1,6 +1,8 @@
 const Product = require("../../models/product.model");
 const Category = require("../../models/category.model");
 const processImages = require("../../helpers/imgProcess.helper");
+const { render, success } = require("../../helpers/response.helper");
+const { HTTP_STATUS } = require("../../constants");
 const handleError = require("../../helpers/handleError.helper");
 const cloudinary = require('../../config/cloudinary.config')
 
@@ -64,7 +66,7 @@ const showProducts = async (req, res) => {
 
     const totalPages = Math.ceil(totalProducts / limit);
 
-    return res.render("adminPages/products", {
+    return render(res, "adminPages/products", {
       page: "products",
       products: productVariants,
       currentPage: page,
@@ -107,7 +109,7 @@ const showAddProduct = async (req, res) => {
       isDeleted: false,
       isActive: true,
     });
-    return res.render("adminPages/addProduct", {
+    return render(res, "adminPages/addProduct", {
       page: "products",
       categories,
     });
@@ -217,7 +219,7 @@ const showEditProduct = async (req, res) => {
       isActive: true,
     });
     const variants = product.variants;
-    res.render("adminPages/editProduct", {
+    return render(res, "adminPages/editProduct", {
       page: "products",
       product,
       categories,
@@ -301,16 +303,15 @@ const removeImage = async (req, res) => {
     const { public_id } = req.body;
     const productId = req.params.id;
     const product = await Product.findById(productId);
-    if (!public_id) return res.status(400).json({ success: false, message: 'public_id is required' });
-    if (!product) return res.status(400).json({ success: false, message: 'product not found' });
+    if (!public_id) return res.status(HTTP_STATUS.BAD_REQUEST).json({ success: false, message: 'public_id is required' });
+    if (!product) return res.status(HTTP_STATUS.BAD_REQUEST).json({ success: false, message: 'product not found' });
 
     await cloudinary.uploader.destroy(public_id);
     await Product.findByIdAndUpdate(productId, { $pull: { images: { public_id } } });
 
-    return res.status(200).json({ success: true, message: 'Image deleted successfully' });
+    return success(res, 'Image deleted successfully');
   } catch (err) {
-    console.error('Error deleting image:', err);
-    return res.status(500).json({ success: false, message: 'Server error' });
+    handleError(res, "removeImage", err);
   }
 };
 
